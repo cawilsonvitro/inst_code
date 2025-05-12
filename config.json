@@ -1,0 +1,11 @@
+{
+    "Spectrometer": {
+        "integrationtime": "10000",
+        "model": "USB2000PLUS",
+        "darkAvgs": "10",
+        "lightAvgs": "10",
+        "BoxCar": "5",
+        "startPt":"300",
+        "stopPt":"1550"
+    }
+}
