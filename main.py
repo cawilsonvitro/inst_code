@@ -57,7 +57,7 @@ class inst_suite():
         pass
 
 
-    def endAPP(self event):
+    def endAPP(self, event):
         '''
         stops app and closes intrument connections
         '''
@@ -71,7 +71,12 @@ class inst_suite():
         
         pass
     
-    #end region
+    #endregion
+
+    #region Spec init
+    
+    #endregion
+
 
 if __name__ == "__main__":
     temp = inst_suite()
