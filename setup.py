@@ -4,6 +4,9 @@ import subprocess as sp
 import urllib.request
 import zipfile
 import urllib
+import ssl
+
+ssl._create_default_https_context = ssl._create_unverified_context
 
 
 def download_unzip(url, path , name):
@@ -46,9 +49,10 @@ names = ["Siglent Driver",
          "Siglent Software"]
 
 i = 0 
-for url in urls:
-    download_unzip(url,paths[i],names[i])
-    i += 1
+urllib.request.urlretrieve(urls[0], paths[0])
+# for url in urls:
+#     download_unzip(url,paths[i],names[i])
+#     i += 1
 #end region
 
 
