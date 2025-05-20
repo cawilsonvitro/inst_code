@@ -10,6 +10,7 @@ import winreg
 ssl._create_default_https_context = ssl._create_unverified_context
 
 def check_programs(program):
+    found = False
     reg = winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE)
     key = winreg.OpenKey(reg, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall")
 
@@ -20,8 +21,12 @@ def check_programs(program):
             software_name = winreg.QueryValueEx(software_key, "DisplayName")[0]
             if program in software_name:
                 print("Found ", program, software_name)
+                found = True 
+                return found
         except Exception as e:
             print(e)
+    
+    return found
 
 def download_unzip(url, path , name):
     print('Downloading ', name)
@@ -53,7 +58,16 @@ def download_unzip(url, path , name):
 
 
 #region Local exes
-os.system("install_files\\ni-icp_25.3_online.exe")
+locals = ["NI IVI Compliance Package", "NI VISA"]
+locals_paths = ["install_files\ni-icp_25.3_online.exe", "install_files\ni-visa_25.3_online.exe"]
+i = 0 
+for local in locals:
+    if check_programs(local):
+        print("software already installed")
+    else:
+        os.system(locals_paths[i])
+        
+    i += 1
 #region Online exes
 urls = ["https://siglentna.com/download/44281/?tmstv=1747753775",
         "https://siglentna.com/download/46709/?tmstv=1747767986"]
@@ -61,14 +75,20 @@ paths = ["install_files/SDM IVI Drivers_V2.5.zip",
          "install_files/EasyDMMX_V1.0.3.zip"]
 names = ["Siglent Driver",
          "Siglent Software"]
-programs = ["NI IVI Compliance Package", "SDM IVI Drivers", "EasyDMMX"]
-i = 0 
 
-for url in urls:
-    download_unzip(url,paths[i],names[i])
+onlines = ["SDM IVI Drivers", "EasyDMMX"]
+
+i = 0
+for online in onlines:
+    if check_programs(online):
+        print("software already installed")
+    else:
+        download_unzip(urls[i], paths[i], names[i])
     i += 1
+
 #end region
 
 
+#region Clean up
 
-
+#end region
