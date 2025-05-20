@@ -172,3 +172,9 @@ cython_debug/
 
 #all data change to upload data
 *.csv
+
+#exe folders
+**/install_files/
+
+#all zipped files
+*.zip
