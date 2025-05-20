@@ -5,9 +5,23 @@ import urllib.request
 import zipfile
 import urllib
 import ssl
+import winreg
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
+def check_programs(program):
+    reg = winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE)
+    key = winreg.OpenKey(reg, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall")
+
+    for i in range(winreg.QueryInfoKey(key)[0]):
+        software_key_name = winreg.EnumKey(key, i)
+        software_key = winreg.OpenKey(key, software_key_name)
+        try:
+            software_name = winreg.QueryValueEx(software_key, "DisplayName")[0]
+            if program in software_name:
+                print("Found ", program, software_name)
+        except Exception as e:
+            print(e)
 
 def download_unzip(url, path , name):
     print('Downloading ', name)
@@ -47,7 +61,7 @@ paths = ["install_files/SDM IVI Drivers_V2.5.zip",
          "install_files/EasyDMMX_V1.0.3.zip"]
 names = ["Siglent Driver",
          "Siglent Software"]
-
+programs = ["NI IVI Compliance Package", "SDM IVI Drivers", "EasyDMMX"]
 i = 0 
 
 for url in urls:
