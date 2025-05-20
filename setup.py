@@ -39,10 +39,10 @@ def download_unzip(url, path , name):
 
 
 #region Local exes
-
+os.system("install_files\\ni-icp_25.3_online.exe")
 #region Online exes
 urls = ["https://siglentna.com/download/44281/?tmstv=1747753775",
-        "https://siglentna.com/download/4377/?tmstv=1747753775"]
+        "https://siglentna.com/download/46709/?tmstv=1747767986"]
 paths = ["install_files/SDM IVI Drivers_V2.5.zip",
          "install_files/EasyDMMX_V1.0.3.zip"]
 names = ["Siglent Driver",
