@@ -6,3 +6,7 @@ def fun(**kwargs):
 
 
 fun(s1 = 1, s2 = 1)
+
+
+if '64' in 'SDM 3k4k IVIDmm V2.5_EN/sdm_ivi_v2.5_32bit.msi':
+    print("HUH")
