@@ -49,10 +49,10 @@ names = ["Siglent Driver",
          "Siglent Software"]
 
 i = 0 
-urllib.request.urlretrieve(urls[0], paths[0])
-# for url in urls:
-#     download_unzip(url,paths[i],names[i])
-#     i += 1
+
+for url in urls:
+    download_unzip(url,paths[i],names[i])
+    i += 1
 #end region
 
 
