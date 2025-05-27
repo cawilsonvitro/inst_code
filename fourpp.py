@@ -50,7 +50,7 @@ class siglent():
 
         values_str = [item.strip() for item in self.values_raw.split(',')]
 
-        self.values = [[float(r1) for r1 in values_str]]
+        self.values = [float(r1) for r1 in values_str]
 
 
         print(self.values)
@@ -71,3 +71,12 @@ foo.init_driver()
 foo.measure()
 
 foo.quit()
+
+value = sum(foo.values)/len(foo.values)
+
+
+def convert(value):
+    answer = 4.517 * 0.6337 
+    
+
+
