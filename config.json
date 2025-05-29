@@ -1,4 +1,8 @@
-{
+{    "Tool_ip": {
+        "Host": "192.168.1.1",
+        "fourpp": "192.168.1.2"
+        
+    },
     "Spectrometer1": {
         "integrationtime": "10000",
         "model": "USB2000PLUS",

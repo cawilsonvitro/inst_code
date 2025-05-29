@@ -131,3 +131,7 @@ else:
             cleanup(subfolder)
 stop = True
 #endregion
+
+#region pip
+os.system("pip install -r requirements.txt")
+print("pip install complete")

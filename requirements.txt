@@ -1,3 +1,3 @@
 numpy
-matlotlib
 gui-package-cawilvitro==0.0.1
+pyvisa
