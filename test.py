@@ -103,3 +103,15 @@
 import sys
 
 print(sys.argv)
+
+
+from multiprocessing import Process, Queue
+
+
+a = Queue()
+
+a.put("Hello from main process")
+
+b = a.get()
+
+print(b)
