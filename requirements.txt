@@ -1,3 +1,4 @@
 numpy
 gui-package-cawilvitro==0.0.1
 pyvisa
+pillow
