@@ -2,6 +2,7 @@
 #region imports
 from gui_package_cawilvitro import *
 import socket
+import select
 from multiprocessing import Process, Queue
 from queue import Empty
 import time
@@ -43,8 +44,8 @@ class inst_suite():
         
         #tcp vars
         self.host = sys.argv[1]
-        print(self.host)
         self.port = 5000
+        self.ADDR = (self.host, self.port)
         
     
     
@@ -96,12 +97,21 @@ class inst_suite():
     
     #endregion
     #region tcp server
+    
+    
+    
 
     def TCPServer(self):
         '''
-        starts tcp server
+        sets up tcp server
         '''
-
+        pass
+        
+    def reader(self):
+        '''
+        reads from tcp server is temp
+        '''
+        
     #endregion  
 
 

@@ -13,8 +13,8 @@ from typing import Any
 
 
 class tcp_multiserver():
-    def __init__(self, ip, port, bus, max_connections=5):
-        self.addr = (ip, port)
+    def __init__(self, ip, port, bus_out, bus_in, max_connections=5):
+        self.ADDR = (ip, port)
         self.max_connections = max_connections
         self.server_socket = None
         self.connected_sockets = []  # list of the client sockets being connected
@@ -22,7 +22,10 @@ class tcp_multiserver():
         self.starttime = None
         self.server_socket = None
         
-        self.bus_out: Queue[Any] = bus
+        #data management
+        self.bus_out: Queue[Any] = bus_out
+        self.bus_in: Queue[Any] = bus_in
+        self.client_data = None
         
     def all_sockets_closed(self):
         """closes the server socket and displays the duration of the connection"""
@@ -38,18 +41,17 @@ class tcp_multiserver():
         )
         self.server_socket.close()
         print(f"\nThe Server Was Active For {elapsed} {unit}\n\n")
-    
+        
     def active_client_sockets(self):
         """prints the IP and PORT of all connected sockets"""
         print("\nCurrently Connected Sockets:")
         for c in self.connected_sockets:
-            print("\t", c.getpeername())  # ('IP', PORT)
-            
+            print("\t", c.getpeername())
+    
     def serve_client(self, current_socket):
         """Takes the msg received from the client and handles it accordingly"""
         try:
             client_data = current_socket.recv(1024).decode()
-            self.bus_out.put(client_data)  # send the message to the bus
             date_time = time.strftime("%d/%m/%Y, %H:%M:%S")
             print(
                 f"\nReceived new message form client {current_socket.getpeername()} at {date_time}:"
@@ -116,26 +118,22 @@ class tcp_multiserver():
                 current_socket.send(client_data.encode())
                 print("Responded by: Sending the message back to the client")
     
-    def setup_server(self):
+    def server(self):
         """server setup and socket handling"""
         print("Setting up server...")
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server_socket.setblocking(False)  # set the server socket to non-blocking mode
-        self.server_socket.bind(self.addr)
+        self.server_socket.bind(self.ADDR)
+
+        self.server_socket.listen()
         print("\n* Server is ON *\n")
         print("Waiting for clients to establish connection...")
         self.starttime = time.time()
-           
-    def start_server(self):
-        self.bus_out.put("Server Started")
-        self.server_socket.listen()
-        print(f"Server is listening on {self.addr[0]}:{self.addr[1]}")
+        self.connected_sockets = []  # list of the client sockets being connected
         try:
             while True:
                 ready_to_read, ready_to_write, in_error = select.select(
-                    [self.server_socket] + self.connected_sockets, [], [], 0
+                    [self.server_socket] + self.connected_sockets, [], []
                 )
-                    
                 for current_socket in ready_to_read:
                     if (
                         current_socket is self.server_socket
@@ -146,26 +144,37 @@ class tcp_multiserver():
                         self.active_client_sockets()
                         continue
                     self.serve_client(current_socket)
-                #  print("\n\nWaiting for clients to connect...\n")
-
         except ValueError:
-            # occurs when the last client connected is forcibly closing the socket (and not by Sending 'q' or 'quit'),
-            # and the server keeps scanning with the 'select()' method.
-            # In this case the select method will return -1 and raise an exception for value error.
-            # we know that this exception can be raised only when the list of connected sockets is empty, so we will call a function to close the server socket.
-
             self.all_sockets_closed()
-            
-        except Exception as e:
-            # catch any other exception that may occur
-            print(f"An error occurred: {e}")
-            self.all_sockets_closed()
-
-
+                
 # SERVER = "192.168.1.1"
 # PORT = 5050
 # ADDR = (SERVER, PORT)
+# a = Queue()
+# b = Queue()
 
-# temp = tcp_multiserver(SERVER, PORT)
-# temp.setup_server()
-# temp.start_server()
+
+# def counting():
+#     count = 0
+#     while True:
+#         count += 1
+#         print(f"Count: {count}")
+#         time.sleep(1)  # Sleep to simulate work being done
+
+# if __name__ == "__main__":
+#     # Create an instance of the tcp_multiserver class         
+#     temp = tcp_multiserver(SERVER, PORT, a, b)
+#     tcpthread = Process(target = temp.server)
+#     counting_thread = Process(target=counting)
+#     tcpthread.daemon = True  # Ensures the thread will exit when the main program exits
+#     tcpthread.start()
+#     counting_thread.start()
+    
+#     counting_thread.join()
+#     tcpthread.join()
+    
+#     # temp = tcp_multiserver(SERVER, PORT, a, b)
+#     # temp.server()
+
+
+
