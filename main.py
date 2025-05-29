@@ -1,16 +1,9 @@
 
 #region imports
-from gui import *
-import Eddy as ed
-import fourpp as pp
-import HMS as hms
-import Light as lig
-import RDT as rdt
-import shutter_one as sh1
-import shutter_two as sh2
-import Spec_one as spec1
-import Spec_two as spec2
-import Spec_three as spec3
+from gui_package_cawilvitro import *
+
+
+
 #endregion
 class inst_suite():
     #region application control
