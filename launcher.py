@@ -1,6 +1,6 @@
 import json
 import socket
-
+import os
 
 with open('config.json', 'r') as file:
     config = json.load(file)['Tool_ip']
@@ -24,7 +24,8 @@ if tool != "Host":
 
 file += ".py"
 
-exec(open(file).read())
+os.system(f"py {file} ip_address ")
+
 
 
 stop = True

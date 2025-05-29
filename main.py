@@ -2,11 +2,16 @@
 #region imports
 from gui_package_cawilvitro import *
 import socket
+from multiprocessing import Process, Queue
+from queue import Empty
+import time
+import json
+import sys
 
 #endregion
 class inst_suite():
     #region app init
-    def __init__(self):
+    def __init__(self,):
         
         self.quit = False
         self.process_display = None
@@ -37,24 +42,43 @@ class inst_suite():
 
         
         #tcp vars
-        self.host = None
-        self.port = None
+        self.host = self.sys.argv[1]
+        print(self.host)
+        self.port = 5000
         
+    
+    
+    
+        def loadConfig(self):
+            '''
+            loads config
+            '''
+            pass
+        
+    
+    def setup(self) -> None:
+        '''
+        setups all threads for main application
+        '''
+        
+        self.message: Queue[Any] = Queue(maxsize=1)
+        self.response: Queue[Any] = Queue(maxsize=1)
+        
+        self.appThread = Process(target=self.startApp, args=())
+        self.tcpThread = Process(target=self.TCPServer, args=())
+    
+    
     #endregion
     #region application control
+    
    
     def startApp(self):
         '''
         starts tk application
         '''
+        
+        
         pass
-
-    def loadConfig(self):
-        '''
-        loads config
-        '''
-        pass
-
 
     def endAPP(self, event):
         '''
@@ -72,18 +96,11 @@ class inst_suite():
     
     #endregion
     #region tcp server
-    def startTCPServer(self):
+
+    def TCPServer(self):
         '''
         starts tcp server
         '''
-        self.host = socket.gethostname()
-        self.port = 5000
-        self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server_socket.bind((self.host, self.port))
-        self.server_socket.listen(5)
-        print(f"Server started at {self.host}:{self.port}")
-        conn, addr = self.server_socket.accept()
-        print(f"Connection from {addr} has been established.")
 
     #endregion  
 
@@ -91,6 +108,5 @@ class inst_suite():
 if __name__ == "__main__":
     temp = inst_suite()
 
-    temp.startApp()
+    # temp.startApp()
     
-    print("I ran")

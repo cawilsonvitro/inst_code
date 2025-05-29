@@ -1,6 +1,5 @@
 #region imports
 import threading
-import tcp_class
 from multiprocessing import Process, Queue
 from queue import Empty
 import time
