@@ -64,7 +64,7 @@ class siglent():
 
 
 
-foo = siglent("USB0::0xF4EC::0x1208::SDM36HCD801150::INSTR")
+# foo = siglent("USB0::0xF4EC::0x1208::SDM36HCD801150::INSTR")
 
 # foo.init_driver()
 

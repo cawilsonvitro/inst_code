@@ -24,7 +24,9 @@ if tool != "Host":
 
 file += ".py"
 
-os.system(f"py {file} {ip_address}")
+file = f"tools//{tool}//{file}"
+
+os.system(f"py {file} ){config[list(config.keys())[0]]}")
 
 
 
