@@ -26,5 +26,5 @@ file += ".py"
 
 exec(open(file).read())
 
-print("I ran")
+
 stop = True

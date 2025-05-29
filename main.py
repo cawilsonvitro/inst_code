@@ -1,12 +1,11 @@
 
 #region imports
 from gui_package_cawilvitro import *
-
-
+import socket
 
 #endregion
 class inst_suite():
-    #region application control
+    #region app init
     def __init__(self):
         
         self.quit = False
@@ -35,7 +34,14 @@ class inst_suite():
         #resistances
         self.CRM = None #contact sheet R
         self.CLRM = None #contactless sheet R
-   
+
+        
+        #tcp vars
+        self.host = None
+        self.port = None
+        
+    #endregion
+    #region application control
    
     def startApp(self):
         '''
@@ -55,7 +61,7 @@ class inst_suite():
         stops app and closes intrument connections
         '''
         pass
-    #end region
+    #endregion
     #region GUI building
     def buildGUI(self):
         '''
@@ -65,10 +71,21 @@ class inst_suite():
         pass
     
     #endregion
+    #region tcp server
+    def startTCPServer(self):
+        '''
+        starts tcp server
+        '''
+        self.host = socket.gethostname()
+        self.port = 5000
+        self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server_socket.bind((self.host, self.port))
+        self.server_socket.listen(5)
+        print(f"Server started at {self.host}:{self.port}")
+        conn, addr = self.server_socket.accept()
+        print(f"Connection from {addr} has been established.")
 
-    #region Spec init
-    
-    #endregion
+    #endregion  
 
 
 if __name__ == "__main__":
