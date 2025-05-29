@@ -42,7 +42,7 @@ class inst_suite():
 
         
         #tcp vars
-        self.host = self.sys.argv[1]
+        self.host = sys.argv[1]
         print(self.host)
         self.port = 5000
         

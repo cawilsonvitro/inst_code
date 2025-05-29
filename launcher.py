@@ -8,8 +8,8 @@ with open('config.json', 'r') as file:
 
 hostname = socket.gethostname()
 ip_address = socket.gethostbyname(hostname)
-print(f"Hostname: {hostname}")
-print(f"IP Address: {ip_address}")
+# print(f"Hostname: {hostname}")
+# print(f"IP Address: {ip_address}")
 
 try:
     tool = config[ip_address]
@@ -24,7 +24,7 @@ if tool != "Host":
 
 file += ".py"
 
-os.system(f"py {file} ip_address ")
+os.system(f"py {file} {ip_address}")
 
 
 
