@@ -12,7 +12,7 @@ class instrument():
         '''
         self.name = name
         self.address = address
-        self.connected = False
+        self.Status = False
     
     def connect(self):
         '''
