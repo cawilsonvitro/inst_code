@@ -10,3 +10,6 @@ https://siglentna.com/service-and-support/firmware-software/
 
 Usb resource addy
 USB0::0xF4EC::0x1208::SDM36HCD801150::INSTR
+
+tcp server based on 
+https://github.com/YanivWein24/TCP_Server_Client/blob/master/TCP_Client.py
