@@ -13,3 +13,18 @@ USB0::0xF4EC::0x1208::SDM36HCD801150::INSTR
 
 tcp server based on 
 https://github.com/YanivWein24/TCP_Server_Client/blob/master/TCP_Client.py
+
+
+to do:
+tcp server cannot handel reconnecting need to fix
+
+add hard typing 
+
+add better error handling
+
+file management system
+
+clean up imports
+
+
+i dont need to thread indi. inst 

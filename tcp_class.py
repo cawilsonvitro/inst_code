@@ -30,14 +30,12 @@ class tcp_multiserver():
         self.bus_out: Queue[Any] = bus_out
         self.bus_in: Queue[Any] = bus_in
         
-        #tools
-        self.tools = {
-            "fourpp": instrument_handle("Four Point Probe")
-        }
         
-        #tool ids
+        #client ids
+        self.read_to_read = []
+        
         with open('config.json', 'r') as file:
-            self.tool_ids = json.load(file)['Tool_ip']
+            self.config = json.load(file)['Tool_ip']
         
     def all_sockets_closed(self):
         """closes the server socket and displays the duration of the connection"""
@@ -60,17 +58,17 @@ class tcp_multiserver():
         for c in self.connected_sockets:
             print("\t", c.getpeername())
     
-    def serve_client(self, current_socket):
+    def serve_client(self, current_socket : socket.socket):
         """Takes the msg received from the client and handles it accordingly"""
         try:
             client_data = current_socket.recv(1024).decode()
-            self.bus_out.put(client_data)  # put the data in the bus for the main app to handle
-            incoming = self.bus_in.get(timeout=5)  # wait for the main app to process the data
-            print(incoming)
+           # self.bus_out.put(client_data)  # put the data in the bus for the main app to handle
+          #  incoming = self.bus_in.get(timeout=5)  # wait for the main app to process the data
+          #  print(incoming)
             date_time = time.strftime("%d/%m/%Y, %H:%M:%S")
-            print(
-                f"\nReceived new message form client {current_socket.getpeername()} at {date_time}:"
-            )
+       #     print(
+        #        f"\nReceived new message form client {current_socket.getpeername()} at {date_time}:"
+         #   )
 
         except ConnectionResetError:
             print(f"\nThe client {current_socket.getpeername()} has disconnected...")
@@ -90,28 +88,24 @@ class tcp_multiserver():
                 print(
                     "Connection closed",
                 )
-            # if the client asks to disconnect, he sends the word "quit" and the server response with "Bye" message.
-            # and when the client receives this message it automatically disconnects from the server.
-            # we also know that the server response back the messages received the client.
-            # so we want to make sure that if the client sends to word "Bye", the server wont send the exact same message,
-            # and therefore wont force the client to disconnect.
-
-            elif client_data.upper() == "NAME":  # send server's name
-                current_socket.send("SERVER'S NAME: LOCAL HOST - MY PC".encode())
-                print("Responded by: Sending The Name of the Server")
-
-            elif client_data.upper() == "TIME":  # send current time and date
-                current_time = f"Today is {time.strftime('%A %d %b %Y %I:%M:%S')}"
-                current_socket.send(current_time.encode())
-                print("Responded by: Sending current time and date")
-
-            elif client_data.upper() == "RAND":  # send random number between 0 and 10
-                random_number = str(round(10 * (random.random())))
-                current_socket.send(f"Your random number is: {random_number}".encode())
-                print(
-                    f"Responded by: Sending a random number between 0-10: {random_number}"
-                )
-
+            elif client_data == "ID":
+                id: str = self.config[current_socket.getpeername()[0]]
+                current_socket.send(id.encode())
+            
+            elif client_data == "MEAS":
+                #first get tool to build SQL query with
+                tool = self.config[current_socket.getpeername()[0]]
+                
+                #get value
+                
+                value = float(client_data)
+                
+                #confirm
+                
+                current_socket.send("data received".encode())
+                
+                
+                
             elif (
                 client_data.upper() == "QUIT" or client_data.upper() == "Q"
             ):  # close connection with the client and close socket
@@ -123,15 +117,16 @@ class tcp_multiserver():
                 self.connected_sockets.remove(current_socket)
                 current_socket.close()
                 if len(self.connected_sockets) != 0:
-                    self.active_client_sockets()
+                    self.active_client_sockets(self.connected_sockets)
                 else:
                     raise ValueError
                 """the whole disconnection sequence is triggered from the exception handler, se we will just raise the exception
                     to close the server socket"""
-
+            
             else:
                 current_socket.send(client_data.encode())
-                print("Responded by: Sending the message back to the client")
+             #   print("Responded by: Sending the message back to the client")
+             
     
     def server(self):
         """server setup and socket handling"""
@@ -148,52 +143,57 @@ class tcp_multiserver():
             while True:
                 ready_to_read, ready_to_write, in_error = select.select(
                     [self.server_socket] + self.connected_sockets, [], []
-                )
-                for current_socket in ready_to_read:
-                    if (
-                        current_socket is self.server_socket
-                    ):  # if the current socket is the new socket we receive from the server
-                        (client_socket, client_address) = current_socket.accept()
-                        tool = self.tool_ids[client_address]
-                        self.tools[tool].address = client_address
-                        print("\nNew client joined!", client_address)
-                        #asking status and if tool is inuse
-                        
-                        self.connected_sockets.append(client_socket)
-                        self.active_client_sockets()
-                        continue
-                    self.serve_client(current_socket)
+                )                
+                if len(ready_to_read) != 0:
+                    for current_socket in ready_to_read:
+                        if (
+                            current_socket is self.server_socket
+                        ):  # if the current socket is the new socket we receive from the server
+                            (client_socket, client_address) = current_socket.accept()
+                            print("\nNew client joined!", client_address)
+                            self.connected_sockets.append(client_socket)
+                            self.active_client_sockets()
+                            continue
+                        self.serve_client(current_socket)
+                else:
+                    print("No client detected waiting")
+                    self.server_socket.listen()
         except ValueError:
+            print(len(ready_to_read))
+            print("No client detected waiting")
+            self.server_socket.listen()
+        except KeyboardInterrupt:
             self.all_sockets_closed()
-                
-# SERVER = "192.168.1.1"
-# PORT = 5050
-# ADDR = (SERVER, PORT)
-# a = Queue()
-# b = Queue()
+        except Exception as e:
+            print(e)
+SERVER = "127.0.0.1"# "192.168.1.1"
+PORT = 5050
+ADDR = (SERVER, PORT)
+a = Queue()
+b = Queue()
 
 
-# def counting():
-#     count = 0
-#     while True:
-#         count += 1
-#         print(f"Count: {count}")
-#         time.sleep(1)  # Sleep to simulate work being done
+def counting():
+    count = 0
+    while True:
+        count += 1
+        print(f"Count: {count}")
+        time.sleep(1)  # Sleep to simulate work being done
 
-# if __name__ == "__main__":
-#     # Create an instance of the tcp_multiserver class         
-#     temp = tcp_multiserver(SERVER, PORT, a, b)
-#     tcpthread = Process(target = temp.server)
-#     counting_thread = Process(target=counting)
-#     tcpthread.daemon = True  # Ensures the thread will exit when the main program exits
-#     tcpthread.start()
-#     counting_thread.start()
+if __name__ == "__main__":
+    # Create an instance of the tcp_multiserver class         
+    temp = tcp_multiserver(SERVER, PORT, a, b)
+    tcpthread = Process(target = temp.server)
+    counting_thread = Process(target=counting)
+    tcpthread.daemon = True  # Ensures the thread will exit when the main program exits
+    tcpthread.start()
+    counting_thread.start()
     
-#     counting_thread.join()
-#     tcpthread.join()
+    counting_thread.join()
+    tcpthread.join()
     
-#     # temp = tcp_multiserver(SERVER, PORT, a, b)
-#     # temp.server()
+    # temp = tcp_multiserver(SERVER, PORT, a, b)
+    # temp.server()
 
 
 

@@ -12,7 +12,7 @@ import time
 import random
 
 
-SERVER = "192.168.1.1"
+SERVER = "127.0.0.1" # "192.168.1.1"
 PORT = 5050
 ADDR = (SERVER, PORT)
 
