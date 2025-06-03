@@ -119,12 +119,6 @@ class inst_suite():
                 msg = self.message.get(block=False)
             except Empty:
                 continue
-            
-            
-            
-            
-            
-            
             # returning response to the client
             try:
                 self.response.put("Response from main app")

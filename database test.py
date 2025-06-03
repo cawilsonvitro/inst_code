@@ -46,11 +46,11 @@ xs = [x[0] for x in mycursor]
 
 if "mydatabase" not in xs: mycursor.execute("CREATE DATABASE mydatabase")
 
-#creating table 
+# creating table 
 
-# mycursor = mydb.cursor()
+mycursor = mydb.cursor()
 
-# mycursor.execute("CREATE TABLE customers (name VARCHAR(255), address VARCHAR(255))")
+mycursor.execute("CREATE TABLE customers (name VARCHAR(255), address VARCHAR(255))")
 
 
 #checking  if table exists
@@ -71,3 +71,6 @@ mycursor.execute(sql, val)
 mydb.commit()
 
 print(mycursor.rowcount, "record inserted.")
+
+
+
