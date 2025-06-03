@@ -2,3 +2,6 @@ numpy
 gui-package-cawilvitro==0.0.1
 pyvisa
 pillow
+mysql-connector-python
+pyodbc
+mysql-connector-python
