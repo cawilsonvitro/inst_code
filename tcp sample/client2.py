@@ -4,7 +4,7 @@ import socket
 import sys
 
 
-SERVER = "localhost"
+SERVER = "192.168.1.1"
 PORT = 5050
 ADDR = (SERVER, PORT)
 
