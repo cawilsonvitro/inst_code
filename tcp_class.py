@@ -216,6 +216,7 @@ if __name__ == "__main__":
     counting_thread.join()
     tcpthread.join()
     
+    a = 3
     # temp = tcp_multiserver(SERVER, PORT, a, b)
     # temp.server()
 

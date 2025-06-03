@@ -178,6 +178,13 @@ class inst_suite():
             root,
             image= TkImage("Net_status", r"images\Status_Bad.png").image
         ).place(x = 210, y = 405)
+        
+        StandardButtons(
+            "Test",
+            root,
+            image = TkImage("Test", r"images\test_connections.png").image,
+            command = self.test,
+        ).place(x = 50, y = 250)
     
     #endregion
     #region inst manager
@@ -186,17 +193,23 @@ class inst_suite():
         '''
         manages all instruments and instrument communications
         '''
-        while not self.quit:
-            #getting tcp message
-            try:
-                msg = self.message.get(block=False)
-            except Empty:
-                continue
-            # returning response to the client
-            try:
-                self.response.put("Response from main app")
-            except Exception as e:
-                print(f"Error putting response in queue: {e}")
+        #first testing internet connections
+        self.net_stat = self.tcphandler.internet()
+        
+        if self.net_stat:
+            StandardLabel (
+                "Net_status",
+                self.root,
+                image= TkImage("Net_status", r"images\Status_Good.png").image
+            ).place(x = 210, y = 405)
+        else:
+            StandardLabel (
+                "Net_status",
+                self.root,
+                image= TkImage("Net_status", r"images\Status_Bad.png").image
+            ).place(x = 210, y = 405)
+
+
         
     #endregion  
 
