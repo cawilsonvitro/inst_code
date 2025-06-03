@@ -10,6 +10,7 @@ import json
 import sys
 import tcp_class 
 import threading
+import dbhandler 
 
 #endregion
 class inst_suite():
@@ -49,6 +50,8 @@ class inst_suite():
         self.port = 5050
         self.ADDR = (self.host, self.port)
         
+        #sql stuff app thread will handle sql as it is not continously running
+        self.SQL = dbhandler.sql_client("config.json")
 
         
     

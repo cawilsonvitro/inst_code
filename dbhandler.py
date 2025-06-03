@@ -8,7 +8,7 @@ import mysql.connector.cursor_cext
 
 mysql.connector.connection_cext.CMySQLConnection
 mysql.connector.cursor_cext.CMySQLCursor
-class sqlserver():
+class sql_client():
   
   
     def __init__(self, config_path: str):
@@ -114,7 +114,7 @@ class sqlserver():
         self.sql.commit()
         
 if __name__ == "__main__":
-    temp = sqlserver("config.json")
+    temp = sql_client("config.json")
     temp.load_config()
     temp.connect()
     temp.check_tables()
