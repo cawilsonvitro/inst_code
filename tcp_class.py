@@ -139,8 +139,8 @@ class tcp_multiserver():
         print("Waiting for clients to establish connection...")
         self.starttime = time.time()
         self.connected_sockets = []  # list of the client sockets being connected
-        try:
-            while True:
+        while True:            
+            try:       
                 ready_to_read, ready_to_write, in_error = select.select(
                     [self.server_socket] + self.connected_sockets, [], []
                 )                
@@ -155,18 +155,26 @@ class tcp_multiserver():
                             self.active_client_sockets()
                             continue
                         self.serve_client(current_socket)
-                else:
-                    print("No client detected waiting")
-                    self.server_socket.listen()
-        except ValueError:
-            print(len(ready_to_read))
-            print("No client detected waiting")
-            self.server_socket.listen()
-        except KeyboardInterrupt:
-            self.all_sockets_closed()
-        except Exception as e:
-            print(e)
-SERVER = "127.0.0.1"# "192.168.1.1"
+            except ValueError:
+                while len(self.connected_sockets) == 0:#while waiting for new clients
+                                ready_to_read, ready_to_write, in_error = select.select(
+                                [self.server_socket] + self.connected_sockets, [], []
+                                )
+                                
+                                for current_socket in ready_to_read:
+                                    if (
+                                        current_socket is self.server_socket
+                                    ):  # if the current socket is the new socket we receive from the server
+                                        (client_socket, client_address) = current_socket.accept()
+                                        print("\nNew client joined!", client_address)
+                                        self.connected_sockets.append(client_socket)
+                                        self.active_client_sockets()
+                                        continue
+            except KeyboardInterrupt:
+                self.all_sockets_closed()
+            except Exception as e:
+                print(e)
+SERVER ="192.168.1.1" #"127.0.0.1"# 
 PORT = 5050
 ADDR = (SERVER, PORT)
 a = Queue()

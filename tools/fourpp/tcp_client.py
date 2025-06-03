@@ -7,7 +7,7 @@ from queue import Empty
 from typing import Any
 import time
 
-SERVER = "127.0.0.1" #"192.168.1.1"
+SERVER = "192.168.1.1" #"127.0.0.1" #
 PORT = 5050
 ADDR = (SERVER, PORT)
 
