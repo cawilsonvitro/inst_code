@@ -35,6 +35,20 @@ class tcp_multiserver():
         
         with open('config.json', 'r') as file:
             self.config = json.load(file)['Tool_ip']
+    
+    def internet(self, host="8.8.8.8", port=53, timeout=3):
+        """
+        Host: 8.8.8.8 (google-public-dns-a.google.com)
+        OpenPort: 53/tcp
+        Service: domain (DNS/TCP)
+        """
+        try:
+            socket.setdefaulttimeout(timeout)
+            socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
+            return True
+        except socket.error as ex:
+            print(ex)
+            return False
         
     def all_sockets_closed(self):
         """closes the server socket and displays the duration of the connection"""
@@ -125,8 +139,7 @@ class tcp_multiserver():
             else:
                 current_socket.send(client_data.encode())
              #   print("Responded by: Sending the message back to the client")
-             
-    
+                
     def server(self):
         """server setup and socket handling"""
         print("Setting up server...")
@@ -173,6 +186,10 @@ class tcp_multiserver():
                 self.all_sockets_closed()
             except Exception as e:
                 print(e)
+
+    def quit(self):
+        self.server_socket.close()
+
 SERVER ="192.168.1.1" #"127.0.0.1"# 
 PORT = 5050
 ADDR = (SERVER, PORT)

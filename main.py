@@ -92,17 +92,39 @@ class inst_suite():
         starts tk application
         '''
         
+        self.root = tk.Tk()
+        self.root.title("Insturment Control Suite")
+        self.root.geometry("430x485")
+        self.root.bind("<Escape>", self.endApp)
+        self.root.protocol("WM_DELETE_WINDOW",self.endProto)
+        self.process_display = tk.StringVar() 
+        self.process_display.set("Booting")
+        self.root.update_idletasks()
+        self.buildGUI(self.root)
+        
+        self.root.mainloop()
+        
         
         pass
 
-    def endAPP(self, event):
+    def endApp(self, event):
         '''
         stops app and closes intrument connections
         '''
         self.quit = True
+        self.tcphandler.quit()
+        self.root.quit()
+        
+        
+        
+    def endProto(self):
+        '''
+        wrapper to end app
+        '''
+        self.endApp(None)
     #endregion
     #region GUI building
-    def buildGUI(self):
+    def buildGUI(self, root):
         '''
         build gui
         '''
