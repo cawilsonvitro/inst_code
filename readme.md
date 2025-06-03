@@ -21,6 +21,7 @@ need to get sql server better
 
 add front end functionality to main
 
+get better status lights working
 
 add hard typing 
 

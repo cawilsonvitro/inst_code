@@ -81,6 +81,9 @@ class inst_suite():
         self.appThread.join()
         self.tcpThread.join()
         self.insturmentManagerThread.join()
+        
+        #cwd to fix issues
+        
     #    
     
     #endregion
@@ -114,9 +117,7 @@ class inst_suite():
         self.quit = True
         self.tcphandler.quit()
         self.root.quit()
-        
-        
-        
+              
     def endProto(self):
         '''
         wrapper to end app
@@ -128,8 +129,55 @@ class inst_suite():
         '''
         build gui
         '''
+        StandardLabel.remove(None)
         
-        pass
+        StandardLabel (
+            "4pp",
+            root,
+            image = TkImage("4pp_label", r"images\4pp_label.png").image
+        ).place(x = 50, y = 50)
+        
+        StandardLabel(
+            "4pp_status",
+            root,
+            image = TkImage("4pp_status_bad", r"images\Status_Bad.png").image
+        ).place(x = 198, y = 55)
+        
+        StandardLabel (
+            "RDT",
+            root,
+            image= TkImage("RDT_label", r"images\rdt_label.png").image
+        ).place(x = 50, y = 150)
+        
+        StandardLabel(
+            "RDT_status",
+            root,
+            image = TkImage("RDT_status_bad", r"images\Status_Bad.png").image
+        ).place(x = 198, y = 155)
+        
+        StandardLabel (
+            "SQL",
+            root,
+            image= TkImage("SQL_label", r"images\sql_label.png").image
+        ).place(x = 50, y = 350)
+        
+        StandardLabel (
+            "SQL_status",
+            root,
+            image= TkImage("SQL_status", r"images\Status_Bad.png").image
+        ).place(x = 210, y = 355)
+        
+        StandardLabel (
+            "Network",
+            root,
+            image= TkImage("Net_label", r"images\network_label.png").image
+        ).place(x = 50, y = 400)
+        
+        StandardLabel (
+            "Net_status",
+            root,
+            image= TkImage("Net_status", r"images\Status_Bad.png").image
+        ).place(x = 210, y = 405)
     
     #endregion
     #region inst manager
