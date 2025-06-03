@@ -6,6 +6,8 @@ import random
 from multiprocessing import Process, Queue
 from queue import Empty
 from typing import Any
+from instrument import *
+import json
 #endregion 
 
 
@@ -13,6 +15,7 @@ from typing import Any
 
 
 class tcp_multiserver():
+    
     def __init__(self, ip, port, bus_out, bus_in, max_connections=5):
         self.ADDR = (ip, port)
         self.max_connections = max_connections
@@ -26,6 +29,15 @@ class tcp_multiserver():
         self.client_data = None
         self.bus_out: Queue[Any] = bus_out
         self.bus_in: Queue[Any] = bus_in
+        
+        #tools
+        self.tools = {
+            "fourpp": instrument_handle("Four Point Probe")
+        }
+        
+        #tool ids
+        with open('config.json', 'r') as file:
+            self.tool_ids = json.load(file)['Tool_ip']
         
     def all_sockets_closed(self):
         """closes the server socket and displays the duration of the connection"""
@@ -142,7 +154,11 @@ class tcp_multiserver():
                         current_socket is self.server_socket
                     ):  # if the current socket is the new socket we receive from the server
                         (client_socket, client_address) = current_socket.accept()
+                        tool = self.tool_ids[client_address]
+                        self.tools[tool].address = client_address
                         print("\nNew client joined!", client_address)
+                        #asking status and if tool is inuse
+                        
                         self.connected_sockets.append(client_socket)
                         self.active_client_sockets()
                         continue
