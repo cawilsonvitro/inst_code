@@ -117,8 +117,8 @@ def main():
     print("Waiting for clients to establish connection...")
     starttime = time.time()
     connected_sockets = []  # list of the client sockets being connected
-    try:
-        while True:
+    while True:
+        try:
             ready_to_read, ready_to_write, in_error = select.select(
                 [server_socket] + connected_sockets, [], []
             )
@@ -134,14 +134,29 @@ def main():
                 serve_client(
                     current_socket, server_socket, connected_sockets, starttime
                 )
-
-    except ValueError:
+        except ValueError:
+            print(len(connected_sockets))
+            while len(connected_sockets) == 0:#while waiting for new clients
+                ready_to_read, ready_to_write, in_error = select.select(
+                [server_socket] + connected_sockets, [], []
+                )
+                
+                for current_socket in ready_to_read:
+                    if (
+                        current_socket is server_socket
+                    ):  # if the current socket is the new socket we receive from the server
+                        (client_socket, client_address) = current_socket.accept()
+                        print("\nNew client joined!", client_address)
+                        connected_sockets.append(client_socket)
+                        active_client_sockets(connected_sockets)
+                        continue
+                
         # occurs when the last client connected is forcibly closing the socket (and not by Sending 'q' or 'quit'),
         # and the server keeps scanning with the 'select()' method.
         # In this case the select method will return -1 and raise an exception for value error.
         # we know that this exception can be raised only when the list of connected sockets is empty, so we will call a function to close the server socket.
 
-        all_sockets_closed(server_socket, starttime)
+     #   all_sockets_closed(server_socket, starttime)
         pass
 
 

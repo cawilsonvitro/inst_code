@@ -17,16 +17,20 @@ except KeyError:
     print(f"IP address {ip_address} not found in config.json.")
     tool = None 
 
+
 file = "main"
 
-if tool != "Host":
+if tool != "host":
     file += tool
 
-file += ".py"
+    file += ".py"
 
-file = f"tools//{tool}//{file}"
-
-os.system(f"py {file} ){config[list(config.keys())[0]]}")
+    file = f"tools//{tool}//{file}"
+else:
+    file = f"{file}.py"
+    
+server_ip = list(config.keys())[0]
+os.system(f"py {file} {server_ip}")
 
 
 

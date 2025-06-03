@@ -7,7 +7,7 @@ from queue import Empty
 from typing import Any
 import time
 
-SERVER = "127.0.0.1" #"192.168.1.1"
+SERVER = "192.168.1.1" #"127.0.0.1" #
 PORT = 5050
 ADDR = (SERVER, PORT)
 
@@ -53,59 +53,4 @@ class client():
         else:
             return self.tool
         
-    # def measure(self, value):
-    #     '''
-    #     gets measurement from tool and sends it over
-    #     '''
-        
-    #     #put getting command from queue here
-    #     # self.msg_out.put("?VAL")
-        
-        
-    #     # time.sleep(1)
-    #     # value = self.msg_in.get(timeout = "3")
-        
-    #     # print(value)
-        
-        
-    #     # sample_value = 98571
-        
-    #     self.soc.send(str(value).encode())
-
-    #     resp = self.soc.recv(1024).decode()
-        
-    #     if resp == "data received":
-    #         print("data sent")
-        
-    # def run_client(self):
-    #     '''
-    #     runs the client in a loop, main purp is to keep getting data from client
-    #     '''
-    #     while self.data != "QUIT":
-    #         if self.flag == 0:
-    #             self.connect()
-    #             print(f"Instrument connected to {self.ADDR[0]}")
-    #             flag += 1
-    #             try:
-    #                 # from_main = self.msg_in.get(block=False)
-                    
-    #                 self.commands[from_main]()
-    #             except Empty:
-    #                 print(" waiting for message")
-                
-                
-                
-
-# if __name__ == "__main__":
-#     temp = client(SERVER, PORT)
-    
-#     temp.load_config()
-    
-#     temp.connect()
-    
-#     temp.id()
-    
-#     temp.measure()
-    
-#     temp.disconnect()
-#     print("I RAN")
+   

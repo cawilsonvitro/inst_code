@@ -16,7 +16,11 @@ https://github.com/YanivWein24/TCP_Server_Client/blob/master/TCP_Client.py
 
 
 to do:
-tcp server cannot handel reconnecting need to fix
+
+need to get sql server better
+
+add front end functionality to main
+
 
 add hard typing 
 
@@ -27,4 +31,11 @@ file management system
 clean up imports
 
 
+
+done:
+
+tcp server cannot handel reconnecting need to fix
+
 i dont need to thread indi. inst 
+
+add sql installs to setup

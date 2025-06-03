@@ -10,6 +10,7 @@ import json
 import sys
 import tcp_class 
 import threading
+import dbhandler 
 
 #endregion
 class inst_suite():
@@ -49,6 +50,8 @@ class inst_suite():
         self.port = 5050
         self.ADDR = (self.host, self.port)
         
+        #sql stuff app thread will handle sql as it is not continously running
+        self.SQL = dbhandler.sql_client("config.json")
 
         
     
@@ -89,17 +92,39 @@ class inst_suite():
         starts tk application
         '''
         
+        self.root = tk.Tk()
+        self.root.title("Insturment Control Suite")
+        self.root.geometry("430x485")
+        self.root.bind("<Escape>", self.endApp)
+        self.root.protocol("WM_DELETE_WINDOW",self.endProto)
+        self.process_display = tk.StringVar() 
+        self.process_display.set("Booting")
+        self.root.update_idletasks()
+        self.buildGUI(self.root)
+        
+        self.root.mainloop()
+        
         
         pass
 
-    def endAPP(self, event):
+    def endApp(self, event):
         '''
         stops app and closes intrument connections
         '''
         self.quit = True
+        self.tcphandler.quit()
+        self.root.quit()
+        
+        
+        
+    def endProto(self):
+        '''
+        wrapper to end app
+        '''
+        self.endApp(None)
     #endregion
     #region GUI building
-    def buildGUI(self):
+    def buildGUI(self, root):
         '''
         build gui
         '''
@@ -119,12 +144,6 @@ class inst_suite():
                 msg = self.message.get(block=False)
             except Empty:
                 continue
-            
-            
-            
-            
-            
-            
             # returning response to the client
             try:
                 self.response.put("Response from main app")
