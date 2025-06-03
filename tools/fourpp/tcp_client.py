@@ -1,64 +1,111 @@
-# client side:
+
 
 import socket
 import sys
+from multiprocessing import Queue
+from queue import Empty
+from typing import Any
+import time
 
-
-SERVER = "192.168.1.1"
+SERVER = "127.0.0.1" #"192.168.1.1"
 PORT = 5050
 ADDR = (SERVER, PORT)
 
 
-soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-try:
-    soc.connect(ADDR)
+class client():
+    def __init__(self, ip, port):#, msg_in: Queue, msg_out: Queue):
+        self.ADDR = (ip, port)
+        
+        self.data = ""
+        self.flag = 0
+        self.tool = ""
+        
+        self.soc = None
+        
+        # self.msg_in = msg_in
+        # self.msg_out = msg_out
 
-except TimeoutError or ConnectionResetError:
-    print(
-        "\nCould not receive a response from the server.\n"
-        "Please check the IP and PORT numbers provided.\n"
-    )
-    sys.exit()
+    def connect(self):
+        self.soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            self.soc.connect(self.ADDR)
 
-except OSError or ConnectionRefusedError:
-    print(
-        "\nPlease check if the server is connected to the internet\n"
-        "and that the IP and PORT numbers are correct on both ends\n"
-    )
-    sys.exit()
-
-
-data = ""
-flag = 0
-
-
-while data != "Bye":
-    try:
-        if flag == 0:
-            long_msg_txt = (
-                "\nWelcome! \n\n"
-                "Please enter your message, or type:\n"
-                "NAME - to get the name of the server\n"
-                "TIME -  to get the current time and date\n"
-                "RAND - to receive a random number between 0-10\n"
-                "QUIT or Q - to close the socket\n\n"
-                "Enter your message Here: "
+        except OSError or ConnectionRefusedError:
+            print(
+            "\nPlease check if the server is connected to the internet\n"
+            "and that the IP and PORT numbers are correct on both ends\n"
             )
-            long_msg = input(long_msg_txt)
-            soc.send(long_msg.encode())
-            flag += 1
+            sys.exit()
+            
+    def disconnect(self):
+        self.soc.send("Q".encode())
+        self.soc.close()
+            
+    def id(self):
+        '''
+        gets id of client
+        '''
+        if self.tool == "":
+            self.soc.send("ID".encode())
+            
+            self.tool = self.soc.recv(1024).decode()
+            print(self.tool)
         else:
-            msg = input("Enter your message Here: ")
-            soc.send(msg.encode())
-        data = soc.recv(1024).decode()
-    except ConnectionResetError or ConnectionAbortedError:
+            return self.tool
+        
+    # def measure(self, value):
+    #     '''
+    #     gets measurement from tool and sends it over
+    #     '''
+        
+    #     #put getting command from queue here
+    #     # self.msg_out.put("?VAL")
+        
+        
+    #     # time.sleep(1)
+    #     # value = self.msg_in.get(timeout = "3")
+        
+    #     # print(value)
+        
+        
+    #     # sample_value = 98571
+        
+    #     self.soc.send(str(value).encode())
 
-        print("\nThe connection was forcibly closed by the remote host\n")
-        break
-    else:
-        # received message from server(1024=max bytes size)
-        print(f"\nThe server sent: {data}\n")
+    #     resp = self.soc.recv(1024).decode()
+        
+    #     if resp == "data received":
+    #         print("data sent")
+        
+    # def run_client(self):
+    #     '''
+    #     runs the client in a loop, main purp is to keep getting data from client
+    #     '''
+    #     while self.data != "QUIT":
+    #         if self.flag == 0:
+    #             self.connect()
+    #             print(f"Instrument connected to {self.ADDR[0]}")
+    #             flag += 1
+    #             try:
+    #                 # from_main = self.msg_in.get(block=False)
+                    
+    #                 self.commands[from_main]()
+    #             except Empty:
+    #                 print(" waiting for message")
+                
+                
+                
 
-# when data == "Bye"
-print("Closing the socket with the server")
-soc.close()  # close the connection
+# if __name__ == "__main__":
+#     temp = client(SERVER, PORT)
+    
+#     temp.load_config()
+    
+#     temp.connect()
+    
+#     temp.id()
+    
+#     temp.measure()
+    
+#     temp.disconnect()
+#     print("I RAN")

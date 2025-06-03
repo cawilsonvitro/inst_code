@@ -1,16 +1,24 @@
-
 #region imports
 from gui_package_cawilvitro import *
-import fourpp
+import fourpp_dummy as fourpp
 import tkinter as tk
 from tkinter import Misc
 import tkinter.ttk as ttk
+from multiprocessing import Process, Queue
+from queue import Empty
+import time
+import json
+import sys
+import threading
+import tcp_client
 
 #endregion
+
+
 class four_point_app():
     
     #region application start up
-    def __init__(self):
+    def __init__(self, ip, port):
         '''
         init class for use
         '''
@@ -26,6 +34,16 @@ class four_point_app():
         self.dataPath = r"data/"
         self.sample_num = 1
         self.exst = ".csv"
+        
+        #threading
+        # self.message: Queue[Any] = Queue(maxsize=1)
+        # self.response: Queue[Any] = Queue(maxsize=1)
+        
+        
+        #tcp handels init too
+        self.tcp = tcp_client.client(ip, port)#, self.message, self.response)
+        self.tcp.connect()
+        self.tcp.id() #tells server the ip is connected
     
     def startApp(self):
         self.root = tk.Tk()
@@ -55,10 +73,12 @@ class four_point_app():
         ends application
         '''
         self.quit = True
+        self.tcp.disconnect()
         self.DM.quit()
         self.root.quit()
         
     #endregion
+   
     #region building GUI
     def buildGUI(self, root):
         '''
@@ -71,7 +91,7 @@ class four_point_app():
         StandardButtons(
             "Measure",
             root,
-            image = TkImage("Measure", r"images\Measure_Button.png").image,
+            image = TkImage("Measure", r"tools\fourpp\images\Measure_Button.png").image,
             command = self.measure
         ).place(x = 0, y = 120)
         
@@ -94,13 +114,14 @@ class four_point_app():
         StandardLabel(
             "Status",
             root,
-            image = TkImage("status_bad", r"images/Status_Bad.png").image
+            image = TkImage("status_bad", r"tools\fourpp\images\Status_Bad.png").image
         ).place(x = 140, y = 120)
         
         self.process_display.set("GUI Built, initalizing DM")
         self.load_dm()
 
     #endregion
+    
     #region 4 pp
     def load_dm(self):
         try:
@@ -112,33 +133,51 @@ class four_point_app():
             StandardLabel(
                 "Status",
                 self.root,
-                image = TkImage("status_Bad",r"images/Status_Good.png").image,
+                image = TkImage("status_Bad",r"tools\fourpp\images\Status_Good.png").image,
             ).place(x = 140, y = 120)
         else:
             StandardLabel(
                 "Status",
                 self.root,
-                image = TkImage("status_bad", r"images/Status_Bad.png").image
+                image = TkImage("status_bad", r"tools\fourpp\images\Status_Bad.png").image
             ).place(x = 140, y = 120)
+    
     def measure(self):
-        
         if self.DM.status:
             try:
                 self.DM.measure()
-                self.value = self.DM.values[0]
+                self.value = self.DM.values[0][0]
+                
+                
+                print(self.value)
+                
+                self.tcp.soc.send(str(self.value).encode())
+                
+                if self.tcp.soc.recv(1024).decode() == "data received":
+                    print("DATA SENT WOOO")
+                    
+                # self.message.put(self.value)
             except Exception as e:
                 self.DM.status = False
                 print(e)
 
         if not self.DM.status:
             self.load_dm()
-        
-            
-            
-        print("I too am a method in this class")
+    #endregion
     
+
+    #region threading
+    
+        
+        
     #endregion
 if __name__ == "__main__":
     
-    temp = four_point_app()
+    SERVER = "127.0.0.1" #"192.168.1.1"
+    PORT = 5050
+    ADDR = (SERVER, PORT)
+    
+    temp = four_point_app(SERVER, PORT)
     temp.startApp()
+
+ 
