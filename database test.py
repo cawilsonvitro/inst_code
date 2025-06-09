@@ -90,3 +90,10 @@ cursor = conn.cursor()
 # WHEN 0 THEN 'Windows and SQL Server Authentication'
 # END as [Authentication Mode]
 #python user: pylocal pw: pyvitro
+
+
+#ip of server
+#10.40.0.114 1433 wifi
+#192.168.1.1 1433 local
+#127.0.0.1 1433
+#

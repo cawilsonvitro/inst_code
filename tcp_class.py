@@ -22,7 +22,7 @@ class tcp_multiserver():
         self.server_socket: socket.socket
         self.connected_sockets: list[socket.socket] = []  # list of the client sockets being connected
         
-        self.starttime: str
+        self.starttime: float
         
         #data management
         self.client_data: str
@@ -40,10 +40,14 @@ class tcp_multiserver():
         
         with open('config.json', 'r') as file:
             self.config = json.load(file)['Tool_ip']
-        self.tools = {}
+        self.tools: dict[str, str] = {}
         
-        for key in list(self.config.keys()):
-            self.tools[f"{key}_incoming"] = False
+        for key:  in list(self.config.keys()): #type:ignore
+            self.tools[f"{key}_incoming"] = False #type:ignore
+        
+        return
+    
+            
     def SQL_startup(self):
         try:
             self.SQL.load_config()
@@ -54,7 +58,10 @@ class tcp_multiserver():
             print(e)
             self.db_status = False
             
-    def connections(self, host="8.8.8.8", port=53, timeout=3):
+        return
+ 
+            
+    def connections(self, host:str = "8.8.8.8", port: int = 53, timeout: int = 3):
         """
         Host: 8.8.8.8 (google-public-dns-a.google.com)
         OpenPort: 53/tcp
@@ -70,16 +77,17 @@ class tcp_multiserver():
             print(ex)
             self.network_status = False
         try:
-            self.db_status = self.SQL.sql.is_connected()
+            self.db_status  = self.SQL.sql.closed
             
         except Exception as e:
             print(e)
             self.SQL_startup()
+ 
         
     def all_sockets_closed(self):
         """closes the server socket and displays the duration of the connection"""
         print("\n\nAll Clients Disconnected\nClosing The Server...")
-        endtime = time.time()
+        endtime: float = time.time()
         elapsed = time.strftime("%H:%M:%S", time.gmtime(endtime - self.starttime))
         unit = (
             "Seconds"
@@ -90,12 +98,14 @@ class tcp_multiserver():
         )
         self.server_socket.close()
         print(f"\nThe Server Was Active For {elapsed} {unit}\n\n")
+   
         
     def active_client_sockets(self):
         """prints the IP and PORT of all connected sockets"""
         print("\nCurrently Connected Sockets:")
         for c in self.connected_sockets:
             print("\t", c.getpeername())
+  
     
     def serve_client(self, current_socket : socket.socket):
         """Takes the msg received from the client and handles it accordingly"""
@@ -104,7 +114,7 @@ class tcp_multiserver():
            # self.bus_out.put(client_data)  # put the data in the bus for the main app to handle
           #  incoming = self.bus_in.get(timeout=5)  # wait for the main app to process the data
           #  print(incoming)
-            date_time = time.strftime("%d/%m/%Y, %H:%M:%S")
+            date_time: str = time.strftime("%d/%m/%Y, %H:%M:%S")
        #     print(
         #        f"\nReceived new message form client {current_socket.getpeername()} at {date_time}:"
          #   )
@@ -175,7 +185,7 @@ class tcp_multiserver():
                 self.connected_sockets.remove(current_socket)
                 current_socket.close()
                 if len(self.connected_sockets) != 0:
-                    self.active_client_sockets(self.connected_sockets)
+                    self.active_client_sockets()
                 else:
                     raise ValueError
                 """the whole disconnection sequence is triggered from the exception handler, se we will just raise the exception
@@ -185,6 +195,7 @@ class tcp_multiserver():
                 tool = current_socket.getpeername()[0]
                 current_socket.send(client_data.encode())
              #   print("Responded by: Sending the message back to the client")
+     
                 
     def server(self):
         """server setup and socket handling"""
@@ -233,26 +244,27 @@ class tcp_multiserver():
             except Exception as e:
                 print(e)
 
+
     def quit(self):
         self.server_socket.close()
         self.SQL.quit()
 
-SERVER ="192.168.1.1" #"127.0.0.1"# 
-PORT = 5050
-ADDR = (SERVER, PORT)
-a = Queue()
-b = Queue()
 
-
-def counting():
-    count = 0
-    while True:
-        count += 1
-        print(f"Count: {count}")
-        time.sleep(1)  # Sleep to simulate work being done
 
 if __name__ == "__main__":
-    # Create an instance of the tcp_multiserver class         
+    SERVER ="192.168.1.1" #"127.0.0.1"# 
+    PORT = 5050
+    ADDR = (SERVER, PORT)
+    a: Queue[Any] = Queue()
+    b: Queue[Any] = Queue()
+
+    def counting():
+        count = 0
+        while True:
+            count += 1
+            print(f"Count: {count}")
+            time.sleep(1)  # Sleep to simulate work being done
+        # Create an instance of the tcp_multiserver class         
     temp = tcp_multiserver(SERVER, PORT, a, b)
     temp.SQL_startup()
     temp.connections()
