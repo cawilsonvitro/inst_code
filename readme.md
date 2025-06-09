@@ -39,6 +39,8 @@ client reconnect in app and starts without tcp working
 
 need to get it closing nicely
 
+might be able to remove queue and have tcp handler hand sql stuff
+
 done:
 
 tcp server cannot handel reconnecting need to fix

@@ -10,7 +10,6 @@ import json
 import sys
 import tcp_class 
 import threading
-import dbhandler 
 from socket import socket
 import json
 
@@ -56,7 +55,7 @@ class inst_suite():
             self.toolip = json.load(file)['Tool_ip']
         
         #sql stuff app thread will handle sql as it is not continously running
-        self.SQL = dbhandler.sql_client("config.json")
+        
 
         
     
@@ -70,7 +69,7 @@ class inst_suite():
         
         #setting up tcp server and getting instruments
         self.tcphandler: tcp_class.tcp_multiserver = tcp_class.tcp_multiserver(self.host, self.port, self.message, self.response)
-        
+        self.tcphandler.SQL_startup()
         
         self.appThread = threading.Thread(target=self.startApp, args=())
         self.tcpThread = threading.Thread(target=self.tcphandler.server, args=())
@@ -202,7 +201,10 @@ class inst_suite():
         '''
 
         #first testing internet connections
-        self.net_stat = self.tcphandler.internet()
+        self.tcphandler.connections()
+        
+        self.net_stat = self.tcphandler.network_status
+        self.db_stat = self.tcphandler.db_status
         
         if self.net_stat:
             StandardLabel (
@@ -217,6 +219,19 @@ class inst_suite():
                 image= TkImage("Net_status", r"images\Status_Bad.png").image
             ).place(x = 210, y = 405)
 
+        if self.db_stat:
+            StandardLabel (
+                "SQL_status",
+                self.root,
+                image= TkImage("SQL_status", r"images\Status_Good.png").image
+                ).place(x = 210, y = 355)
+        else:
+            StandardLabel (
+                "SQL_status",
+                self.root,
+                image= TkImage("SQL_status", r"images\Status_Bad.png").image
+            ).place(x = 210, y = 355)
+        
         #testing instrument connections
         conc_clients: list[socket] = self.tcphandler.connected_sockets
         conc_tools: list[str] = []
