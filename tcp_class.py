@@ -2,7 +2,8 @@
 import socket
 import select
 import time
-import random
+import dbhandler
+
 from multiprocessing import Process, Queue
 from queue import Empty
 from typing import Any
@@ -28,27 +29,50 @@ class tcp_multiserver():
         self.client_data = None
         self.bus_out: Queue[Any] = bus_out
         self.bus_in: Queue[Any] = bus_in
-        
+        self.SQL: dbhandler.sql_client = dbhandler.sql_client("config.json")
+
         
         #client ids
         self.read_to_read = []
         
+        #connection flags
+        self.network_status = False
+        self.db_status = False
+        
         with open('config.json', 'r') as file:
             self.config = json.load(file)['Tool_ip']
     
-    def internet(self, host="8.8.8.8", port=53, timeout=3):
+    def SQL_startup(self):
+        try:
+            self.SQL.load_config()
+            self.SQL.connect()
+            self.SQL.check_tables()
+            self.db_status = True
+        except Exception as e:
+            print(e)
+            self.db_status = False
+            
+    def connections(self, host="8.8.8.8", port=53, timeout=3):
         """
         Host: 8.8.8.8 (google-public-dns-a.google.com)
         OpenPort: 53/tcp
         Service: domain (DNS/TCP)
         """
+        self.network_status = False
+        self.db_status = False
         try:
             socket.setdefaulttimeout(timeout)
             socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
-            return True
+            self.network_status = True
         except socket.error as ex:
             print(ex)
-            return False
+            self.network_status = False
+        try:
+            self.db_status = self.SQL.sql.is_connected()
+            
+        except Exception as e:
+            print(e)
+            self.SQL_startup()
         
     def all_sockets_closed(self):
         """closes the server socket and displays the duration of the connection"""
@@ -189,6 +213,7 @@ class tcp_multiserver():
 
     def quit(self):
         self.server_socket.close()
+        self.SQL.quit()
 
 SERVER ="192.168.1.1" #"127.0.0.1"# 
 PORT = 5050
@@ -207,14 +232,16 @@ def counting():
 if __name__ == "__main__":
     # Create an instance of the tcp_multiserver class         
     temp = tcp_multiserver(SERVER, PORT, a, b)
-    tcpthread = Process(target = temp.server)
-    counting_thread = Process(target=counting)
-    tcpthread.daemon = True  # Ensures the thread will exit when the main program exits
-    tcpthread.start()
-    counting_thread.start()
+    temp.SQL_startup()
+    temp.connections()
+    # tcpthread = Process(target = temp.server)
+    # counting_thread = Process(target=counting)
+    # tcpthread.daemon = True  # Ensures the thread will exit when the main program exits
+    # tcpthread.start()
+    # counting_thread.start()
     
-    counting_thread.join()
-    tcpthread.join()
+    # counting_thread.join()
+    # tcpthread.join()
     
     a = 3
     # temp = tcp_multiserver(SERVER, PORT, a, b)

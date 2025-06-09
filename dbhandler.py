@@ -1,3 +1,4 @@
+import mysql
 import mysql.connector
 import json
 
@@ -34,6 +35,7 @@ class sql_client():
         #sql querries
         self.tools:list[str] = []
         self.tables: list[str] = []
+        
     def load_config(self):
         '''
         loads db connection config from config file
@@ -83,6 +85,7 @@ class sql_client():
 
         self.cursor = self.sql.cursor()
         
+        self.connection = self.sql.is_connected()
         
     def check_tables(self):
         self.cursor.execute("SHOW TABLES")
@@ -113,10 +116,14 @@ class sql_client():
         self.cursor.execute(query,inputs)
         self.sql.commit()
         
+    def quit(self):
+        self.sql.close()
+        
 if __name__ == "__main__":
     temp = sql_client("config.json")
     temp.load_config()
     temp.connect()
+    temp.sql.is_connected()
     temp.check_tables()
     
     
