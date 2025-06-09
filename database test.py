@@ -76,14 +76,12 @@
 
 #for sql using google ai
 import pyodbc
-connection_string = (
-    "DRIVER={ODBC Driver 17 for SQL Server};"
-    "SERVER=localhost;"
-    "DATABASE=master;"
-    "UID=abcd;"
-)
-
-conn = pyodbc.connect(connection_string)
+conn = pyodbc.connect(DRIVER='{ODBC Driver 17 for SQL Server}',
+                      SERVER='localhost',
+                      DATABASE = 'glass_test',
+                      UID = "pylocal",
+                      PWD = "pyvitro"
+                      )
 
 cursor = conn.cursor()
 
@@ -91,3 +89,4 @@ cursor = conn.cursor()
 # WHEN 1 THEN 'Windows Authentication'
 # WHEN 0 THEN 'Windows and SQL Server Authentication'
 # END as [Authentication Mode]
+#python user: pylocal pw: pyvitro

@@ -1,10 +1,17 @@
-import pyodbc
+import mysql
+import mysql.connector
 import json
 
 
+#for typing
+from typing import Union, Any
+import mysql.connector.cursor_cext
+
+mysql.connector.connection_cext.CMySQLConnection
+mysql.connector.cursor_cext.CMySQLCursor
 class sql_client():
-    
-    
+  
+  
     def __init__(self, config_path: str):
         #connction string
         self.host: str = ""
@@ -21,15 +28,14 @@ class sql_client():
             
         }
         #server connection
-        self.sql: pyodbc.Connection|None = None
-        self.cursor: pyodbc.Cursor|None = None
+        self.sql: mysql.connector.connection_cext.CMySQLConnection|None = None
+        self.cursor: mysql.connector.cursor_cext.CMySQLCursor|None
         #for building tables
         
         #sql querries
         self.tools:list[str] = []
         self.tables: list[str] = []
-    
-    
+        
     def load_config(self):
         '''
         loads db connection config from config file
@@ -40,94 +46,94 @@ class sql_client():
             self.config_tools = config["Tool_ip"]
         #connection string from files
         self.host = self.config_db["host"]
-        self.user = "pylocal"
-        self.pw =  "pyvitro"
-        self.driver = self.config_db["driver"]
+        self.user = self.config_db["user"]
+        self.pw = self.config_db["pw"]
         self.db = self.config_db["db"]
         #tool names from file
         self.tools = list(self.config_tools.values())
-    
+        
+        
+            
+        
     
     def connect(self):
         #connectin to server
-        self.sql = pyodbc.connect(
+        self.sql = mysql.connector.connect(
             host = self.host,
             user = self.user,
-            driver = self.driver,
-            password = self.pw
+            password = self.pw,
         )
         self.cursor = self.sql.cursor()
         
-        # #checking for db then connecting
+        #checking for db then connecting
         
-        self.cursor.execute("SELECT name FROM sys.databases;")
+        self.cursor.execute("SHOW DATABASES")
         
         self.dbs = [x[0] for x in self.cursor]
-        print(self.dbs)
+        
         if self.db not in self.dbs:
             self.cursor.execute(f"CREATE DATABASE {self.db}")
         
         self.sql.close()
         
-        self.sql = pyodbc.connect(
+        self.sql = mysql.connector.connect(
             host = self.host,
             user = self.user,
             password = self.pw,
-            driver = self.driver,
             database = self.db
         )
 
         self.cursor = self.sql.cursor()
         
-        self.closed = self.sql.closed
-    
+        self.connection = self.sql.is_connected()
+        
     def check_tables(self):
-        temp = self.cursor.execute("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE'")
-        self.tables = [x[2] for x in temp]
+        self.cursor.execute("SHOW TABLES")
+        self.tables = [x[0] for x in self.cursor]
+        
         for tool in self.tools:
             if tool not in self.tables:
                 if tool == "fourpp":
-                    self.cursor.execute(f"CREATE TABLE {tool} (time VARCHAR(255), resistance VARCHAR(255), sample_id VARCHAR(255))")
-        
-        self.sql.commit()
-    #ursor.execute("insert into products(id, name) values ('pyodbc', 'awesome library')")
+                    self.cursor.execute(f"CREATE TABLE {tool} (time VARCHAR(255), resistance VARCHAR(255))")
+    
     
     def write(self, table, values):
-        self.cursor.execute("insert into fourpp(time, resistance) values ('dasgsa', 'dasgsa')")
-        self.cursor.commit()
         #values is going to be formatted as 
         # values = [[col1, val1] , [col2, val2]]
-        query = f"insert into {table}("
+        query = f"INSERT INTO {table} ("
         end = "("
+        inputs = []
         for value in values:
             query += f"{value[0]}, " #building query 
-            end += f"'{value[1]}', "
+            inputs.append(value[1])
+            end += "%s, "
         end = end[:-2] + ")"
         
         query = query[:-2] + ")"
         
-        query = query + " values " + end
-        self.cursor.execute(query)
+        query = query + " VALUES " + end
+        print(query)
+        self.cursor.execute(query,inputs)
         self.sql.commit()
-    
-    
+        
     def quit(self):
-        #closes
         self.sql.close()
         
-
 if __name__ == "__main__":
+    temp = sql_client("config.json")
+    temp.load_config()
+    temp.connect()
+    temp.sql.is_connected()
+    temp.check_tables()
+    
     
     
     values = [
         ["time","12:30"],
-        ["resistance", "30"],
-        ["sample_id", "123"]
+        ["resistance", "30"]
     ]
     
-    temp = sql_client('config.json')
-    temp.load_config()
-    temp.connect()
-    temp.check_tables()
     temp.write("fourpp", values)
-    temp.quit()
+    
+    
+    

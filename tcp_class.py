@@ -2,7 +2,7 @@
 import socket
 import select
 import time
-import dbhandler
+import dbhandler_mysql
 
 from multiprocessing import Process, Queue
 from queue import Empty
@@ -29,7 +29,7 @@ class tcp_multiserver():
         self.client_data = None
         self.bus_out: Queue[Any] = bus_out
         self.bus_in: Queue[Any] = bus_in
-        self.SQL: dbhandler.sql_client = dbhandler.sql_client("config.json")
+        self.SQL: dbhandler_mysql.sql_client = dbhandler_mysql.sql_client("config.json")
 
         
         #client ids
