@@ -5,7 +5,7 @@ import json
 class sql_client():
     
     
-    def __init__(self, config_path: str):
+    def __init__(self, config_path: str) -> None:
         #connction string
         self.host: str = ""
         self.user: str = ""
@@ -14,15 +14,15 @@ class sql_client():
         
         #config 
         self.config_path:str = config_path
-        self.config_db:dict = {
+        self.config_db:dict[str, str] = {
             
             }
-        self.config_tools:dict = {
+        self.config_tools:dict[str, str] = {
             
         }
         #server connection
-        self.sql: pyodbc.Connection|None = None
-        self.cursor: pyodbc.Cursor|None = None
+        self.sql: pyodbc.Connection
+        self.cursor: pyodbc.Cursor
         #for building tables
         
         #sql querries
@@ -63,7 +63,6 @@ class sql_client():
         self.cursor.execute("SELECT name FROM sys.databases;")
         
         self.dbs = [x[0] for x in self.cursor]
-        print(self.dbs)
         if self.db not in self.dbs:
             self.cursor.execute(f"CREATE DATABASE {self.db}")
         
@@ -82,6 +81,7 @@ class sql_client():
         self.closed = self.sql.closed
     
     def check_tables(self):
+        temp: pyodbc.Cursor|None = None
         temp = self.cursor.execute("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE'")
         self.tables = [x[2] for x in temp]
         for tool in self.tools:
@@ -92,7 +92,7 @@ class sql_client():
         self.sql.commit()
     #ursor.execute("insert into products(id, name) values ('pyodbc', 'awesome library')")
     
-    def write(self, table, values):
+    def write(self, table: str, values : list[list[str]]):
         self.cursor.execute("insert into fourpp(time, resistance) values ('dasgsa', 'dasgsa')")
         self.cursor.commit()
         #values is going to be formatted as 

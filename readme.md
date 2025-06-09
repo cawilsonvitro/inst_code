@@ -44,6 +44,7 @@ need to get it closing nicely
 add sql installs to setup
 
 auto update connection status when device connects
+
 done:
 
 tcp server cannot handel reconnecting need to fix

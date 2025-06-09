@@ -2,10 +2,10 @@
 import socket
 import select
 import time
-import dbhandler_mysql
+import dbhandler
 
-from multiprocessing import Process, Queue
-from queue import Empty
+from multiprocessing import Process, Queue #type:ignore
+from queue import Empty #type:ignore
 from typing import Any
 import json
 #endregion 
@@ -16,28 +16,27 @@ import json
 
 class tcp_multiserver():
     
-    def __init__(self, ip, port, bus_out, bus_in, max_connections=5):
-        self.ADDR = (ip, port)
-        self.max_connections = max_connections
-        self.server_socket = None
-        self.connected_sockets = []  # list of the client sockets being connected
+    def __init__(self, ip:str , port:str , bus_out:Queue[Any] , bus_in:Queue[Any], max_connections:int = 5):
+        self.ADDR: tuple[str, str] = (ip, port)
+        self.max_connections: int = max_connections
+        self.server_socket: socket.socket
+        self.connected_sockets: list[socket.socket] = []  # list of the client sockets being connected
         
-        self.starttime = None
-        self.server_socket = None
+        self.starttime: str
         
         #data management
-        self.client_data = None
+        self.client_data: str
         self.bus_out: Queue[Any] = bus_out
         self.bus_in: Queue[Any] = bus_in
-        self.SQL: dbhandler_mysql.sql_client = dbhandler_mysql.sql_client("config.json")
+        self.SQL: dbhandler.sql_client = dbhandler.sql_client("config.json")
 
         
         #client ids
-        self.read_to_read = []
+        self.read_to_read: list[socket.socket] = []
         
         #connection flags
-        self.network_status = False
-        self.db_status = False
+        self.network_status:bool = False
+        self.db_status:bool = False
         
         with open('config.json', 'r') as file:
             self.config = json.load(file)['Tool_ip']
