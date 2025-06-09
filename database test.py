@@ -86,3 +86,8 @@ connection_string = (
 conn = pyodbc.connect(connection_string)
 
 cursor = conn.cursor()
+
+# SELECT CASE SERVERPROPERTY('IsIntegratedSecurityOnly')
+# WHEN 1 THEN 'Windows Authentication'
+# WHEN 0 THEN 'Windows and SQL Server Authentication'
+# END as [Authentication Mode]
