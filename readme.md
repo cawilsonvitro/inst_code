@@ -33,6 +33,11 @@ clean up imports
 
 write script to handle copying files from docker container over to other computers which will ssh into docker container and copy files to repo
 
+need to do full test with vdap
+
+client reconnect in app and starts without tcp working
+
+need to get it closing nicely
 
 done:
 

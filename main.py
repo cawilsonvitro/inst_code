@@ -11,6 +11,8 @@ import sys
 import tcp_class 
 import threading
 import dbhandler 
+from socket import socket
+import json
 
 #endregion
 class inst_suite():
@@ -50,6 +52,9 @@ class inst_suite():
         self.port = 5050
         self.ADDR = (self.host, self.port)
         
+        with open('config.json', 'r') as file:
+            self.toolip = json.load(file)['Tool_ip']
+        
         #sql stuff app thread will handle sql as it is not continously running
         self.SQL = dbhandler.sql_client("config.json")
 
@@ -62,25 +67,27 @@ class inst_suite():
         
         self.message: Queue[Any] = Queue(maxsize=1)
         self.response: Queue[Any] = Queue(maxsize=1)
+        
+        #setting up tcp server and getting instruments
         self.tcphandler: tcp_class.tcp_multiserver = tcp_class.tcp_multiserver(self.host, self.port, self.message, self.response)
         
         
         self.appThread = threading.Thread(target=self.startApp, args=())
         self.tcpThread = threading.Thread(target=self.tcphandler.server, args=())
-        self.insturmentManagerThread = threading.Thread(target=self.test, args=())
+        # self.insturmentManagerThread = threading.Thread(target=self.test, args=())
         
         self.appThread.daemon = True
         self.tcpThread.daemon = True
-        self.insturmentManagerThread.daemon = True
+        # self.insturmentManagerThread.daemon = True
         
         #starting threads
         self.appThread.start()
         self.tcpThread.start()
-        self.insturmentManagerThread.start()
+        # self.insturmentManagerThread.start()
         
         self.appThread.join()
         self.tcpThread.join()
-        self.insturmentManagerThread.join()
+        # self.insturmentManagerThread.join()
         
         #cwd to fix issues
         
@@ -104,10 +111,10 @@ class inst_suite():
         self.process_display.set("Booting")
         self.root.update_idletasks()
         self.buildGUI(self.root)
-        
+        self.test()
         self.root.mainloop()
         
-        
+         #checks inst connections before booting up tcp server and other 
         pass
 
     def endApp(self, event):
@@ -193,6 +200,7 @@ class inst_suite():
         '''
         manages all instruments and instrument communications
         '''
+
         #first testing internet connections
         self.net_stat = self.tcphandler.internet()
         
@@ -209,7 +217,25 @@ class inst_suite():
                 image= TkImage("Net_status", r"images\Status_Bad.png").image
             ).place(x = 210, y = 405)
 
-
+        #testing instrument connections
+        conc_clients: list[socket] = self.tcphandler.connected_sockets
+        conc_tools: list[str] = []
+        for soc in conc_clients:
+            conc_tools.append(self.toolip[soc.getpeername()[0]])
+        
+        if "fourpp" in conc_tools:
+            StandardLabel(
+                "4pp_status",
+                self.root,
+                image = TkImage("4pp_status_bad", r"images\Status_Good.png").image
+            ).place(x = 198, y = 55)
+        else:
+            StandardLabel(
+                "4pp_status",
+                self.root,
+                image = TkImage("4pp_status_bad", r"images\Status_Bad.png").image
+            ).place(x = 198, y = 55)
+        
         
     #endregion  
 
