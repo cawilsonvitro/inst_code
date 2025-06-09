@@ -41,7 +41,10 @@ class tcp_multiserver():
         
         with open('config.json', 'r') as file:
             self.config = json.load(file)['Tool_ip']
-    
+        self.tools = {}
+        
+        for key in list(self.config.keys()):
+            self.tools[f"{key}_incoming"] = False
     def SQL_startup(self):
         try:
             self.SQL.load_config()
@@ -132,14 +135,33 @@ class tcp_multiserver():
             elif client_data == "MEAS":
                 #first get tool to build SQL query with
                 tool = self.config[current_socket.getpeername()[0]]
+                print(f"awaiting value from {tool}")
+                
+                value = current_socket.recv(1024).decode()
                 
                 #get value
                 
-                value = float(client_data)
+                value = float(value)
+                
+                print(value)
                 
                 #confirm
-                
+                print("Writing back")
                 current_socket.send("data received".encode())
+                
+                
+                #writing to sql server
+                if tool == "fourpp":
+                    values = [
+                        ["resistance", str(value)],
+                        ["sample_id", "123"]
+                    ]
+                    
+                
+                
+                self.SQL.write(tool, values)
+                    
+                
                 
                 
                 
@@ -161,6 +183,7 @@ class tcp_multiserver():
                     to close the server socket"""
             
             else:
+                tool = current_socket.getpeername()[0]
                 current_socket.send(client_data.encode())
              #   print("Responded by: Sending the message back to the client")
                 

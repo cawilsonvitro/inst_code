@@ -17,6 +17,8 @@ https://github.com/YanivWein24/TCP_Server_Client/blob/master/TCP_Client.py
 
 to do:
 
+add sample id to input field on 4 pp
+
 need to get sql server better
 
 add front end functionality to main
@@ -39,12 +41,13 @@ client reconnect in app and starts without tcp working
 
 need to get it closing nicely
 
-might be able to remove queue and have tcp handler hand sql stuff
+add sql installs to setup
 
+auto update connection status when device connects
 done:
 
 tcp server cannot handel reconnecting need to fix
 
 i dont need to thread indi. inst 
 
-add sql installs to setup
+might be able to remove queue and have tcp handler hand sql stuff
