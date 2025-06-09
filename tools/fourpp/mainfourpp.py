@@ -1,6 +1,6 @@
 #region imports
 from gui_package_cawilvitro import *
-import fourpp_dummy as fourpp
+import fourpp as fourpp
 import tkinter as tk
 from tkinter import Misc
 import tkinter.ttk as ttk
@@ -146,20 +146,23 @@ class four_point_app():
         if self.DM.status:
             try:
                 self.DM.measure()
-                self.value = self.DM.values[0][0]
+                print(self.DM.values)
+                self.value = (sum(self.DM.values)/len(self.DM.values)) * 4.517 * 1 * 1.006
                 
                 
-                print(self.value)
-                
+                self.tcp.soc.send("MEAS".encode())
                 self.tcp.soc.send(str(self.value).encode())
                 
-                if self.tcp.soc.recv(1024).decode() == "data received":
-                    print("DATA SENT WOOO")
+                resp = self.tcp.soc.recv(1024).decode()
+
+                if resp != "data received":
+                    print("ERROR")
+
                     
                 # self.message.put(self.value)
             except Exception as e:
                 self.DM.status = False
-                print(e)
+                print("Measuring fail", e)
 
         if not self.DM.status:
             self.load_dm()

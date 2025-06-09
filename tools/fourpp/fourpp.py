@@ -75,7 +75,7 @@ if __name__ == "__main__":
     foo.init_driver()
 
     foo.measure()
-
+    print(foo.values)
     foo.quit()
 
     value = sum(foo.values)/len(foo.values)

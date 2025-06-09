@@ -27,50 +27,62 @@
 
 # # using https://www.w3schools.com/python/python_mysql_getstarted.asp for mysql pw: 1234 usr test pw same
 
-import mysql.connector
+# import mysql.connector
 
-mydb = mysql.connector.connect(
-  host="localhost",
-  user="root",
-  password="1234",
-  database = "mydatabase"
+# mydb = mysql.connector.connect(
+#   host="localhost",
+#   user="root",
+#   password="1234",
+#   database = "mydatabase"
+# )
+
+# print(mydb)
+
+# mycursor = mydb.cursor()
+
+# mycursor.execute("SHOW DATABASES")
+
+# xs = [x[0] for x in mycursor]
+
+# if "mydatabase" not in xs: mycursor.execute("CREATE DATABASE mydatabase")
+
+# # creating table 
+
+# mycursor = mydb.cursor()
+
+# mycursor.execute("CREATE TABLE customers (name VARCHAR(255), address VARCHAR(255))")
+
+
+# #checking  if table exists
+# mycursor = mydb.cursor()
+
+# mycursor.execute("SHOW TABLES")
+# xs = [x[0] for x in mycursor]
+# if "customers" not in xs: mycursor.execute("CREATE TABLE customers (name VARCHAR(255), address VARCHAR(255))")
+
+# # adding column
+# # mycursor.execute("ALTER TABLE customers ADD COLUMN id INT AUTO_INCREMENT PRIMARY KEY")
+
+# #adding data
+# sql = "INSERT INTO customers (name, address) VALUES (%s, %s)"
+# val = ("John", "Highway 21")
+# mycursor.execute(sql, val)
+
+# mydb.commit()
+
+# print(mycursor.rowcount, "record inserted.")
+
+
+
+#for sql using google ai
+import pyodbc
+connection_string = (
+    "DRIVER={ODBC Driver 17 for SQL Server};"
+    "SERVER=localhost;"
+    "DATABASE=master;"
+    "UID=abcd;"
 )
 
-print(mydb)
+conn = pyodbc.connect(connection_string)
 
-mycursor = mydb.cursor()
-
-mycursor.execute("SHOW DATABASES")
-
-xs = [x[0] for x in mycursor]
-
-if "mydatabase" not in xs: mycursor.execute("CREATE DATABASE mydatabase")
-
-# creating table 
-
-mycursor = mydb.cursor()
-
-mycursor.execute("CREATE TABLE customers (name VARCHAR(255), address VARCHAR(255))")
-
-
-#checking  if table exists
-mycursor = mydb.cursor()
-
-mycursor.execute("SHOW TABLES")
-xs = [x[0] for x in mycursor]
-if "customers" not in xs: mycursor.execute("CREATE TABLE customers (name VARCHAR(255), address VARCHAR(255))")
-
-# adding column
-# mycursor.execute("ALTER TABLE customers ADD COLUMN id INT AUTO_INCREMENT PRIMARY KEY")
-
-#adding data
-sql = "INSERT INTO customers (name, address) VALUES (%s, %s)"
-val = ("John", "Highway 21")
-mycursor.execute(sql, val)
-
-mydb.commit()
-
-print(mycursor.rowcount, "record inserted.")
-
-
-
+cursor = conn.cursor()
