@@ -64,19 +64,26 @@ class siglent():
 
 
 
-# foo = siglent("USB0::0xF4EC::0x1208::SDM36HCD801150::INSTR")
 
-# foo.init_driver()
+if __name__ == "__main__":
+    def convert(value):
+        answer = value * 4.517 * 1 * 1.006
+        print(answer)
+    
+    foo = siglent("USB0::0xF4EC::0x1208::SDM36HCD801150::INSTR")
 
-# foo.measure()
+    foo.init_driver()
 
-# foo.quit()
+    foo.measure()
 
-# value = sum(foo.values)/len(foo.values)
+    foo.quit()
+
+    value = sum(foo.values)/len(foo.values)
+    
+    convert(value)
 
 
-# def convert(value):
-#     answer = 4.517 * 0.6337 
+
     
 
 

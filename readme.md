@@ -31,6 +31,7 @@ file management system
 
 clean up imports
 
+write script to handle copying files from docker container over to other computers which will ssh into docker container and copy files to repo
 
 
 done:
