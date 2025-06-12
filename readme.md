@@ -18,6 +18,8 @@ to activate use Activate.ps1 in the venv folder
 
 to do:
 
+need to get execution working with virt 
+
 get setup working with windows 11 computers
 
 update script to work with venv to bypasss other stuff
