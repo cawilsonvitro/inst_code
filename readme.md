@@ -14,9 +14,13 @@ USB0::0xF4EC::0x1208::SDM36HCD801150::INSTR
 tcp server based on 
 https://github.com/YanivWein24/TCP_Server_Client/blob/master/TCP_Client.py
 
+to activate use Activate.ps1 in the venv folder
 
 to do:
 
+get setup working with windows 11 computers
+
+update script to work with venv to bypasss other stuff
 add sample id to input field on 4 pp
 
 need to get sql server better
