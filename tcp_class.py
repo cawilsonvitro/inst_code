@@ -252,22 +252,23 @@ class tcp_multiserver():
         self.server_socket.close()
         self.SQL.quit()
 
-
+def counting():
+    count = 0
+    while True:
+        count += 1
+        print(f"Count: {count}")
+        time.sleep(1)  # Sleep to simulate work being done
+    
 
 if __name__ == "__main__":
-    SERVER: str ="192.168.1.1" #"127.0.0.1"# 
+    #SERVER: str ="192.168.1.1" 
+    SERVER: str = "127.0.0.1" #for testing
     PORT: int = 5050
     ADDR = (SERVER, PORT)
     a: Any = Queue() #type: ignore
     b: Any = Queue()    #type: ignore
 
-    def counting():
-        count = 0
-        while True:
-            count += 1
-            print(f"Count: {count}")
-            time.sleep(1)  # Sleep to simulate work being done
-        # Create an instance of the tcp_multiserver class         
+    # Create an instance of the tcp_multiserver class     
     temp = tcp_multiserver(SERVER, PORT, a, b)
     temp.SQL_startup()
     temp.connections()

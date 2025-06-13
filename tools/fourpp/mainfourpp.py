@@ -1,6 +1,6 @@
 #region imports
 from gui_package_cawilvitro import *
-import fourpp as fourpp
+import fourpp_dummy as fourpp
 import tkinter as tk
 from tkinter import Misc
 import tkinter.ttk as ttk
@@ -176,8 +176,8 @@ class four_point_app():
     #endregion
 if __name__ == "__main__":
     
-    #SERVER = "127.0.0.1" #"192.168.1.1"
-    SERVER = "192.168.1.1"
+    SERVER = "127.0.0.1" 
+    #SERVER = "192.168.1.1"
     PORT = 5050
     ADDR = (SERVER, PORT)
     

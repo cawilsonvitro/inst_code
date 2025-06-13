@@ -5,7 +5,7 @@
 
     },
     "Database_Config":{
-        "host": "WHAMNUC1",
+        "host": "localhost",
         "db": "glass_test",
         "driver": "{ODBC Driver 17 for SQL Server}"
     },

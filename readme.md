@@ -2,7 +2,8 @@ git notes:
 connect with the following:
 ssh cawilson@vitro.com@127.0.0.1
 
-
+sql: for debugging
+WHAMNUC1
 
 for 4 pp
 First installed
