@@ -1,3 +1,7 @@
+git notes: 
+connect with the following:
+ssh cawilson@vitro.com@127.0.0.1
+
 
 
 for 4 pp
@@ -18,7 +22,16 @@ to activate use Activate.ps1 in the venv folder
 
 to do:
 
-update package to fix pathing issue   
+
+(last) remove Any typing
+add to setup.py:
+    adjust venv pyvevn.cfg to target exe
+
+
+
+fix pathing to working with venv paths 
+
+
 
 need to get execution working with virt 
 
