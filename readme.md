@@ -23,9 +23,14 @@ to activate use Activate.ps1 in the venv folder
 
 to do:
 
+
+
 get local debugging working again just changes 127.0.0.1 to all ip
 
 (last) remove Any typing
+(last) update gitignore
+
+
 add to setup.py:
     adjust venv pyvevn.cfg to target exe
 
