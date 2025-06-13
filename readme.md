@@ -1,3 +1,7 @@
+git notes: 
+connect with the following:
+ssh cawilson@vitro.com@127.0.0.1
+
 
 
 for 4 pp
@@ -17,6 +21,17 @@ https://github.com/YanivWein24/TCP_Server_Client/blob/master/TCP_Client.py
 to activate use Activate.ps1 in the venv folder
 
 to do:
+
+
+(last) remove Any typing
+add to setup.py:
+    adjust venv pyvevn.cfg to target exe
+
+
+
+fix pathing to working with venv paths 
+
+
 
 need to get execution working with virt 
 

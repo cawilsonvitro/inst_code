@@ -8,6 +8,8 @@ from multiprocessing import Process, Queue #type:ignore
 from queue import Empty #type:ignore
 from typing import Any
 import json
+
+
 #endregion 
 
 
@@ -16,18 +18,19 @@ import json
 
 class tcp_multiserver():
     
-    def __init__(self, ip:str , port:str , bus_out:Queue[Any] , bus_in:Queue[Any], max_connections:int = 5):
-        self.ADDR: tuple[str, str] = (ip, port)
+    def __init__(self, ip:str , port:int , bus_out:Any , bus_in:Any, max_connections:int = 5): #fix typing
+        self.ADDR: tuple[str, int] = (ip, port)
         self.max_connections: int = max_connections
         self.server_socket: socket.socket
         self.connected_sockets: list[socket.socket] = []  # list of the client sockets being connected
         
         self.starttime: float
         
+        
         #data management
         self.client_data: str
-        self.bus_out: Queue[Any] = bus_out
-        self.bus_in: Queue[Any] = bus_in
+        self.bus_out: Any = bus_out
+        self.bus_in: Any = bus_in
         self.SQL: dbhandler.sql_client = dbhandler.sql_client("config.json")
 
         
@@ -42,7 +45,7 @@ class tcp_multiserver():
             self.config = json.load(file)['Tool_ip']
         self.tools: dict[str, str] = {}
         
-        for key:  in list(self.config.keys()): #type:ignore
+        for key in list(self.config.keys()): #type:ignore
             self.tools[f"{key}_incoming"] = False #type:ignore
         
         return
@@ -252,11 +255,11 @@ class tcp_multiserver():
 
 
 if __name__ == "__main__":
-    SERVER ="192.168.1.1" #"127.0.0.1"# 
-    PORT = 5050
+    SERVER: str ="192.168.1.1" #"127.0.0.1"# 
+    PORT: int = 5050
     ADDR = (SERVER, PORT)
-    a: Queue[Any] = Queue()
-    b: Queue[Any] = Queue()
+    a: Any = Queue() #type: ignore
+    b: Any = Queue()    #type: ignore
 
     def counting():
         count = 0
@@ -268,14 +271,14 @@ if __name__ == "__main__":
     temp = tcp_multiserver(SERVER, PORT, a, b)
     temp.SQL_startup()
     temp.connections()
-    # tcpthread = Process(target = temp.server)
-    # counting_thread = Process(target=counting)
-    # tcpthread.daemon = True  # Ensures the thread will exit when the main program exits
-    # tcpthread.start()
-    # counting_thread.start()
+    tcpthread = Process(target = temp.server)
+    counting_thread = Process(target=counting)
+    tcpthread.daemon = True  # Ensures the thread will exit when the main program exits
+    tcpthread.start()
+    counting_thread.start()
     
-    # counting_thread.join()
-    # tcpthread.join()
+    counting_thread.join()
+    tcpthread.join()
     
     a = 3
     # temp = tcp_multiserver(SERVER, PORT, a, b)
