@@ -18,6 +18,8 @@ to activate use Activate.ps1 in the venv folder
 
 to do:
 
+update package to fix pathing issue   
+
 need to get execution working with virt 
 
 get setup working with windows 11 computers

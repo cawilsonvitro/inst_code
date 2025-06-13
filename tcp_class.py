@@ -16,7 +16,7 @@ import json
 
 class tcp_multiserver():
     
-    def __init__(self, ip:str , port:str , bus_out:Queue[Any] , bus_in:Queue[Any], max_connections:int = 5):
+    def __init__(self, ip:str , port:str , bus_out , bus_in, max_connections:int = 5):
         self.ADDR: tuple[str, str] = (ip, port)
         self.max_connections: int = max_connections
         self.server_socket: socket.socket
@@ -26,8 +26,8 @@ class tcp_multiserver():
         
         #data management
         self.client_data: str
-        self.bus_out: Queue[Any] = bus_out
-        self.bus_in: Queue[Any] = bus_in
+        self.bus_out = bus_out
+        self.bus_in = bus_in
         self.SQL: dbhandler.sql_client = dbhandler.sql_client("config.json")
 
         
@@ -42,7 +42,7 @@ class tcp_multiserver():
             self.config = json.load(file)['Tool_ip']
         self.tools: dict[str, str] = {}
         
-        for key:  in list(self.config.keys()): #type:ignore
+        for key in list(self.config.keys()): #type:ignore
             self.tools[f"{key}_incoming"] = False #type:ignore
         
         return
@@ -255,8 +255,8 @@ if __name__ == "__main__":
     SERVER ="192.168.1.1" #"127.0.0.1"# 
     PORT = 5050
     ADDR = (SERVER, PORT)
-    a: Queue[Any] = Queue()
-    b: Queue[Any] = Queue()
+    a = Queue()
+    b = Queue()
 
     def counting():
         count = 0
