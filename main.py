@@ -1,17 +1,14 @@
 
 #region imports
-from gui_package_cawilvitro import *
+from gui_package_cawilvitro import * #type:ignore
 import socket
-import select
-from multiprocessing import Process, Queue
-from queue import Empty
-import time
+from multiprocessing import Process, Queue #type:ignore
+from queue import Empty #type:ignore
 import json
 import sys
 import tcp_class 
 import threading
 from socket import socket
-import json
 
 #endregion
 class inst_suite():
@@ -101,10 +98,10 @@ class inst_suite():
         starts tk application
         '''
         
-        self.root = tk.Tk()
+        self.root: tk.Tk = tk.Tk() 
         self.root.title("Insturment Control Suite")
         self.root.geometry("430x485")
-        self.root.bind("<Escape>", self.endApp)
+        self.root.bind("<Escape>", self.endApp) #type: ignore
         self.root.protocol("WM_DELETE_WINDOW",self.endProto)
         self.process_display = tk.StringVar() 
         self.process_display.set("Booting")
@@ -116,7 +113,7 @@ class inst_suite():
          #checks inst connections before booting up tcp server and other 
         pass
 
-    def endApp(self, event):
+    def endApp(self, event: Any):
         '''
         stops app and closes intrument connections
         '''
@@ -131,7 +128,7 @@ class inst_suite():
         self.endApp(None)
     #endregion
     #region GUI building
-    def buildGUI(self, root):
+    def buildGUI(self, root: tk.Tk) -> None:
         '''
         build gui
         '''
