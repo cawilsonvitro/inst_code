@@ -3,7 +3,7 @@ import socket
 import select
 import time
 import dbhandler
-from multiprocessing import Process, Queue #type:ignore
+from multiprocessing import Process, Queue 
 from queue import Empty #type:ignore
 from typing import Any
 import json
@@ -42,10 +42,10 @@ class tcp_multiserver():
         
         with open('config.json', 'r') as file:
             self.config = json.load(file)['Tool_ip']
-        self.tools: dict[str, str] = {}
+        self.tools: dict[str, str|bool] = {}
         
-        for key in list(self.config.keys()): #type:ignore
-            self.tools[f"{key}_incoming"] = False #type:ignore
+        for key in list(self.config.keys()): 
+            self.tools[f"{key}_incoming"] = False 
         
         return
     
@@ -265,8 +265,8 @@ if __name__ == "__main__":
     SERVER: str = "127.0.0.1" #for testing
     PORT: int = 5050
     ADDR = (SERVER, PORT)
-    a: "Queue[Any]" = Queue() #type: ignore
-    b: "Queue[Any]" = Queue()    #type: ignore
+    a: "Queue[Any]" = Queue() 
+    b: "Queue[Any]" = Queue()    
 
     # Create an instance of the tcp_multiserver class     
     temp = tcp_multiserver(SERVER, PORT, a, b)
