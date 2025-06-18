@@ -3,7 +3,6 @@ import socket
 import select
 import time
 import dbhandler
-
 from multiprocessing import Process, Queue #type:ignore
 from queue import Empty #type:ignore
 from typing import Any
@@ -18,7 +17,7 @@ import json
 
 class tcp_multiserver():
     
-    def __init__(self, ip:str , port:int , bus_out:Any , bus_in:Any, max_connections:int = 5): #fix typing
+    def __init__(self, ip:str , port:int , bus_out:"Queue[Any]" , bus_in:"Queue[Any]", max_connections:int = 5): #fix typing
         self.ADDR: tuple[str, int] = (ip, port)
         self.max_connections: int = max_connections
         self.server_socket: socket.socket
@@ -29,8 +28,8 @@ class tcp_multiserver():
         
         #data management
         self.client_data: str
-        self.bus_out: Any = bus_out
-        self.bus_in: Any = bus_in
+        self.bus_out: "Queue[Any]" = bus_out
+        self.bus_in: "Queue[Any]" = bus_in
         self.SQL: dbhandler.sql_client = dbhandler.sql_client("config.json")
 
         
@@ -38,8 +37,8 @@ class tcp_multiserver():
         self.read_to_read: list[socket.socket] = []
         
         #connection flags
-        self.network_status:bool = False
-        self.db_status:bool = False
+        self.network_status: bool = False
+        self.db_status: bool|None = False
         
         with open('config.json', 'r') as file:
             self.config = json.load(file)['Tool_ip']
@@ -79,12 +78,12 @@ class tcp_multiserver():
         except socket.error as ex:
             print(ex)
             self.network_status = False
-        try:
-            self.db_status  = self.SQL.sql.closed
+        #try:
+        #    self.db_status  = self.SQL.quit()
             
-        except Exception as e:
-            print(e)
-            self.SQL_startup()
+        #except Exception as e:
+            # print(e)
+            #self.SQL_startup()
  
         
     def all_sockets_closed(self):
@@ -118,9 +117,9 @@ class tcp_multiserver():
           #  incoming = self.bus_in.get(timeout=5)  # wait for the main app to process the data
           #  print(incoming)
             date_time: str = time.strftime("%d/%m/%Y, %H:%M:%S")
-       #     print(
-        #        f"\nReceived new message form client {current_socket.getpeername()} at {date_time}:"
-         #   )
+            print(
+                f"\nReceived new message form client {current_socket.getpeername()} at {date_time}:"
+            )
 
         except ConnectionResetError:
             print(f"\nThe client {current_socket.getpeername()} has disconnected...")
@@ -145,6 +144,9 @@ class tcp_multiserver():
                 current_socket.send(id.encode())
             
             elif client_data == "MEAS":
+                values: list[list[str]]
+                
+                
                 #first get tool to build SQL query with
                 tool = self.config[current_socket.getpeername()[0]]
                 print(f"awaiting value from {tool}")
@@ -169,9 +171,7 @@ class tcp_multiserver():
                         ["sample_id", "123"]
                     ]
                     
-                
-                
-                self.SQL.write(tool, values)
+                    self.SQL.write(tool, values)
                     
                 
                 
@@ -265,12 +265,12 @@ if __name__ == "__main__":
     SERVER: str = "127.0.0.1" #for testing
     PORT: int = 5050
     ADDR = (SERVER, PORT)
-    a: Any = Queue() #type: ignore
-    b: Any = Queue()    #type: ignore
+    a: "Queue[Any]" = Queue() #type: ignore
+    b: "Queue[Any]" = Queue()    #type: ignore
 
     # Create an instance of the tcp_multiserver class     
     temp = tcp_multiserver(SERVER, PORT, a, b)
-    temp.SQL_startup()
+    #temp.SQL_startup()
     temp.connections()
     tcpthread = Process(target = temp.server)
     counting_thread = Process(target=counting)
