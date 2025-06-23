@@ -21,11 +21,11 @@ https://github.com/YanivWein24/TCP_Server_Client/blob/master/TCP_Client.py
 
 to activate use Activate.ps1 in the venv folder
 
+make sure Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
+
 to do:
 
 
-
-get local debugging working again just changes 127.0.0.1 to all ip
 
 (last) remove Any typing
 (last) update gitignore
@@ -66,11 +66,10 @@ file management system
 
 clean up imports
 
-write script to handle copying files from docker container over to other computers which will ssh into docker container and copy files to repo
 
 need to do full test with vdap
 
-client reconnect in app and starts without tcp working
+ starts without tcp working
 
 need to get it closing nicely
 
@@ -79,6 +78,11 @@ add sql installs to setup
 auto update connection status when device connects
 
 done:
+
+client reconnect in app 
+
+
+get local debugging working again just changes 127.0.0.1 to all ip
 
 tcp server cannot handel reconnecting need to fix
 
