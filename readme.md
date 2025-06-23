@@ -23,6 +23,9 @@ to activate use Activate.ps1 in the venv folder
 
 make sure Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 
+make sure to replace in .venv\pyvenv.cfg the c### with current user
+
+
 to do:
 
 figure out better launching method currently using systems python to launch venv python

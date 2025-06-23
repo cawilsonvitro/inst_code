@@ -6,3 +6,4 @@ mysql-connector-python
 pyodbc
 mysql-connector-python
 matplotlib
+configparser

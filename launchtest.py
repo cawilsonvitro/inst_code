@@ -3,9 +3,9 @@ import sys
 
 
 
-virt_path = os.path.join(os.getcwd(), 'suite', 'inst_code', 'virt', 'scripts', 'python.exe')
+virt_path = os.path.join(os.getcwd(), '.venv', 'scripts', 'python.exe')
 
 
-os.system(f"\"powershell {virt_path}\" test.py")
+os.system(f"{virt_path} test.py")
 
 print(virt_path)
