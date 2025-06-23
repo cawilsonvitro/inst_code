@@ -51,6 +51,7 @@ class tcp_multiserver():
     
             
     def SQL_startup(self):
+        print(" I ran")
         try:
             self.SQL.load_config()
             self.SQL.connect()
@@ -78,12 +79,12 @@ class tcp_multiserver():
         except socket.error as ex:
             print(ex)
             self.network_status = False
-        #try:
-        #    self.db_status  = self.SQL.quit()
-            
-        #except Exception as e:
-            # print(e)
-            #self.SQL_startup()
+        try:
+            self.db_status  = self.SQL.quit()
+            self.SQL_startup()
+        except Exception as e:
+            print(e)
+            self.SQL_startup()
  
         
     def all_sockets_closed(self):
@@ -270,7 +271,7 @@ if __name__ == "__main__":
 
     # Create an instance of the tcp_multiserver class     
     temp = tcp_multiserver(SERVER, PORT, a, b)
-    #temp.SQL_startup()
+    temp.SQL_startup()
     temp.connections()
     tcpthread = Process(target = temp.server)
     counting_thread = Process(target=counting)
