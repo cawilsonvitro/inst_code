@@ -1,0 +1,16 @@
+Metadata-Version: 2.4
+Name: gui_package_cawilvitro
+Version: 0.0.1
+Summary: simple GUI package for QC and inline tools
+Project-URL: Homepage, https://github.com/pypa/gui_package_cawilvitro
+Project-URL: Issues, https://github.com/pypa/gui_package_cawilvitro/issues
+Author-email: Carl Wilson <cawilson@example.com>
+License-Expression: MIT
+License-File: LICENSE
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+
+created using
+https://packaging.python.org/en/latest/tutorials/packaging-projects/
