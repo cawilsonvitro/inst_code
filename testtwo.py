@@ -1,9 +1,3 @@
-import os
-from instrument import *
+import os #type: ignore
 # os.system("py test.py hi")
-
-a = instrument_handle()
-a.name("hi")
-
-print(a.name)
 
