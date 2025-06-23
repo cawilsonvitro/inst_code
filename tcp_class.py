@@ -19,6 +19,7 @@ class tcp_multiserver():
     
     def __init__(self, ip:str , port:int , bus_out:"Queue[Any]" , bus_in:"Queue[Any]", max_connections:int = 5): #fix typing
         self.ADDR: tuple[str, int] = (ip, port)
+        print(self.ADDR)
         self.max_connections: int = max_connections
         self.server_socket: socket.socket
         self.connected_sockets: list[socket.socket] = []  # list of the client sockets being connected

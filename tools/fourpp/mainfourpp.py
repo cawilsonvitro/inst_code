@@ -176,8 +176,12 @@ class four_point_app():
     #endregion
 if __name__ == "__main__":
     
-    SERVER = "127.0.0.1" 
-    #SERVER = "192.168.1.1"
+    #SERVER = "127.0.0.1" 
+    try:
+        SERVER = sys.argv[1]
+    except:
+        SERVER = "192.168.1.1"
+    
     PORT = 5050
     ADDR = (SERVER, PORT)
     
