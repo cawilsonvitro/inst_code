@@ -202,3 +202,4 @@ print("test")
 
 import matplotlib
 import gui_package_cawilvitro
+from stellarnet_driverLibs import stellarnet_driver3 as sn
