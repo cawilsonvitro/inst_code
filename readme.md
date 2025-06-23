@@ -25,7 +25,7 @@ make sure Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 
 to do:
 
-
+figure out better launching method currently using systems python to launch venv python
 
 (last) remove Any typing
 (last) update gitignore
