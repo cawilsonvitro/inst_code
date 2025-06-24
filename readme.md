@@ -2,6 +2,9 @@ git notes:
 connect with the following:
 ssh cawilson@vitro.com@127.0.0.1
 
+to fix 2503/2502:
+go to Navigate to the Windows Temp folder located at c:\windows\temp and give permissions to user
+
 sql: for debugging
 WHAMNUC1
 
