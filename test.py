@@ -200,6 +200,12 @@
 
 print("test")
 
-import matplotlib
-import gui_package_cawilvitro
-from stellarnet_driverLibs import stellarnet_driver3 as sn
+# import matplotlib
+# import gui_package_cawilvitro
+# from stellarnet_driverLibs import stellarnet_driver3 as sn
+
+
+def testingkwarg(**kwargs):
+    print(kwargs["a"])
+    
+testingkwarg(a=1)

@@ -27,6 +27,7 @@ make sure to replace in .venv\pyvenv.cfg the c### with current user
 
 
 to do:
+add logging
 
 (last) remove Any typing
 (last) update gitignore
