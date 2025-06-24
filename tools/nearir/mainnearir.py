@@ -40,7 +40,7 @@ class near_ir_app():
         # self.response: Queue[Any] = Queue(maxsize=1)
         
         
-        tcp handels init too
+        # tcp handels init too
         self.tcp = tcp_client.client(ip, port)#, self.message, self.response)
         self.tcp.connect()
         self.tcp.id() #tells server the ip is connected
