@@ -51,9 +51,6 @@ class stellarnet():
         
             self.status = True
             
-        except StellarnetError as e:
-            print(f"Stellarnet Error: {e}")
-            self.status = False
             
         except Exception as e:
             print(f"error: {e}")

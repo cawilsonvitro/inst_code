@@ -1,6 +1,6 @@
 #region imports
 from gui_package_cawilvitro import *
-import nearir_dummy as IR
+import nearir as IR
 import tkinter as tk
 from tkinter import Misc
 import tkinter.ttk as ttk
@@ -32,15 +32,18 @@ class near_ir_app():
         self.sample_num = 1
         self.exst = ".csv"
         
+        #spectrometer
+        self.spectrometer = None
+        
         #threading
         # self.message: Queue[Any] = Queue(maxsize=1)
         # self.response: Queue[Any] = Queue(maxsize=1)
         
         
-        #tcp handels init too
-        # self.tcp = tcp_client.client(ip, port)#, self.message, self.response)
-        # self.tcp.connect()
-        # self.tcp.id() #tells server the ip is connected
+        tcp handels init too
+        self.tcp = tcp_client.client(ip, port)#, self.message, self.response)
+        self.tcp.connect()
+        self.tcp.id() #tells server the ip is connected
     
     def startApp(self):
         self.root = tk.Tk()
@@ -53,6 +56,7 @@ class near_ir_app():
         self.process_display.set("Booting")
         self.root.update_idletasks()
         self.buildGUI(self.root)
+        self.spec_init()
         
         self.root.mainloop()
     
@@ -70,7 +74,7 @@ class near_ir_app():
         ends application
         '''
         self.quit = True
-        # self.tcp.disconnect()
+        self.tcp.disconnect()
         self.root.quit()
         
     #endregion
@@ -117,8 +121,31 @@ class near_ir_app():
         
     #endregion
     
-    #region placeholder
+    #region spectrometer
+    def spec_init(self):
+        '''
+        initializes spectrometer
+        '''
+        self.process_display.set("Initializing Spectrometer")
+        self.spectrometer = IR.stellarnet(int_time=1000, scans_to_avg=1, x_smooth=0, x_timing=3)
+        self.spectrometer.init_driver()
+        
+        if self.spectrometer.status:
+            self.process_display.set("Spectrometer initialized")
+            StandardLabel(
+                "Status",
+                self.root,
+                image = TkImage("status_good", r"tools\nearir\images\Status_Good.png").image
+            ).place(x = 140, y = 120)
+        else:
+            self.process_display.set("Spectrometer failed to initialize")
+            StandardLabel(
+                "Status",
+                self.root,
+                image = TkImage("status_bad", r"tools\nearir\images\Status_Bad.png").image
+            ).place(x = 140, y = 120)
     
+    #region data aquisition and processing
     def measure(self):
         pass
     
@@ -134,6 +161,7 @@ if __name__ == "__main__":
         SERVER = sys.argv[1]
     except:
         SERVER = "192.168.1.1"
+        
     PORT = 5050
     ADDR = (SERVER, PORT)
     
