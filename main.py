@@ -120,6 +120,7 @@ class inst_suite():
         self.quit = True
         self.tcphandler.quit()
         self.root.quit()
+        sys.exit(0)
               
     def endProto(self):
         '''
