@@ -2,6 +2,12 @@ git notes:
 connect with the following:
 ssh cawilson@vitro.com@127.0.0.1
 
+to run with virtual env us .venv\Scripts\python.exe <path to python script>
+
+
+to fix 2503/2502:
+go to Navigate to the Windows Temp folder located at c:\windows\temp and give permissions to user
+
 sql: for debugging
 WHAMNUC1
 
@@ -27,32 +33,23 @@ make sure to replace in .venv\pyvenv.cfg the c### with current user
 
 
 to do:
-
-figure out better launching method currently using systems python to launch venv python
+add logging
 
 (last) remove Any typing
 (last) update gitignore
-
+package up the file manager and tcp client 
 add way to auto select or have user select which hall system we are going to use
 code both
 
 get eptoc bus
 
-
 add to setup.py:
     adjust venv pyvevn.cfg to target exe
-
-
-
-fix pathing to working with venv paths 
-
-
 
 need to get execution working with virt 
 
 get setup working with windows 11 computers
 
-update script to work with venv to bypasss other stuff
 add sample id to input field on 4 pp
 
 need to get sql server better
@@ -69,10 +66,9 @@ file management system
 
 clean up imports
 
-
 need to do full test with vdap
 
- starts without tcp working
+
 
 need to get it closing nicely
 
@@ -92,3 +88,12 @@ tcp server cannot handel reconnecting need to fix
 i dont need to thread indi. inst 
 
 might be able to remove queue and have tcp handler hand sql stuff
+
+figure out better launching method currently using systems python to launch venv python
+
+fix pathing to working with venv paths 
+
+
+update script to work with venv to bypasss other stuff
+
+starts without tcp working
