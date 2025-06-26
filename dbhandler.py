@@ -1,6 +1,6 @@
 import pyodbc
 import json
-
+import re
 
 class sql_client():
     
@@ -28,6 +28,7 @@ class sql_client():
         #sql querries
         self.tools:list[str] = []
         self.tables: list[str] = []
+        self.missing_col_error:str = "207"
     
     
     def load_config(self):
@@ -79,7 +80,51 @@ class sql_client():
         self.cursor = self.sql.cursor()
         
         self.closed = self.sql.closed
+    def get_col_name(self, error: str, positions: list[int]) -> str:
+        '''Extracts the column name from the error message based on the position of the error code.
+        Args:
+            error (str): The error message string.
+            pos (list[int]): A list containing the positions of the error code in the error message.
+        Returns:
+            str: The extracted column name.
+        '''
+        col_names: list[str] = []
+        col_out: str = ""
+        
+        
+        for pos in positions:
+            
+            p2 = len(error) - (pos + len(self.missing_col_error)) - 1
+            
+            
+            
+            rs = error[::-1][p2: ]
+            
+            rss = rs[rs.index('\'') + 1:]
+            
+            
+            col_names.append(rss[:rss.index('\'')][::-1])
+            
+        col_out = ",".join(col_names)
+        return col_out
     
+    def check_columns(self, table: str , columns: list[str]) -> None:
+        
+        try:
+            sql: str = f"SELECT {",".join(columns)} from {table}"
+        
+        except pyodbc.Error as e:
+            error: str = str(e)
+            positions = [match.start() for match in re.finditer(self.missing_col_error, error)]
+            
+            col_to_add: str = self.get_col_name(error, positions)
+            
+            sql = f"ALTER TABLE {table} ADD {col_to_add} VARCHAR(255)"
+            
+            self.cursor.execute(sql)
+            self.sql.commit()
+            print(f"Added columns {col_to_add} to table {table}")                                    
+
     def check_tables(self):
         temp: pyodbc.Cursor|None = None
         temp = self.cursor.execute("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE'")

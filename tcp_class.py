@@ -173,7 +173,8 @@ class tcp_multiserver():
                     values = [
                         ["time", t],
                         ["resistance", str(value)],
-                        ["sample_id", "123"]
+                        ["sample_id", "123"],
+                        ["test", "test2"]
                     ]
                     
                     self.SQL.write(tool, values)
@@ -194,13 +195,17 @@ class tcp_multiserver():
                     
                     i: int = 0
                     col: list[str] = []
+                    cols: list[list[str]] = [] 
+                    
                     for wv in wvs:
                         
                         col = [wv, spec[i]]
+                        cols.append(col)
                         values.append(col)
                         
                         i += 1
                     
+                    self.SQL.check_columns(tool, cols)
                     
                 
                 
