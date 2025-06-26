@@ -11,6 +11,8 @@ go to Navigate to the Windows Temp folder located at c:\windows\temp and give pe
 sql: for debugging
 WHAMNUC1
 
+
+
 for 4 pp
 First installed
 https://www.ni.com/en/support/downloads/drivers/download.ivi-compliance-package.html?srsltid=AfmBOoq6J4W_o6OnaM8dM2qVdWaU9a3JQMW0jFE53bZjrWgZ-QUobpDT#564292
@@ -33,7 +35,10 @@ make sure to replace in .venv\pyvenv.cfg the c### with current user
 
 
 to do:
+
 add logging
+
+fix setup and make it runoffline
 
 (last) remove Any typing
 (last) update gitignore
