@@ -147,7 +147,39 @@ class near_ir_app():
     
     #region data aquisition and processing
     def measure(self):
-        pass
+        self.process_display.set("Measuring")
+        self.root.update_idletasks()
+        if self.spectrometer.status:
+            self.spectrometer.measure()
+        else:
+            self.spec_init()
+        wvs: str = ""
+        spec: str = ""
+        i: int = 0
+        for wv in self.spectrometer.wv:
+            wvs += str(wv[0]) + ","
+            spec += str(self.spectrometer.spectra[i]) + ","
+            i += 1
+
+        wvs = wvs[:-1]
+        spec = spec[:-1]
+        self.process_display.set("Measuring Done")  
+
+
+        self.process_display.set("sending data")
+        self.root.update_idletasks()
+
+        self.tcp.soc.send("MEAS".encode())
+        self.tcp.soc.send(wvs.encode())
+
+        self.tcp.soc.send(spec.encode())
+
+        resp = self.tcp.soc.recv(1024).decode()
+
+        if resp != "data received":
+            print(resp)
+            self.process_display.set("ERROR")
+
     
     #endregion
     #region threading
