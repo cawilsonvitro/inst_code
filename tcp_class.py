@@ -7,7 +7,7 @@ from multiprocessing import Process, Queue
 from queue import Empty #type:ignore
 from typing import Any
 import json
-
+from datetime import datetime as dt
 
 #endregion 
 
@@ -146,34 +146,61 @@ class tcp_multiserver():
                 current_socket.send(id.encode())
             
             elif client_data == "MEAS":
-                values: list[list[str]]
-                
+                values: list[list[str]] | list[str] 
+                t = dt.now().strftime("%m-%d-%Y, Hour %H Min %M Sec %S")
                 
                 #first get tool to build SQL query with
                 tool = self.config[current_socket.getpeername()[0]]
                 print(f"awaiting value from {tool}")
                 
-                value = current_socket.recv(1024).decode()
-                
                 #get value
                 
-                value = float(value)
+                value = current_socket.recv(1024).decode()
                 
-                print(value)
-                
-                #confirm
+                # confirm
                 print("Writing back")
                 current_socket.send("data received".encode())
                 
+
+                
+
+                #process
                 
                 #writing to sql server
                 if tool == "fourpp":
+                    value = float(value)
+                    
                     values = [
+                        ["time", t],
                         ["resistance", str(value)],
                         ["sample_id", "123"]
                     ]
                     
                     self.SQL.write(tool, values)
+                
+                if tool == "nearir":
+                    #get spectra
+                    wvs = value.split(",")
+                    spec = current_socket.recv(1024).decode().split(",")
+                    
+                    #check if each wavelenght has a col
+
+                    
+                    # build values list
+                    values = [
+                            ["time",t],
+                            ["sample_id", "123"]
+                        ]
+                    
+                    i: int = 0
+                    col: list[str] = []
+                    for wv in wvs:
+                        
+                        col = [wv, spec[i]]
+                        values.append(col)
+                        
+                        i += 1
+                    
                     
                 
                 

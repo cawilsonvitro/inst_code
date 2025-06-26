@@ -88,7 +88,9 @@ class sql_client():
             if tool not in self.tables:
                 if tool == "fourpp":
                     self.cursor.execute(f"CREATE TABLE {tool} (time VARCHAR(255), resistance VARCHAR(255), sample_id VARCHAR(255))")
-        
+                if tool == "nearir":
+                    self.cursor.execute(f"CREATE TABLE {tool} (time VARCHAR(255), sample_id VARCHAR(255))")
+                
         self.sql.commit()
     #ursor.execute("insert into products(id, name) values ('pyodbc', 'awesome library')")
     

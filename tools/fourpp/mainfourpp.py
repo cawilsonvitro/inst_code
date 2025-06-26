@@ -1,6 +1,6 @@
 #region imports
 from gui_package_cawilvitro import *
-import fourpp_dummy as fourpp
+import fourpp as fourpp
 import tkinter as tk
 from tkinter import Misc
 import tkinter.ttk as ttk
