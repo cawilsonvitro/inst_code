@@ -24,7 +24,8 @@ class HMS():
         self.status = True
     
     def measure(self):
-        self.values = [[7,8,9,10]]
+        print("I ran")
+        self.values = [7,8,9,10]
 
         
 

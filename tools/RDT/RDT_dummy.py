@@ -4,11 +4,10 @@ import random
 
 class rdt_sys():
 
-    def __init__(self,connection_string, **kwargs):
+    def __init__(self, **kwargs):
         self.status = False
         
         self.rm = None
-        self.inst_addy = connection_string
         self.instrument = None
         
         
@@ -24,7 +23,7 @@ class rdt_sys():
         self.status = True
     
     def measure(self):
-        self.values = [[7,8,9,10]]
+        self.values = [7,8,9,10]
 
         
 

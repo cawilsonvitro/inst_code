@@ -1,6 +1,7 @@
 #region imports
 from gui_package_cawilvitro import *
-import fourpp as fourpp
+# import fourpp as fourpp
+import fourpp_dummy as fourpp
 import tkinter as tk
 from tkinter import Misc
 import tkinter.ttk as ttk
@@ -23,8 +24,9 @@ class four_point_app():
         init class for use
         '''
         self.quit = False
+        
         self.process_display = None
-
+        self.samples = []
         #siglent
         self.DM = None
         self.resource_string = "USB0::0xF4EC::0x1208::SDM36HCD801150::INSTR"
@@ -87,6 +89,31 @@ class four_point_app():
         Button.remove(None)
         Label.remove(None)
         StandardLabel.remove(None)
+        dropdown.remove(None)
+        
+        dropdown(
+            "samples",
+            root,
+            values = "",
+            width = 28,
+            postcommand=lambda: dropdown.instances["samples"].configure(values=["a", "b", "c"]),
+        ).place(x = 0, y = 60)
+        
+        Label(
+            "Samples",
+            root,
+            text = "sample ID:",
+            anchor=tk.W,           
+            height=1,              
+            width=30,              
+            bd=1,                  
+            font=("Arial", 10), 
+            cursor="hand2",   
+            fg="black",                           
+            justify = tk.LEFT,  
+            wraplength=100   
+            ).place(x = 0, y = 40, width = 80,height = 20)
+        
         
         StandardButtons(
             "Measure",
@@ -142,30 +169,42 @@ class four_point_app():
                 image = TkImage("status_bad", r"tools\fourpp\images\Status_Bad.png").image
             ).place(x = 140, y = 120)
     
+    #endregion
+    
+    
+    #region measurement
     def measure(self):
-        if self.DM.status:
-            try:
-                self.DM.measure()
-                print(self.DM.values)
-                self.value = (sum(self.DM.values)/len(self.DM.values)) * 4.517 * 1 * 1.006
-                
-                
-                self.tcp.soc.send("MEAS".encode())
-                self.tcp.soc.send(str(self.value).encode())
-                
-                resp = self.tcp.soc.recv(1024).decode()
-
-                if resp != "data received":
-                    print("ERROR")
-
+        self.sample_num = dropdown.instances["samples"].get()
+        if self.sample_num == "":
+            self.process_display.set("Please select or enter a sample ID")
+        else:
+            if self.DM.status:
+                try:
+                    self.DM.measure()
+                    self.value = (sum(self.DM.values)/len(self.DM.values)) * 4.517 * 1 * 1.006
                     
-                # self.message.put(self.value)
-            except Exception as e:
-                self.DM.status = False
-                print("Measuring fail", e)
+                    
+                    self.tcp.soc.send("MEAS".encode())
+                    resp = self.tcp.soc.recv(1024).decode()
+                    print(resp)
+                    print("sending sample id")
+                    self.tcp.soc.send(str(self.sample_num).encode())
+                    resp = self.tcp.soc.recv(1024).decode()
+                    print(resp)
+                    print("sending value")
+                    self.tcp.soc.send(str(self.value).encode())
+                    
+                    resp = self.tcp.soc.recv(1024).decode()
 
-        if not self.DM.status:
-            self.load_dm()
+                    if resp != "data received":
+                        print("ERROR")
+
+                except Exception as e:
+                    self.DM.status = False
+                    print("Measuring fail", e)
+
+            if not self.DM.status:
+                self.load_dm()
     #endregion
     
 
@@ -176,11 +215,11 @@ class four_point_app():
     #endregion
 if __name__ == "__main__":
     
-    #SERVER = "127.0.0.1" 
     try:
         SERVER = sys.argv[1]
     except:
-        SERVER = "192.168.1.1"
+        SERVER = "127.0.0.1" 
+        #SERVER = "192.168.1.1"
     
     PORT = 5050
     ADDR = (SERVER, PORT)
