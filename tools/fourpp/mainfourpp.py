@@ -11,7 +11,7 @@ import time
 import json
 import sys
 import threading
-# import tcp_client
+import tcp_client
 
 #endregion
 
@@ -43,9 +43,9 @@ class four_point_app():
         
         
         #tcp handels init too
-        # self.tcp = tcp_client.client(ip, port)#, self.message, self.response)
-        # self.tcp.connect()
-        # self.tcp.id() #tells server the ip is connected
+        self.tcp = tcp_client.client(ip, port)#, self.message, self.response)
+        self.tcp.connect()
+        self.tcp.id() #tells server the ip is connected
     
     def startApp(self):
         self.root = tk.Tk()
@@ -75,7 +75,7 @@ class four_point_app():
         ends application
         '''
         self.quit = True
-        # self.tcp.disconnect()
+        self.tcp.disconnect()
         self.DM.quit()
         self.root.quit()
         
@@ -170,29 +170,37 @@ class four_point_app():
             ).place(x = 140, y = 120)
     
     def measure(self):
-        if self.DM.status:
-            try:
-                self.DM.measure()
-                print(self.DM.values)
-                self.value = (sum(self.DM.values)/len(self.DM.values)) * 4.517 * 1 * 1.006
-                
-                
-                # self.tcp.soc.send("MEAS".encode())
-                # self.tcp.soc.send(str(self.value).encode())
-                
-                # resp = self.tcp.soc.recv(1024).decode()
-
-                # if resp != "data received":
-                #     print("ERROR")
-
+        self.sample_num = dropdown.instances["samples"].get()
+        if self.sample_num == "":
+            self.process_display.set("Please select or enter a sample ID")
+        else:
+            if self.DM.status:
+                try:
+                    self.DM.measure()
+                    self.value = (sum(self.DM.values)/len(self.DM.values)) * 4.517 * 1 * 1.006
                     
-                # self.message.put(self.value)
-            except Exception as e:
-                self.DM.status = False
-                print("Measuring fail", e)
+                    
+                    self.tcp.soc.send("MEAS".encode())
+                    resp = self.tcp.soc.recv(1024).decode()
+                    print(resp)
+                    print("sending sample id")
+                    self.tcp.soc.send(str(self.sample_num).encode())
+                    resp = self.tcp.soc.recv(1024).decode()
+                    print(resp)
+                    print("sending value")
+                    self.tcp.soc.send(str(self.value).encode())
+                    
+                    resp = self.tcp.soc.recv(1024).decode()
 
-        if not self.DM.status:
-            self.load_dm()
+                    if resp != "data received":
+                        print("ERROR")
+
+                except Exception as e:
+                    self.DM.status = False
+                    print("Measuring fail", e)
+
+            if not self.DM.status:
+                self.load_dm()
     #endregion
     
 
@@ -203,11 +211,11 @@ class four_point_app():
     #endregion
 if __name__ == "__main__":
     
-    #SERVER = "127.0.0.1" 
     try:
         SERVER = sys.argv[1]
     except:
-        SERVER = "192.168.1.1"
+        SERVER = "127.0.0.1" 
+        #SERVER = "192.168.1.1"
     
     PORT = 5050
     ADDR = (SERVER, PORT)

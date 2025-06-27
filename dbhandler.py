@@ -111,7 +111,8 @@ class sql_client():
     def check_columns(self, table: str , columns: list[str]) -> None:
         
         try:
-            sql: str = f"SELECT {",".join(columns)} from {table}"
+            cols = ",".join(columns)
+            sql: str = f"SELECT {cols} from {table}"
         
         except pyodbc.Error as e:
             error: str = str(e)

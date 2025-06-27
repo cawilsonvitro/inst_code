@@ -24,7 +24,7 @@ class siglent():
         self.status = True
     
     def measure(self):
-        self.values = [[7,8,9,10]]
+        self.values = [7,8,9,10]
 
         
 

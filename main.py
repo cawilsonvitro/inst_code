@@ -44,7 +44,10 @@ class inst_suite():
 
         
         #tcp vars
-        self.host = sys.argv[1]
+        try:
+            self.host = sys.argv[1]
+        except:
+            self.host = "127.0.0.1"
         self.port = 5050
         self.ADDR = (self.host, self.port)
         

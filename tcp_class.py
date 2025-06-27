@@ -8,7 +8,7 @@ from queue import Empty #type:ignore
 from typing import Any
 import json
 from datetime import datetime as dt
-
+from samp import sample
 #endregion 
 
 
@@ -32,7 +32,7 @@ class tcp_multiserver():
         self.bus_out: "Queue[Any]" = bus_out
         self.bus_in: "Queue[Any]" = bus_in
         self.SQL: dbhandler.sql_client = dbhandler.sql_client("config.json")
-
+        self.samples: list[sample] = []  # list of samples
         
         #client ids
         self.read_to_read: list[socket.socket] = []
@@ -133,6 +133,9 @@ class tcp_multiserver():
                 raise ValueError
             """the whole disconnection sequence is triggered from the exception handler, se we will just raise the exception
                     to close the server socket"""
+        except Exception as e:
+            print("serving client error")
+            print(e)
         else:
             print(client_data)
 
@@ -146,11 +149,45 @@ class tcp_multiserver():
                 current_socket.send(id.encode())
             
             elif client_data == "MEAS":
+                t = dt.now().strftime("%m-%d-%Y, Hour %H Min %M Sec %S")   
+                tool = self.config[current_socket.getpeername()[0]]
+                print("awaitning sample id")
+                current_socket.send("awaiting sampleid".encode())
+                sample_id = current_socket.recv(1024).decode()
+                current_socket.send("awaiting value from {tool}".encode())
+                print(f"got {sample_id} from {tool}")
+                #check if current sample exists
+                found:bool = False
+                for samp in self.samples:
+                    if samp.id == sample_id:
+                        samp.insts[tool] = True
+                        found = True
+                        break
+                if not found:
+                    
+                    temp_samp:sample = sample()
+                    temp_samp.id = sample_id
+                    temp_samp.insts[tool] = True
+                    self.samples.append(temp_samp)
+                
+                for samp in self.samples:
+                    
+                    print(samp.id)
+                    
+                    for key in samp.insts:
+                        print(key, samp.insts[key])
+                
                 values: list[list[str]] | list[str] 
-                t = dt.now().strftime("%m-%d-%Y, Hour %H Min %M Sec %S")
+                
+                values = [
+                    ["time", t],
+                    ["sample_id", sample_id],
+                    ]
+                
+                
+               
                 
                 #first get tool to build SQL query with
-                tool = self.config[current_socket.getpeername()[0]]
                 print(f"awaiting value from {tool}")
                 
                 #get value
@@ -161,8 +198,7 @@ class tcp_multiserver():
                 print("Writing back")
                 current_socket.send("data received".encode())
                 
-
-                
+                #checks all samples and removes completed samples
 
                 #process
                 
@@ -170,12 +206,7 @@ class tcp_multiserver():
                 if tool == "fourpp":
                     value = float(value)
                     
-                    values = [
-                        ["time", t],
-                        ["resistance", str(value)],
-                        ["sample_id", "123"],
-                        ["test", "test2"]
-                    ]
+                    values.append(["resistance", str(value)]) 
                     
                     self.SQL.write(tool, values)
                 
@@ -184,13 +215,11 @@ class tcp_multiserver():
                     wvs = value.split(",")
                     spec = current_socket.recv(1024).decode().split(",")
                     
-                    #check if each wavelenght has a col
-
                     
                     # build values list
                     values = [
                             ["time",t],
-                            ["sample_id", "123"]
+                            [sample_id, "123"]
                         ]
                     
                     i: int = 0
@@ -204,10 +233,13 @@ class tcp_multiserver():
                         values.append(col)
                         
                         i += 1
-                    
+                    #check if each wavelenght has a col
                     self.SQL.check_columns(tool, cols)
                     
+            elif client_data == "UPDATE":
+                #update the requested tools drop down list of samples that need measured
                 
+                current_socket.send("sending updated list".encode())
                 
                 
                 
@@ -279,6 +311,7 @@ class tcp_multiserver():
             except KeyboardInterrupt:
                 self.all_sockets_closed()
             except Exception as e:
+                print("Server issue")
                 print(e)
 
 

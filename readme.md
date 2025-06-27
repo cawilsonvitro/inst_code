@@ -1,3 +1,22 @@
+tcp notes
+protocol
+
+measuring:
+1st. send "MEAS" to put server into measurement mode
+2nd. server sends msg back
+3rd. send sample id to server
+4th. server sends msg back
+5th. send value to server
+6th. server gets value and sends back "data received" 
+
+
+
+
+
+
+
+
+
 git notes: 
 connect with the following:
 ssh cawilson@vitro.com@127.0.0.1
