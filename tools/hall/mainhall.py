@@ -83,6 +83,30 @@ class hall_app():
         Button.remove(None)
         Label.remove(None)
         StandardLabel.remove(None)
+        dropdown.remove(None)
+        
+        dropdown(
+            "samples",
+            root,
+            values = "",
+            width = 28,
+            postcommand=lambda: dropdown.instances["samples"].configure(values=["a", "b", "c"]),
+        ).place(x = 0, y = 60)
+        
+        Label(
+            "Samples",
+            root,
+            text = "sample ID:",
+            anchor=tk.W,           
+            height=1,              
+            width=30,              
+            bd=1,                  
+            font=("Arial", 10), 
+            cursor="hand2",   
+            fg="black",                           
+            justify = tk.LEFT,  
+            wraplength=100   
+            ).place(x = 0, y = 40, width = 80,height = 20)
         
         StandardButtons(
             "Measure",

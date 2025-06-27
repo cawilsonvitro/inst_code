@@ -1,6 +1,7 @@
 #region imports
 from gui_package_cawilvitro import *
-import fourpp as fourpp
+# import fourpp as fourpp
+import fourpp_dummy as fourpp
 import tkinter as tk
 from tkinter import Misc
 import tkinter.ttk as ttk
@@ -10,7 +11,7 @@ import time
 import json
 import sys
 import threading
-import tcp_client
+# import tcp_client
 
 #endregion
 
@@ -23,8 +24,9 @@ class four_point_app():
         init class for use
         '''
         self.quit = False
+        
         self.process_display = None
-
+        self.samples = []
         #siglent
         self.DM = None
         self.resource_string = "USB0::0xF4EC::0x1208::SDM36HCD801150::INSTR"
@@ -41,9 +43,9 @@ class four_point_app():
         
         
         #tcp handels init too
-        self.tcp = tcp_client.client(ip, port)#, self.message, self.response)
-        self.tcp.connect()
-        self.tcp.id() #tells server the ip is connected
+        # self.tcp = tcp_client.client(ip, port)#, self.message, self.response)
+        # self.tcp.connect()
+        # self.tcp.id() #tells server the ip is connected
     
     def startApp(self):
         self.root = tk.Tk()
@@ -73,7 +75,7 @@ class four_point_app():
         ends application
         '''
         self.quit = True
-        self.tcp.disconnect()
+        # self.tcp.disconnect()
         self.DM.quit()
         self.root.quit()
         
@@ -87,6 +89,31 @@ class four_point_app():
         Button.remove(None)
         Label.remove(None)
         StandardLabel.remove(None)
+        dropdown.remove(None)
+        
+        dropdown(
+            "samples",
+            root,
+            values = "",
+            width = 28,
+            postcommand=lambda: dropdown.instances["samples"].configure(values=["a", "b", "c"]),
+        ).place(x = 0, y = 60)
+        
+        Label(
+            "Samples",
+            root,
+            text = "sample ID:",
+            anchor=tk.W,           
+            height=1,              
+            width=30,              
+            bd=1,                  
+            font=("Arial", 10), 
+            cursor="hand2",   
+            fg="black",                           
+            justify = tk.LEFT,  
+            wraplength=100   
+            ).place(x = 0, y = 40, width = 80,height = 20)
+        
         
         StandardButtons(
             "Measure",
@@ -150,13 +177,13 @@ class four_point_app():
                 self.value = (sum(self.DM.values)/len(self.DM.values)) * 4.517 * 1 * 1.006
                 
                 
-                self.tcp.soc.send("MEAS".encode())
-                self.tcp.soc.send(str(self.value).encode())
+                # self.tcp.soc.send("MEAS".encode())
+                # self.tcp.soc.send(str(self.value).encode())
                 
-                resp = self.tcp.soc.recv(1024).decode()
+                # resp = self.tcp.soc.recv(1024).decode()
 
-                if resp != "data received":
-                    print("ERROR")
+                # if resp != "data received":
+                #     print("ERROR")
 
                     
                 # self.message.put(self.value)
