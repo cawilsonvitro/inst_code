@@ -169,6 +169,10 @@ class four_point_app():
                 image = TkImage("status_bad", r"tools\fourpp\images\Status_Bad.png").image
             ).place(x = 140, y = 120)
     
+    #endregion
+    
+    
+    #region measurement
     def measure(self):
         self.sample_num = dropdown.instances["samples"].get()
         if self.sample_num == "":

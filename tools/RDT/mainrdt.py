@@ -1,6 +1,6 @@
 #region imports
 from gui_package_cawilvitro import *
-import RDT_dummy as rdt
+import RDT_dummy as rdt_Driver
 import tkinter as tk
 from tkinter import Misc
 import tkinter.ttk as ttk
@@ -25,6 +25,8 @@ class rdt_app():
         self.quit = False
         self.process_display = None
         
+        self.rdt = rdt_Driver.rdt_sys()
+        
         #data management
         self.value = None
         self.dataPath = r"data/"
@@ -37,9 +39,9 @@ class rdt_app():
         
         
         #tcp handels init too
-        # self.tcp = tcp_client.client(ip, port)#, self.message, self.response)
-        # self.tcp.connect()
-        # self.tcp.id() #tells server the ip is connected
+        self.tcp = tcp_client.client(ip, port)#, self.message, self.response)
+        self.tcp.connect()
+        self.tcp.id() #tells server the ip is connected
     
     def startApp(self):
         self.root = tk.Tk()
@@ -69,7 +71,7 @@ class rdt_app():
         ends application
         '''
         self.quit = True
-        # self.tcp.disconnect()
+        self.tcp.disconnect()
         self.root.quit()
         
     #endregion
@@ -136,15 +138,51 @@ class rdt_app():
             image = TkImage("status_bad", r"tools\rdt\images\Status_Bad.png").image
         ).place(x = 140, y = 120)
         
-        self.process_display.set("GUI Built, initalizing DM")
+        self.process_display.set("GUI Built, initalizing rdt_sys")
         
+        
+        self.load_rdt()
     #endregion
     
-    #region placeholder
+    #region rdt
+    def load_rdt(self):
+        self.rdt.init_driver()
+    #endregion 
+    
+    #region measurement
     
     def measure(self):
-        pass
-    
+        self.sample_num = dropdown.instances["samples"].get()
+        if self.sample_num == "":
+            self.process_display.set("Please select or enter a sample ID")
+        else:
+            if self.rdt.status:
+                try:
+                    self.rdt.measure()
+                    self.value = (sum(self.rdt.values)/len(self.rdt.values)) * 4.517 * 1 * 1.006
+                    
+                    
+                    self.tcp.soc.send("MEAS".encode())
+                    resp = self.tcp.soc.recv(1024).decode()
+                    print(resp)
+                    print("sending sample id")
+                    self.tcp.soc.send(str(self.sample_num).encode())
+                    resp = self.tcp.soc.recv(1024).decode()
+                    print(resp)
+                    print("sending value")
+                    self.tcp.soc.send(str(self.value).encode())
+                    
+                    resp = self.tcp.soc.recv(1024).decode()
+
+                    if resp != "data received":
+                        print("ERROR")
+
+                except Exception as e:
+                    self.rdt.status = False
+                    print("Measuring fail", e)
+
+            if not self.rdt.status:
+                self.load_rdt()
     #endregion
     #region threading
     
@@ -152,11 +190,12 @@ class rdt_app():
         
     #endregion
 if __name__ == "__main__":
-    #SERVER = "127.0.0.1" 
+
     try:
         SERVER = sys.argv[1]
     except:
-        SERVER = "192.168.1.1"
+        # SERVER = "192.168.1.1"
+        SERVER = "127.0.0.1" 
     PORT = 5050
     ADDR = (SERVER, PORT)
     
