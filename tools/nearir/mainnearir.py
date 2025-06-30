@@ -80,6 +80,17 @@ class near_ir_app():
     #endregion
    
     #region building GUI
+    def update(self) -> None:
+        print("asking")
+        self.tcp.soc.send("UPDATE".encode())
+        resp:str = self.tcp.soc.recv(1024).decode()
+        print(resp)
+        if resp != "None":
+            dropdown.instances["samples"].configure(values=resp.split(","))
+        else:
+            dropdown.instances["samples"].configure(values=[])
+            
+            
     def buildGUI(self, root):
         '''
         builds gui for user interaction
@@ -94,7 +105,7 @@ class near_ir_app():
             root,
             values = "",
             width = 28,
-            postcommand=lambda: dropdown.instances["samples"].configure(values=["a", "b", "c"]),
+            postcommand=self.update,
         ).place(x = 0, y = 60)
         
         Label(
@@ -194,8 +205,9 @@ class near_ir_app():
         self.root.update_idletasks()
 
         self.tcp.soc.send("MEAS".encode())
+        
         self.tcp.soc.send(wvs.encode())
-
+        
         self.tcp.soc.send(spec.encode())
 
         resp = self.tcp.soc.recv(1024).decode()

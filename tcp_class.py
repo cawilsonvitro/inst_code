@@ -151,10 +151,11 @@ class tcp_multiserver():
             elif client_data == "MEAS":
                 t = dt.now().strftime("%m-%d-%Y, Hour %H Min %M Sec %S")   
                 tool = self.config[current_socket.getpeername()[0]]
+                print(f"got message from {tool}")
                 print("awaitning sample id")
                 current_socket.send("awaiting sampleid".encode())
                 sample_id = current_socket.recv(1024).decode()
-                current_socket.send("awaiting value from {tool}".encode())
+                current_socket.send(f"awaiting value from {tool}".encode())
                 print(f"got {sample_id} from {tool}")
                 #check if current sample exists
                 found:bool = False
@@ -163,8 +164,8 @@ class tcp_multiserver():
                         samp.insts[tool] = True
                         found = True
                         break
+                
                 if not found:
-                    
                     temp_samp:sample = sample()
                     temp_samp.id = sample_id
                     temp_samp.insts[tool] = True
@@ -205,7 +206,6 @@ class tcp_multiserver():
                 #writing to sql server
                 if tool == "fourpp":
                     value = float(value)
-                    
                     values.append(["resistance", str(value)]) 
                     
                     self.SQL.write(tool, values)
@@ -213,15 +213,10 @@ class tcp_multiserver():
                 if tool == "nearir":
                     #get spectra
                     wvs = value.split(",")
+                    print(wvs)
+                    # current_socket.send("Spectra?")
                     spec = current_socket.recv(1024).decode().split(",")
-                    
-                    
-                    # build values list
-                    values = [
-                            ["time",t],
-                            [sample_id, "123"]
-                        ]
-                    
+                    current_socket.send("data received".encode())
                     i: int = 0
                     col: list[str] = []
                     for wv in wvs:
@@ -231,12 +226,33 @@ class tcp_multiserver():
                         
                         i += 1
                     #check if each wavelenght has a col
-                    self.SQL.check_columns(tool, cols)
+                    self.SQL.check_columns(tool, self.wvs)
                     
+                if tool == "hall":
+                    value = float(value)
+                    values.append(["nb", str(value)])
+                    
+                    self.SQL.write(tool, values)
             elif client_data == "UPDATE":
                 #update the requested tools drop down list of samples that need measured
                 
-                current_socket.send("sending updated list".encode())
+                tool = self.config[current_socket.getpeername()[0]]
+                
+                strids: str = ""
+                
+                ids: list[str] = []
+                
+                if len(self.samples) != 0:
+                    for samp in self.samples:
+                        if not samp.insts[tool]:
+                            ids.append(samp.id)
+                    msg: str = ",".join(ids)
+
+                if len(ids) == 0:
+                    msg = "None"
+                print(msg)
+                current_socket.send(msg.encode())
+                print("I ran")
                 
                 
                 
@@ -313,6 +329,7 @@ class tcp_multiserver():
 
 
     def quit(self):
+        
         self.server_socket.close()
         self.SQL.quit()
 

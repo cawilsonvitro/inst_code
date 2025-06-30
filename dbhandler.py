@@ -136,7 +136,8 @@ class sql_client():
                     self.cursor.execute(f"CREATE TABLE {tool} (time VARCHAR(255), resistance VARCHAR(255), sample_id VARCHAR(255))")
                 if tool == "nearir":
                     self.cursor.execute(f"CREATE TABLE {tool} (time VARCHAR(255), sample_id VARCHAR(255))")
-                
+                if tool == "hall":
+                    self.cursor.execute(f"CREATE TABLE {tool} (time VARCHAR(255), sample_id VARCHAR(255)), nb VARCHAR(255))")
         self.sql.commit()
     #ursor.execute("insert into products(id, name) values ('pyodbc', 'awesome library')")
     

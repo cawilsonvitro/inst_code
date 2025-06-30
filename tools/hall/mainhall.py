@@ -77,8 +77,19 @@ class hall_app():
         self.root.quit()
         
     #endregion
-   
+
     #region building GUI
+    def update(self) -> None:
+        print("asking")
+        self.tcp.soc.send("UPDATE".encode())
+        resp:str = self.tcp.soc.recv(1024).decode()
+        print(resp)
+        if resp != "None":
+            dropdown.instances["samples"].configure(values=resp.split(","))
+        else:
+            dropdown.instances["samples"].configure(values=[])
+            
+            
     def buildGUI(self, root):
         '''
         builds gui for user interaction
@@ -93,7 +104,7 @@ class hall_app():
             root,
             values = "",
             width = 28,
-            postcommand=lambda: dropdown.instances["samples"].configure(values=["a", "b", "c"]),
+            postcommand=self.update,
         ).place(x = 0, y = 60)
         
         Label(
@@ -208,5 +219,3 @@ if __name__ == "__main__":
     
     temp = hall_app(SERVER, PORT)
     temp.startApp()
-
- 

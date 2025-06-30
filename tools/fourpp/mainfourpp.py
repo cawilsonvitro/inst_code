@@ -36,7 +36,7 @@ class four_point_app():
         self.dataPath = r"data/"
         self.sample_num = 1
         self.exst = ".csv"
-        
+
         #threading
         # self.message: Queue[Any] = Queue(maxsize=1)
         # self.response: Queue[Any] = Queue(maxsize=1)
@@ -82,6 +82,17 @@ class four_point_app():
     #endregion
    
     #region building GUI
+    def update(self) -> None:
+        print("asking")
+        self.tcp.soc.send("UPDATE".encode())
+        resp:str = self.tcp.soc.recv(1024).decode()
+        print(resp)
+        if resp != "None":
+            dropdown.instances["samples"].configure(values=resp.split(","))
+        else:
+            dropdown.instances["samples"].configure(values=[])
+
+        
     def buildGUI(self, root):
         '''
         builds gui for user interaction
@@ -96,7 +107,7 @@ class four_point_app():
             root,
             values = "",
             width = 28,
-            postcommand=lambda: dropdown.instances["samples"].configure(values=["a", "b", "c"]),
+            postcommand= self.update,
         ).place(x = 0, y = 60)
         
         Label(
@@ -151,6 +162,8 @@ class four_point_app():
     
     #region 4 pp
     def load_dm(self):
+        self.process_display.set("Loading Driver")
+        self.root.update_idletasks()
         try:
             self.DM = fourpp.siglent(self.resource_string)
             self.DM.init_driver()
@@ -168,12 +181,13 @@ class four_point_app():
                 self.root,
                 image = TkImage("status_bad", r"tools\fourpp\images\Status_Bad.png").image
             ).place(x = 140, y = 120)
-    
+        self.process_display.set("Drivers loaded, Ready")
     #endregion
     
     
     #region measurement
     def measure(self):
+        self.process_display.set("measuring")
         self.sample_num = dropdown.instances["samples"].get()
         if self.sample_num == "":
             self.process_display.set("Please select or enter a sample ID")
