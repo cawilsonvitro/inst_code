@@ -88,8 +88,6 @@ class hall_app():
             dropdown.instances["samples"].configure(values=resp.split(","))
         else:
             dropdown.instances["samples"].configure(values=[])
-            
-            
     def buildGUI(self, root):
         '''
         builds gui for user interaction
@@ -219,3 +217,4 @@ if __name__ == "__main__":
     
     temp = hall_app(SERVER, PORT)
     temp.startApp()
+

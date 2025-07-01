@@ -9,6 +9,7 @@ from typing import Any
 import json
 from datetime import datetime as dt
 from samp import sample
+import traceback
 #endregion 
 
 
@@ -52,14 +53,13 @@ class tcp_multiserver():
     
             
     def SQL_startup(self):
-        print(" I ran")
         try:
             self.SQL.load_config()
             self.SQL.connect()
             self.SQL.check_tables()
             self.db_status = True
         except Exception as e:
-            print(e)
+            print(traceback.format_exc())
             self.db_status = False
             
         return
@@ -78,13 +78,13 @@ class tcp_multiserver():
             socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
             self.network_status = True
         except socket.error as ex:
-            print(ex)
+            print(traceback.format_exc())
             self.network_status = False
         try:
             self.db_status  = self.SQL.quit()
             self.SQL_startup()
         except Exception as e:
-            print(e)
+            print(traceback.format_exc())
             self.SQL_startup()
  
         
@@ -135,7 +135,7 @@ class tcp_multiserver():
                     to close the server socket"""
         except Exception as e:
             print("serving client error")
-            print(e)
+            print(traceback.format_exc())
         else:
             print(client_data)
 
@@ -155,8 +155,8 @@ class tcp_multiserver():
                 print("awaitning sample id")
                 current_socket.send("awaiting sampleid".encode())
                 sample_id = current_socket.recv(1024).decode()
-                current_socket.send(f"awaiting value from {tool}".encode())
                 print(f"got {sample_id} from {tool}")
+                current_socket.send(f"awaiting value from {tool}".encode())
                 #check if current sample exists
                 found:bool = False
                 for samp in self.samples:
@@ -193,7 +193,8 @@ class tcp_multiserver():
                 
                 #get value
                 
-                value = current_socket.recv(1024).decode()
+                value = current_socket.recv(16384).decode()
+                print(f"got  {value}")
                 
                 # confirm
                 print("Writing back")
@@ -213,26 +214,27 @@ class tcp_multiserver():
                 if tool == "nearir":
                     #get spectra
                     wvs = value.split(",")
-                    print(wvs)
-                    # current_socket.send("Spectra?")
-                    spec = current_socket.recv(1024).decode().split(",")
+                    spec = current_socket.recv(32768).decode()
+                    
+                    
+                    spec = spec.split(",")
                     current_socket.send("data received".encode())
                     i: int = 0
                     col: list[str] = []
                     for wv in wvs:
-                        
                         col = [wv, spec[i]]
                         values.append(col)
                         
                         i += 1
                     #check if each wavelenght has a col
-                    self.SQL.check_columns(tool, self.wvs)
+                    self.SQL.check_columns(tool, wvs)
                     
                 if tool == "hall":
                     value = float(value)
                     values.append(["nb", str(value)])
                     
                     self.SQL.write(tool, values)
+                    
             elif client_data == "UPDATE":
                 #update the requested tools drop down list of samples that need measured
                 
@@ -246,14 +248,14 @@ class tcp_multiserver():
                     for samp in self.samples:
                         if not samp.insts[tool]:
                             ids.append(samp.id)
+                            print(samp.id)
                     msg: str = ",".join(ids)
 
                 if len(ids) == 0:
                     msg = "None"
                 print(msg)
                 current_socket.send(msg.encode())
-                print("I ran")
-                
+
                 
                 
             elif (
@@ -325,7 +327,7 @@ class tcp_multiserver():
                 self.all_sockets_closed()
             except Exception as e:
                 print("Server issue")
-                print(e)
+                print(traceback.format_exc())
 
 
     def quit(self):
@@ -342,8 +344,8 @@ def counting():
     
 
 if __name__ == "__main__":
-    #SERVER: str ="192.168.1.1" 
-    SERVER: str = "127.0.0.1" #for testing
+    SERVER: str ="192.168.1.1" 
+    # SERVER: str = "127.0.0.1" #for testing
     PORT: int = 5050
     ADDR = (SERVER, PORT)
     a: "Queue[Any]" = Queue() 
@@ -353,14 +355,15 @@ if __name__ == "__main__":
     temp = tcp_multiserver(SERVER, PORT, a, b)
     temp.SQL_startup()
     temp.connections()
-    tcpthread = Process(target = temp.server)
-    counting_thread = Process(target=counting)
-    tcpthread.daemon = True  # Ensures the thread will exit when the main program exits
-    tcpthread.start()
-    counting_thread.start()
+    temp.server()
+    # tcpthread = Process(target = temp.server)
+    # counting_thread = Process(target=counting)
+    # tcpthread.daemon = True  # Ensures the thread will exit when the main program exits
+    # tcpthread.start()
+    # counting_thread.start()
     
-    counting_thread.join()
-    tcpthread.join()
+    # counting_thread.join()
+    # tcpthread.join()
     
     a = 3
     # temp = tcp_multiserver(SERVER, PORT, a, b)

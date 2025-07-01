@@ -108,24 +108,30 @@ class sql_client():
         col_out = ",".join(col_names)
         return col_out
     
-    def check_columns(self, table: str , columns: list[str]) -> None:
+    def check_columns(self, table: str , columns: str) -> None:
         
         try:
-            cols = ",".join(columns)
-            sql: str = f"SELECT {cols} from {table}"
-        
+            print("FROM DB HANDLER")
+            column_check: str = f"SELECT {columns} FROM {table}"
+            print(column_check)
+            self.cursor.execute(column_check)
+            result = self.cursor.fetchall()
+            
         except pyodbc.Error as e:
+            print("I ran")
             error: str = str(e)
             positions = [match.start() for match in re.finditer(self.missing_col_error, error)]
             
             col_to_add: str = self.get_col_name(error, positions)
-            
-            sql = f"ALTER TABLE {table} ADD {col_to_add} VARCHAR(255)"
+            print(f"adding {col_to_add}")
+            sql = f"ALTER TABLE {table} ADD {col_to_add} VARCHAR(255)  DEFAULT 'CS'"
             
             self.cursor.execute(sql)
             self.sql.commit()
             print(f"Added columns {col_to_add} to table {table}")                                    
 
+    
+    
     def check_tables(self):
         temp: pyodbc.Cursor|None = None
         temp = self.cursor.execute("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE'")
@@ -137,9 +143,11 @@ class sql_client():
                 if tool == "nearir":
                     self.cursor.execute(f"CREATE TABLE {tool} (time VARCHAR(255), sample_id VARCHAR(255))")
                 if tool == "hall":
-                    self.cursor.execute(f"CREATE TABLE {tool} (time VARCHAR(255), sample_id VARCHAR(255)), nb VARCHAR(255))")
+                    self.cursor.execute(f"CREATE TABLE {tool} (time VARCHAR(255), sample_id VARCHAR(255), nb VARCHAR(255))")
+                if tool == "rdt":
+                    self.cursor.execute(f"CREATE TABLE {tool} (time VARCHAR(255), sample_id VARCHAR(255), value VARCHAR(255))")
+                    
         self.sql.commit()
-    #ursor.execute("insert into products(id, name) values ('pyodbc', 'awesome library')")
     
     def write(self, table: str, values : list[list[str]]):
         self.cursor.execute("insert into fourpp(time, resistance) values ('dasgsa', 'dasgsa')")
@@ -179,4 +187,6 @@ if __name__ == "__main__":
     temp.connect()
     temp.check_tables()
     temp.write("fourpp", values)
+    cols = "1234,5678,9101112"
+    temp.check_columns("test",cols)
     temp.quit()

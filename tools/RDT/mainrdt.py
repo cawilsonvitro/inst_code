@@ -102,7 +102,7 @@ class rdt_app():
             root,
             values = "",
             width = 28,
-            postcommand=self.update,
+            postcommand= self.update,
         ).place(x = 0, y = 60)
         
         Label(
