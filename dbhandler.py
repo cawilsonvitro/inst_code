@@ -80,6 +80,8 @@ class sql_client():
         self.cursor = self.sql.cursor()
         
         self.closed = self.sql.closed
+        
+        
     def get_col_name(self, error: str, positions: list[int]) -> str:
         '''Extracts the column name from the error message based on the position of the error code.
         Args:
@@ -112,7 +114,12 @@ class sql_client():
         
         try:
             print("FROM DB HANDLER")
-            column_check: str = f"SELECT {columns} FROM {table}"
+            column_check: str = f"SELECT "#\"{columns}\" FROM {table}"
+            temp_list = columns.split(",")
+            for column in temp_list:
+                column_check += f"\"{column}\", "
+            column_check = column_check[:-2] + f" FROM {table}"
+                
             print(column_check)
             self.cursor.execute(column_check)
             result = self.cursor.fetchall()
@@ -122,13 +129,22 @@ class sql_client():
             error: str = str(e)
             positions = [match.start() for match in re.finditer(self.missing_col_error, error)]
             
-            col_to_add: str = self.get_col_name(error, positions)
-            print(f"adding {col_to_add}")
-            sql = f"ALTER TABLE {table} ADD {col_to_add} VARCHAR(255)  DEFAULT 'CS'"
+            sql = f"ALTER TABLE {table} ADD "
+            
+            cols_to_add: list[str] = self.get_col_name(error, positions).split(",")
+            
+            i: int = 0
+            for col in cols_to_add:
+                cols_to_add[i] = f"\"{cols_to_add[i]}\" VARCHAR(255)"
+                i += 1
+            sql += ",".join(cols_to_add)
+                
+            # print(f"adding {col_to_add}")
+            #  \"{col_to_add}\" VARCHAR(255)"
             
             self.cursor.execute(sql)
             self.sql.commit()
-            print(f"Added columns {col_to_add} to table {table}")                                    
+            
 
     
     
@@ -187,6 +203,6 @@ if __name__ == "__main__":
     temp.connect()
     temp.check_tables()
     temp.write("fourpp", values)
-    cols = "1234,5678,9101112"
+    cols = "test1234,test5678,test9101112"
     temp.check_columns("test",cols)
     temp.quit()
