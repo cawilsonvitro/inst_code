@@ -12,6 +12,13 @@
         "db": "glass_test",
         "driver": "{ODBC Driver 17 for SQL Server}"
     },
+    "Tool_pre": {
+        "fourpp": "fpp",
+        "hall": "hall",
+        "rdt": "rdt",
+        "nearir": "nir",
+        "test": "t"
+    },
     "Spectrometer1": {
         "integrationtime": "10000",
         "model": "USB2000PLUS",
