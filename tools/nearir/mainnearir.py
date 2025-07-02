@@ -201,6 +201,7 @@ class near_ir_app():
                 i += 1
 
             wvs = wvs[:-1]
+            print(len(wvs.encode()))
             spec = spec[:-1]
             self.process_display.set("Measuring Done")  
 
@@ -215,14 +216,15 @@ class near_ir_app():
             resp = self.tcp.soc.recv(1024).decode()
             print(resp)
             self.tcp.soc.send(wvs.encode())
+            time.sleep(1)
             resp = self.tcp.soc.recv(1024).decode()
             print(resp)
-            # self.tcp.soc.send(spec.encode())
-            # resp = self.tcp.soc.recv(1024).decode()
-            # print(resp)
+            self.tcp.soc.send(spec.encode())
+            time.sleep(1)
+            resp = self.tcp.soc.recv(1024).decode()
+            print(resp)
             
             if resp != "data received":
-                print(resp)
                 self.process_display.set("ERROR")
             else:
                 self.process_display.set("Done")

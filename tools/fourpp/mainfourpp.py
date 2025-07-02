@@ -1,7 +1,7 @@
 #region imports
 from gui_package_cawilvitro import *
-# import fourpp as fourpp
-import fourpp_dummy as fourpp
+import fourpp as fourpp
+# import fourpp_dummy as fourpp
 import tkinter as tk
 from tkinter import Misc
 import tkinter.ttk as ttk
@@ -212,7 +212,7 @@ class four_point_app():
 
                     if resp != "data received":
                         print("ERROR")
-
+                    self.process_display.set("Ready")
                 except Exception as e:
                     self.DM.status = False
                     print("Measuring fail", e)

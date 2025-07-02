@@ -159,12 +159,16 @@ class tcp_multiserver():
                 current_socket.send(f"awaiting value from {tool}".encode())
                 #check if current sample exists
                 found:bool = False
+                i = 0
                 for samp in self.samples:
                     if samp.id == sample_id:
                         samp.insts[tool] = True
                         found = True
+                        insts = list(samp.insts.values())
+                        if all(insts):
+                            self.samples.remove(i)
                         break
-                
+                    i += 1
                 if not found:
                     temp_samp:sample = sample()
                     temp_samp.id = sample_id
@@ -193,7 +197,8 @@ class tcp_multiserver():
                 
                 #get value
                 
-                value = current_socket.recv(16384).decode()
+                value = current_socket.recv(32768).decode()
+                time.sleep(1)
                 print(f"got  {value}")
                 
                 # confirm
@@ -215,19 +220,25 @@ class tcp_multiserver():
                     #get spectra
                     wvs = value.split(",")
                     spec = current_socket.recv(32768).decode()
-                    
-                    
+                    time.sleep(1)
                     spec = spec.split(",")
                     current_socket.send("data received".encode())
                     i: int = 0
                     col: list[str] = []
+                    cols: list[str] = [] 
                     for wv in wvs:
-                        col = [wv, spec[i]]
+                        wv2 = wv[:wv.index(".")]
+                        print(wv2)
+                        col = [f"nir_{wv2}", spec[i]]
                         values.append(col)
                         
+                        cols.append(f"nir_{wv2}")
                         i += 1
                     #check if each wavelenght has a col
-                    self.SQL.check_columns(tool, wvs)
+                    
+                    self.SQL.check_columns(tool, (",").join(cols))
+                    
+                    self.SQL.write(tool, values)
                     
                 if tool == "hall":
                     value = float(value)
