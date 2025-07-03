@@ -10,6 +10,7 @@ import json
 from datetime import datetime as dt
 from samp import sample
 import traceback
+from hall_parser import parse
 #endregion 
 
 
@@ -28,7 +29,7 @@ class tcp_multiserver():
         self.starttime: float
         
         
-        #data management
+        #data managementjson
         self.client_data: str
         self.bus_out: "Queue[Any]" = bus_out
         self.bus_in: "Queue[Any]" = bus_in
@@ -44,10 +45,7 @@ class tcp_multiserver():
         
         with open('config.json', 'r') as file:
             self.config = json.load(file)['Tool_ip']
-        self.tools: dict[str, str|bool] = {}
-        
-        for key in list(self.config.keys()): 
-            self.tools[f"{key}_incoming"] = False 
+            self.prefixes = json.load(file)['Tool_pre'] 
         
         return
     
@@ -188,10 +186,7 @@ class tcp_multiserver():
                     ["time", t],
                     ["sample_id", sample_id],
                     ]
-                
-                
-               
-                
+                           
                 #first get tool to build SQL query with
                 print(f"awaiting value from {tool}")
                 
@@ -229,10 +224,10 @@ class tcp_multiserver():
                     for wv in wvs:
                         wv2 = wv[:wv.index(".")]
                         print(wv2)
-                        col = [f"nir_{wv2}", spec[i]]
+                        col = [f"{self.prefixes[tool]}_{wv2}", spec[i]]
                         values.append(col)
                         
-                        cols.append(f"nir_{wv2}")
+                        cols.append(f"{wv2}")
                         i += 1
                     #check if each wavelenght has a col
                     
@@ -241,6 +236,18 @@ class tcp_multiserver():
                     self.SQL.write(tool, values)
                     
                 if tool == "hall":
+                    headers:list[str] = []
+                    datas:list[str]  = []
+                    
+                    headers,datas = parse(r"tools\hall\data\sample_file.txt")
+                    
+                    i = 0
+                    
+                    self.SQL.check_columns(tool, (",").join(headers))
+                    
+                    col = []
+                    
+                    
                     value = float(value)
                     values.append(["nb", str(value)])
                     
