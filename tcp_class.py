@@ -10,7 +10,6 @@ import json
 from datetime import datetime as dt
 from samp import sample
 import traceback
-from hall_parser import parse
 #endregion 
 
 
@@ -44,8 +43,9 @@ class tcp_multiserver():
         self.db_status: bool|None = False
         
         with open('config.json', 'r') as file:
-            self.config = json.load(file)['Tool_ip']
-            self.prefixes = json.load(file)['Tool_pre'] 
+            config = json.load(file)
+            self.config = config['Tool_ip']
+            self.prefixes = config['Tool_pre'] 
         
         return
     
@@ -147,7 +147,8 @@ class tcp_multiserver():
                 current_socket.send(id.encode())
             
             elif client_data == "MEAS":
-                t = dt.now().strftime("%m-%d-%Y, Hour %H Min %M Sec %S")   
+                t = dt.now() #dt.now().strftime("%m-%d-%Y, Hour %H Min %M Sec %S")
+                
                 tool = self.config[current_socket.getpeername()[0]]
                 print(f"got message from {tool}")
                 print("awaitning sample id")
@@ -236,20 +237,16 @@ class tcp_multiserver():
                     self.SQL.write(tool, values)
                     
                 if tool == "hall":
-                    headers:list[str] = []
-                    datas:list[str]  = []
-                    
-                    headers,datas = parse(r"tools\hall\data\sample_file.txt")
-                    
+                    data = value.split(",")
                     i = 0
+                    for col in self.SQL.hall_cols:
+                        values.append([col, data[i]])
+                        i += 1
                     
-                    self.SQL.check_columns(tool, (",").join(headers))
+                    # value = float(value)
+                    # values.append(["nb", str(value)])
                     
-                    col = []
                     
-                    
-                    value = float(value)
-                    values.append(["nb", str(value)])
                     
                     self.SQL.write(tool, values)
                     

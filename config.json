@@ -5,7 +5,6 @@
         "192.168.1.4": "rdt",
         "192.168.1.5": "nearir",
         "127.0.0.1": "testing"
-
     },
     "Database_Config":{
         "host": "WHAMNUC1",
@@ -14,7 +13,7 @@
     },
     "Tool_pre": {
         "fourpp": "fpp",
-        "hall": "hall",
+        "hall": "ha",
         "rdt": "rdt",
         "nearir": "nir",
         "test": "t"
