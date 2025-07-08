@@ -147,7 +147,7 @@ class tcp_multiserver():
                 current_socket.send(id.encode())
             
             elif client_data == "MEAS":
-                t = dt.now() #dt.now().strftime("%m-%d-%Y, Hour %H Min %M Sec %S")
+                t = dt.now().strftime("%m-%d-%Y, Hour %H Min %M Sec %S")
                 
                 tool = self.config[current_socket.getpeername()[0]]
                 print(f"got message from {tool}")
