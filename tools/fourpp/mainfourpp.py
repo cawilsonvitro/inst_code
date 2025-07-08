@@ -1,7 +1,7 @@
 #region imports
 from gui_package_cawilvitro import *
-import fourpp as fourpp
-# import fourpp_dummy as fourpp
+# import fourpp as fourpp
+import fourpp_dummy as fourpp
 import tkinter as tk
 from tkinter import Misc
 import tkinter.ttk as ttk
@@ -12,7 +12,8 @@ import json
 import sys
 import threading
 import tcp_client
-
+from file_manager import FileManager
+from datetime import datetime as dt
 #endregion
 
 
@@ -36,7 +37,8 @@ class four_point_app():
         self.dataPath = r"data/"
         self.sample_num = 1
         self.exst = ".csv"
-
+        self.fmanager:FileManager = FileManager("fourpp", "5")
+        
         #threading
         # self.message: Queue[Any] = Queue(maxsize=1)
         # self.response: Queue[Any] = Queue(maxsize=1)
@@ -216,7 +218,9 @@ class four_point_app():
                 except Exception as e:
                     self.DM.status = False
                     print("Measuring fail", e)
-
+            data:list[str | int | float] = [self.sample_num, str(dt.now()), self.value] 
+            self.fmanager.write_data("fourpp", ["sample id", "time", "resistance"], data)
+            
             if not self.DM.status:
                 self.load_dm()
     #endregion
