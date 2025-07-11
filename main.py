@@ -6,7 +6,7 @@ from multiprocessing import Process, Queue #type:ignore
 from queue import Empty #type:ignore
 import json
 import sys
-import tcp_class 
+from instutil import inst_util as iu
 import threading
 from socket import socket
 
@@ -50,8 +50,8 @@ class inst_suite():
             self.host = "127.0.0.1"
         self.port = 5050
         self.ADDR = (self.host, self.port)
-        
-        with open('config.json', 'r') as file:
+        self.configpath = 'config.json'
+        with open(self.configpath , 'r') as file:
             self.toolip = json.load(file)['Tool_ip']
         
         #sql stuff app thread will handle sql as it is not continously running
@@ -68,7 +68,7 @@ class inst_suite():
         self.response: Queue[Any] = Queue(maxsize=1)
         
         #setting up tcp server and getting instruments
-        self.tcphandler: tcp_class.tcp_multiserver = tcp_class.tcp_multiserver(self.host, self.port, self.message, self.response)
+        self.tcphandler: iu.tcp_multiserver = iu.tcp_multiserver(self.configpath, self.host, self.port, self.message, self.response)
         self.tcphandler.SQL_startup()
         
         self.appThread = threading.Thread(target=self.startApp, args=())

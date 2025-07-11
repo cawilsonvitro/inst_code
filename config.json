@@ -6,6 +6,9 @@
         "192.168.1.5": "nearir",
         "127.0.0.1": "testing"
     },
+    "Hall": {
+        "sys": "HMS"
+    },
     "Database_Config":{
         "host": "WHAMNUC1",
         "db": "glass_test",

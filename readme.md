@@ -61,7 +61,7 @@ fix setup and make it runoffline
 
 (last) remove Any typing
 (last) update gitignore
-package up the file manager and tcp client 
+package up the file manager and tcp client and other packages want most into packages
 add way to auto select or have user select which hall system we are going to use
 code both
 
@@ -70,11 +70,9 @@ get eptoc bus
 add to setup.py:
     adjust venv pyvevn.cfg to target exe
 
-need to get execution working with virt 
-
 get setup working with windows 11 computers
 
-add sample id to input field on 4 pp
+
 
 need to get sql server better
 
@@ -86,15 +84,10 @@ add hard typing
 
 add better error handling
 
-file management system
 
 clean up imports
 
 need to do full test with vdap
-
-
-
-need to get it closing nicely
 
 add sql installs to setup
 
@@ -102,8 +95,15 @@ auto update connection status when device connects
 
 done:
 
+add sample id to input field on 4 pp
+
+need to get it closing nicely
+
 client reconnect in app 
 
+need to get execution working with virt 
+
+file management system
 
 get local debugging working again just changes 127.0.0.1 to all ip
 

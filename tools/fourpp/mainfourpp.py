@@ -1,5 +1,6 @@
 #region imports
 from gui_package_cawilvitro import *
+from instutil import inst_util as iu
 # import fourpp as fourpp
 import fourpp_dummy as fourpp
 import tkinter as tk
@@ -11,8 +12,6 @@ import time
 import json
 import sys
 import threading
-import tcp_client
-from file_manager import FileManager
 from datetime import datetime as dt
 #endregion
 
@@ -37,7 +36,7 @@ class four_point_app():
         self.dataPath = r"data/"
         self.sample_num = 1
         self.exst = ".csv"
-        self.fmanager:FileManager = FileManager("fourpp", "5")
+        self.fmanager:iu.FileManager = iu.FileManager("fourpp", "5")
         
         #threading
         # self.message: Queue[Any] = Queue(maxsize=1)
@@ -45,7 +44,7 @@ class four_point_app():
         
         
         #tcp handels init too
-        self.tcp = tcp_client.client(ip, port)#, self.message, self.response)
+        self.tcp = iu.tcp_client.client(ip, port)#, self.message, self.response)
         self.tcp.connect()
         self.tcp.id() #tells server the ip is connected
     

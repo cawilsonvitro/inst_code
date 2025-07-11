@@ -8,3 +8,4 @@ mysql-connector-python
 matplotlib
 configparser
 pyusb==1.2.1
+instutil==0.0.2

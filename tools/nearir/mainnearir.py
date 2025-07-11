@@ -10,7 +10,7 @@ import time
 import json
 import sys
 import threading
-import tcp_client
+from instutil import inst_util as iu
 
 #endregion
 
@@ -41,7 +41,7 @@ class near_ir_app():
         
         
         # tcp handels init too
-        self.tcp = tcp_client.client(ip, port)#, self.message, self.response)
+        self.tcp = iu.tcp_client.client(ip, port)#, self.message, self.response)
         self.tcp.connect()
         self.tcp.id() #tells server the ip is connected
     
