@@ -39,7 +39,7 @@ class rdt_app():
         
         
         #tcp handels init too
-        self.tcp = iu.tcp_client.client(ip, port)#, self.message, self.response)
+        self.tcp = iu.client.client(ip, port)#, self.message, self.response)
         self.tcp.connect()
         self.tcp.id() #tells server the ip is connected
     

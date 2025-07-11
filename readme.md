@@ -55,6 +55,8 @@ make sure to replace in .venv\pyvenv.cfg the c### with current user
 
 to do:
 
+need to update setup.py 
+
 add logging
 
 fix setup and make it runoffline
