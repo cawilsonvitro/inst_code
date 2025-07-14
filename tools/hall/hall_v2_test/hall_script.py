@@ -143,7 +143,7 @@ class silent_hall:
                 _,data = iu.parse(path)
                 data_str = (",").join(data)
                 
-                self.client.soc.send(data)
+                self.client.soc.send(data_str)
                 
                 
             self.client.disconnect()
