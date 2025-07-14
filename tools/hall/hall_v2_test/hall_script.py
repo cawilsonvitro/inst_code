@@ -111,32 +111,43 @@ class silent_hall:
             for dirpath,_,filenames in os.walk(self.hms):
                 for f in filenames:
                     files += 1
-
+            
+            all_files = os.listdir(self.hms)
+            all_files.sort(key=lambda x: os.path.getmtime(os.path.join(self.hms, x)))
+            timesorted = [os.path.getmtime(os.path.join(self.hms, f)) for f in all_files]
+            recent = timesorted[-1]
             with open(self.tracker, "w") as f:
-                f.write(str(files))
+                f.write(str(recent))
 
         if self.state == "post":
             pre_file: int
-            
             with open(self.tracker, "+r") as f:
-                pre_file = int(f.read())
-            files:int = 0
-            for dirpath,_,filenames in os.walk(self.hms):
-                for f in filenames:
-                    files += 1
-            new_files:int = files - pre_file
+                pre_file = float(f.read())
+            # files:int = 0
+            # for dirpath,_,filenames in os.walk(self.hms):
+            #     for f in filenames:
+            #         files += 1
+            # new_files:int = files - pre_file
 
             all_files = os.listdir(self.hms)
-            all_files.sort(key=lambda x: os.path.getmtime(os.path.join(self.hms, x)))
+            a = all_files.sort(key=lambda x: os.path.getmtime(os.path.join(self.hms, x)))
+            times = [os.path.getmtime(os.path.join(self.hms, f)) for f in all_files]
+            times.sort()
+
+            towrite = times.index(pre_file)
+            print(towrite)
+            new_files = all_files[towrite + 1:]
             
+            print(new_files)
             if new_files != 0:
                 new_files = all_files[-new_files:]
-                self.client = iu.client(self.ip, self.port)
+                self.client = iu.client(self.ip, self.port) 
                 self.client.connect()
                 self.client.id()
                 self.starApp()
                 print(new_files)
                 for file in new_files:
+                    print(file)
                     path = os.path.join("data", file)
                     self.client.soc.send("MEAS".encode())
                     resp = self.client.soc.recv(1024).decode()
@@ -161,7 +172,6 @@ if __name__ == "__main__":
     except:
         SERVER = "192.168.1.1"
     PORT = 5050
-    ADDR = (SERVER, PORT)
     
     temp = silent_hall(SERVER, PORT)
 

@@ -25,9 +25,10 @@ if __name__ == "__main__":
 
     os.chdir(cwd)
 
-    exe_status:int = os.system(f"py hall_script.exe {ip} post")
+    exe_status:int = os.system(f"hall_script.exe {ip} post")
     
-    if exe_status != 0:  
+    if exe_status != 0:
+        print("No exe found running python")
         os.system(f"py hall_script.py {ip} post")
     
 

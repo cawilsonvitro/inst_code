@@ -54,7 +54,10 @@ make sure to replace in .venv\pyvenv.cfg the c### with current user
 
 
 to do:
+add file manager to other tools
 
+add better data storage to rdt for future ai stuff
+add automatic ip handling for hall effect computer on nework
 need to update setup.py 
 
 add logging
