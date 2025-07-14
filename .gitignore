@@ -7,23 +7,23 @@
 # *.so
 
 # # Distribution / packaging
-# .Python
-# build/
-# develop-eggs/
-# dist/
-# downloads/
-# eggs/
-# .eggs/
-# lib/
-# lib64/
-# parts/
-# sdist/
-# var/
-# wheels/
-# share/python-wheels/
-# *.egg-info/
-# .installed.cfg
-# *.egg
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 # MANIFEST
 
 # # PyInstaller
@@ -128,13 +128,14 @@
 # *.sage.py
 
 # # Environments
-# .env
-# .venv
-# env/
-# venv/
-# ENV/
-# env.bak/
-# venv.bak/
+.env
+.venv
+.venv/*
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
 
 # # Spyder project settings
 # .spyderproject
@@ -152,13 +153,13 @@
 # dmypy.json
 
 # # Pyre type checker
-# .pyre/
+.pyre/
 
 # # pytype static type analyzer
-# .pytype/
+.pytype/
 
 # # Cython debug symbols
-# cython_debug/
+cython_debug/
 
 # # PyCharm
 # #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
@@ -168,7 +169,7 @@
 # #.idea/
 
 # # PyPI configuration file
-# .pypirc
+.pypirc
 
 # #all data change to upload data
 # *.csv
