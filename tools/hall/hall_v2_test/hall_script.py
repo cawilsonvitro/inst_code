@@ -1,3 +1,4 @@
+#encoding=<UTF-8>
 #region Imports
 import time
 import sys
@@ -127,27 +128,29 @@ class silent_hall:
 
             all_files = os.listdir(self.hms)
             all_files.sort(key=lambda x: os.path.getmtime(os.path.join(self.hms, x)))
+            
             if new_files != 0:
                 new_files = all_files[-new_files:]
-            self.client = iu.client(self.ip, self.port)
-            self.client.connect()
-            self.client.id()
-            self.starApp()
-            
-            for file in new_files:
-                path = os.path.join("data", file)
-                self.client.soc.send("MEAS".encode())
-                resp = self.client.soc.recv(1024).decode()
-                self.client.soc.send(self.sample_num.encode())
-                resp = self.client.soc.recv(1024).decode()
-                _,data = iu.parse(path)
-                data_str = (",").join(data)
-                
-                self.client.soc.send(data_str)
-                
-                
-            self.client.disconnect()
-
+                self.client = iu.client(self.ip, self.port)
+                self.client.connect()
+                self.client.id()
+                self.starApp()
+                print(new_files)
+                for file in new_files:
+                    path = os.path.join("data", file)
+                    self.client.soc.send("MEAS".encode())
+                    resp = self.client.soc.recv(1024).decode()
+                    self.client.soc.send(self.sample_num.encode())
+                    resp = self.client.soc.recv(1024).decode()
+                    _,data = iu.parse(path)
+                    data_str = (",").join(data)
+                    
+                    self.client.soc.send(data_str)
+                    
+                    
+                self.client.disconnect()
+            else:
+                print("No new files detected")
 
 
 
