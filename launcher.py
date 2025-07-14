@@ -55,11 +55,10 @@ def venv_builder(req = "constraints.txt") -> None:
         install = f"{py} {pip} install -r constraints.txt"
 
         os.system(install)
-
-if __name__ == "__main__":
-    
-    venv_builder() #builds venv, requires internet connections
-    
+        
+def launch():
+    """_summary_ launches correct path
+    """
     virt_path: str = os.path.join(os.getcwd(), '.venv', 'scripts', 'python.exe')
 
     file: typing.TextIO = open('config.json', 'r')
@@ -104,5 +103,21 @@ if __name__ == "__main__":
 
 
     stop = True
+
+if __name__ == "__main__":
+    sysargs = sys.argv
+    try:
+        if sysargs[-1] == "build":
+            
+            venv_builder() #builds venv, requires internet connections
+        if sysargs[-1] == "launch+build":
+            print("I ran")
+            venv_builder()
+            launch()
+        if sysargs[-1] == "launch":
+            launch()
+            
+    except IndexError:
+        launch()
 
 
