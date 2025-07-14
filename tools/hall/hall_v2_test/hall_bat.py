@@ -1,9 +1,7 @@
+#coding=<UTF-8>
 import os
 import sys
 import json
-
-
-
 
 if __name__ == "__main__":
     cwd = os.getcwd()
@@ -21,14 +19,15 @@ if __name__ == "__main__":
             inv_map = {v: k for k, v in ver_map}
             ip = inv_map["host"]
 
-    # os.system(f"py hall_script.py {ip} pre")
-
     os.system("cd \"C:\\Program Files (x86)\\HMS3000 V3.52\"")
 
     os.system("\"C:\\Program Files (x86)\\HMS3000 V3.52\\HMS-3000 V3.52.exe\"")
-    
-    print(cwd)
-    
+
     os.chdir(cwd)
+
+    exe_status:int = os.system(f"py hall_script.exe {ip} post")
     
-    os.system(f"py hall_script.py {ip} post")
+    if exe_status != 0:  
+        os.system(f"py hall_script.py {ip} post")
+    
+
