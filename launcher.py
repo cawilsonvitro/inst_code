@@ -5,6 +5,7 @@ import typing
 import sys
 import subprocess
 import venv #type:ignore
+import traceback
 
 def spawn_program_and_die(program, exit_code=0):
     """
@@ -61,8 +62,16 @@ def launch():
     """
     virt_path: str = os.path.join(os.getcwd(), '.venv', 'scripts', 'python.exe')
 
-    file: typing.TextIO = open('config.json', 'r')
-    config:dict[str, str] = json.load(file)['Tool_ip']
+    with open ('config.json', 'r') as f:
+        config = json.load(f)
+    
+    
+    Tool_ip:dict[str, str] = config['Tool_ip']
+    hall = config['Hall']["sys"]
+    ver_map = Tool_ip.items()
+    
+    inv_map = {v: k for k, v in ver_map}
+    server_ip = inv_map["host"]
 
 
     hostname:str = socket.gethostname()
@@ -72,7 +81,7 @@ def launch():
     # print(f"IP Address: {ip_address}")
 
     try:
-        tool: str = config[ip_address]
+        tool: str = Tool_ip[ip_address]
         print(tool)
     except KeyError:
         print(f"IP address {ip_address} not found in config.json.")
@@ -84,8 +93,12 @@ def launch():
 
 
     if tool != "host" and tool != "testing":
+        if tool == "hall":
+            if hall == "HMS":
+                file_name =  r"hall\hall_v2_test\hall_bat.py"
+            else:
+                file_name += tool
         
-        file_name += tool
         file_name += ".py"
         file_name = f"tools//{tool}//{file_name}"
         
@@ -97,7 +110,6 @@ def launch():
 
     print(file_name)
     py = virt_path
-    server_ip = list(config.keys())[0]
     if file_name != "testing":
         spawn_program_and_die([py, file_name, server_ip])
 
@@ -106,18 +118,16 @@ def launch():
 
 if __name__ == "__main__":
     sysargs = sys.argv
+    print(sysargs)
     try:
         if sysargs[-1] == "build":
-            
             venv_builder() #builds venv, requires internet connections
-        if sysargs[-1] == "launch+build":
-            print("I ran")
+        elif sysargs[-1] == "launch+build":
             venv_builder()
             launch()
-        if sysargs[-1] == "launch":
+        elif sysargs[-1] == "launch":
             launch()
-            
-    except IndexError:
-        launch()
-
+    except Exception as e:
+        print(traceback.format_exc())
+        print("I ran")
 
