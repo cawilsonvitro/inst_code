@@ -135,17 +135,15 @@ class silent_hall:
             times.sort()
 
             towrite = times.index(pre_file)
-            print(towrite)
+            # print(towrite)
             new_files = all_files[towrite + 1:]
             
             print(new_files)
-            if new_files != 0:
-                new_files = all_files[-new_files:]
+            if len(new_files) != 0:
                 self.client = iu.client(self.ip, self.port) 
                 self.client.connect()
                 self.client.id()
                 self.starApp()
-                print(new_files)
                 for file in new_files:
                     print(file)
                     path = os.path.join("data", file)

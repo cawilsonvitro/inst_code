@@ -24,11 +24,14 @@ if __name__ == "__main__":
     os.system("\"C:\\Program Files (x86)\\HMS3000 V3.52\\HMS-3000 V3.52.exe\"")
 
     os.chdir(cwd)
+    try:
+        exe_status:int = os.system(f"hall_script.exe {ip} post")
 
-    exe_status:int = os.system(f"hall_script.exe {ip} post")
-    
-    if exe_status != 0:
-        print("No exe found running python")
-        os.system(f"py hall_script.py {ip} post")
+        if exe_status != 0:
+            print("No exe found running python")
+            os.system(f"py hall_script.py {ip} post")
+    except:
+        print("I RAN")
+        exe_status:int = os.system(f"hall_script.py {ip} post")
     
 

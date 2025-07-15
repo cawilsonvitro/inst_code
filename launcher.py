@@ -84,8 +84,9 @@ def launch():
         tool: str = Tool_ip[ip_address]
         print(tool)
     except KeyError:
-        print(f"IP address {ip_address} not found in config.json.")
-        tool = "" 
+        print(f"IP address {ip_address} not found in config.json, tryind debugging ip")
+        
+        tool = "testing"
 
 
     file_name: str = "main"
@@ -95,7 +96,7 @@ def launch():
     if tool != "host" and tool != "testing":
         if tool == "hall":
             if hall == "HMS":
-                file_name =  r"hall\hall_v2_test\hall_bat.py"
+                file_name =  r"hall_v2_test\hall_bat"
             else:
                 file_name += tool
         
@@ -107,6 +108,9 @@ def launch():
 
     else:
         server_ip = "127.0.0.1"
+        file_name =  r"hall_v2_test\hall_bat"
+        file_name += ".py"
+        file_name = f"tools//hall//{file_name}"
 
     print(file_name)
     py = virt_path
