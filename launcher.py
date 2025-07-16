@@ -96,7 +96,8 @@ def launch():
     if tool != "host" and tool != "testing":
         if tool == "hall":
             if hall == "HMS":
-                file_name =  r"hall_v2_test\hall_bat"
+                file_name == ""
+                file_name += "hall_script"
             else:
                 file_name += tool
         
@@ -108,7 +109,7 @@ def launch():
 
     else:
         server_ip = "127.0.0.1"
-        file_name =  r"hall_v2_test\hall_bat"
+        file_name =  r"hall_v2_test\hall_script"
         file_name += ".py"
         file_name = f"tools//hall//{file_name}"
 
