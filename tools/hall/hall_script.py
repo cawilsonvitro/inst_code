@@ -31,7 +31,6 @@ class silent_hall:
         self.hms = hmsdata
         self.cwd = os.getcwd()
         
-        self.state_sys()
     
     #region gui
     def starApp(self):
