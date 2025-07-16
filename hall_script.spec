@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(
-    ['tools\\hall\\hall_v2_test\\hall_script.py'],
+    ['tools\\hall\\hall_script.py'],
     pathex=[],
     binaries=[],
     datas=[],
