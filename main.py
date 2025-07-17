@@ -2,7 +2,6 @@
 #region imports
 from gui_package_cawilvitro import * #type:ignore
 import socket
-from multiprocessing import Process, Queue #type:ignore
 from queue import Empty #type:ignore
 import json
 import sys
@@ -61,11 +60,11 @@ class inst_suite():
         setups all threads for main application
         '''
         
-        self.message: Queue[Any] = Queue(maxsize=1)
-        self.response: Queue[Any] = Queue(maxsize=1)
+        # self.message: Queue[Any] = Queue(maxsize=1)
+        # self.response: Queue[Any] = Queue(maxsize=1)
         
         #setting up tcp server and getting instruments
-        self.tcphandler: iu.tcp_multiserver = iu.tcp_multiserver(self.configpath, self.host, self.port, self.message, self.response)
+        self.tcphandler: iu.tcp_multiserver = iu.tcp_multiserver(self.configpath, self.host, self.port)#, self.message, self.response)
         self.tcphandler.SQL_startup()
         
         self.appThread = threading.Thread(target=self.startApp, args=())
