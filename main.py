@@ -16,7 +16,7 @@ class inst_suite():
         
         self.quit = False
         self.process_display = None
-
+        self.teststr = "HIIIII"
         #spectrometers
         self.NIR = None
         self.CTR = None  #coated side transmission and reflection spectrometer
@@ -51,13 +51,11 @@ class inst_suite():
         self.ADDR = (self.host, self.port)
         self.configpath = 'config.json'
         with open(self.configpath , 'r') as file:
-            self.toolip = json.load(file)['Tool_ip']
+            self.toolip:dict[str,str] = json.load(file)['Tool_ip']
+        self.tools:list[str] = list(self.toolip.values())
         
         #sql stuff app thread will handle sql as it is not continously running
-        
-
-        
-    
+          
     def setup(self) -> None:
         '''
         setups all threads for main application
@@ -67,7 +65,7 @@ class inst_suite():
         # self.response: Queue[Any] = Queue(maxsize=1)
         
         #setting up tcp server and getting instruments
-        self.tcphandler: iu.tcp_multiserver = iu.tcp_multiserver(self.configpath, self.host, self.port)#, self.message, self.response)
+        self.tcphandler: iu.tcp_multiserver = iu.tcp_multiserver(self.configpath, self.host, self.port, self)#, self.message, self.response)
         self.tcphandler.SQL_startup()
         
         self.appThread = threading.Thread(target=self.startApp, args=())
@@ -92,8 +90,7 @@ class inst_suite():
     #    
     
     #endregion
-    #region application control
-    
+    #region application control   
    
     def startApp(self):
         '''
@@ -144,9 +141,9 @@ class inst_suite():
         ).place(x = 50, y = 50)
         
         StandardLabel(
-            "4pp_status",
+            "fourpp_status",
             root,
-            image = TkImage("4pp_status_bad", r"images\Status_Bad.png").image
+            image = TkImage("fourpp_status", r"images\Status_Bad.png").image
         ).place(x = 198, y = 55)
         
         StandardLabel (
@@ -237,21 +234,24 @@ class inst_suite():
         conc_tools: list[str] = []
         for soc in conc_clients:
             conc_tools.append(self.toolip[soc.getpeername()[0]])
+        for tool in self.tools:
+            try:
+                if tool in conc_tools:
+                    StandardLabel(
+                        f"{tool}_status",
+                        self.root,
+                        image = TkImage(f"{tool}_status", r"images\Status_Good.png").image
+                    ).place(x = 198, y = 55)
+                else:
+                    StandardLabel(
+                        f"{tool}_status",
+                        self.root,
+                        image = TkImage(f"{tool}_status", r"images\Status_Bad.png").image
+                    ).place(x = 198, y = 55)
         
-        if "fourpp" in conc_tools:
-            StandardLabel(
-                "4pp_status",
-                self.root,
-                image = TkImage("4pp_status_bad", r"images\Status_Good.png").image
-            ).place(x = 198, y = 55)
-        else:
-            StandardLabel(
-                "4pp_status",
-                self.root,
-                image = TkImage("4pp_status_bad", r"images\Status_Bad.png").image
-            ).place(x = 198, y = 55)
-        
-        
+            except KeyError:
+                print(f" {tool} not integrated into Front end")
+                
     #endregion  
 
 
