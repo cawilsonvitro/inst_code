@@ -68,10 +68,10 @@ class silent_hall:
         self.endApp(None)
 
     def update(self) -> None:
-        print("asking")
+        # print("asking")
         self.client.soc.send("UPDATE".encode())
         resp:str = self.client.soc.recv(1024).decode()
-        print(resp)
+        # print(resp)
         if resp != "None":
             dropdown.instances["samples"].configure(values=resp.split(","))
         else:
@@ -138,14 +138,14 @@ class silent_hall:
         # print(towrite)
         new_files = all_files[towrite + 1:]
         
-        print(new_files)
+        # print(new_files)
         if len(new_files) != 0:
             self.client = iu.client(self.ip, self.port) 
             self.client.connect()
             self.client.id()
             self.starApp()
             for file in new_files:
-                print(file)
+                # print(file)
                 path = os.path.join("data", file)
                 self.client.soc.send("MEAS".encode())
                 resp = self.client.soc.recv(1024).decode()
@@ -154,7 +154,7 @@ class silent_hall:
                 _,data = iu.parse(path)
                 data_str = (",").join(data)
                 
-                self.client.soc.send(data_str)
+                self.client.soc.send(data_str.encode())
                 
                 
             self.client.disconnect()

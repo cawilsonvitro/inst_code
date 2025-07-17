@@ -55,10 +55,7 @@ class inst_suite():
             self.toolip = json.load(file)['Tool_ip']
         
         #sql stuff app thread will handle sql as it is not continously running
-        
-
-        
-    
+          
     def setup(self) -> None:
         '''
         setups all threads for main application
@@ -93,8 +90,7 @@ class inst_suite():
     #    
     
     #endregion
-    #region application control
-    
+    #region application control   
    
     def startApp(self):
         '''
@@ -238,7 +234,7 @@ class inst_suite():
         conc_tools: list[str] = []
         for soc in conc_clients:
             conc_tools.append(self.toolip[soc.getpeername()[0]])
-        
+
         if "fourpp" in conc_tools:
             StandardLabel(
                 "4pp_status",
