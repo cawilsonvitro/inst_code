@@ -57,7 +57,7 @@ to do:
 add file manager to other tools
 
 add better data storage to rdt for future ai stuff
-add automatic ip handling for hall effect computer on nework
+
 need to update setup.py 
 
 add logging
@@ -66,17 +66,13 @@ fix setup and make it runoffline
 
 (last) remove Any typing
 (last) update gitignore
-package up the file manager and tcp client and other packages want most into packages
-add way to auto select or have user select which hall system we are going to use
-code both
 
-get eptoc bus
+
 
 add to setup.py:
     adjust venv pyvevn.cfg to target exe
 
 get setup working with windows 11 computers
-
 
 
 need to get sql server better
@@ -85,10 +81,7 @@ add front end functionality to main
 
 get better status lights working
 
-add hard typing 
-
 add better error handling
-
 
 clean up imports
 
@@ -99,6 +92,8 @@ add sql installs to setup
 auto update connection status when device connects
 
 done:
+
+package up the file manager and tcp client and other packages want most into packages
 
 add sample id to input field on 4 pp
 
