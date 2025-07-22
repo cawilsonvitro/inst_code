@@ -106,7 +106,7 @@ class inst_suite():
         self.process_display.set("Booting")
         self.root.update_idletasks()
         self.buildGUI(self.root)
-        self.test()
+        self.test_connections()
         self.root.mainloop()
         
          #checks inst connections before booting up tcp server and other 
@@ -186,18 +186,19 @@ class inst_suite():
             "Test",
             root,
             image = TkImage("Test", r"images\test_connections.png").image,
-            command = self.test,
+            command = self.test_connections,
         ).place(x = 50, y = 250)
     
     #endregion
     #region inst manager
     
-    def test(self):
+    def test_connections(self):
         '''
         manages all instruments and instrument communications
         '''
+        # StandardLabel.instances["fourpp_status"].configure(image = TkImage("fourpp_status", r"images\Status_Bad.png").image)
 
-        #first testing internet connections
+        # first testing internet connections
         self.tcphandler.connections()
         
         self.net_stat = self.tcphandler.network_status
@@ -237,22 +238,13 @@ class inst_suite():
         for tool in self.tools:
             try:
                 if tool in conc_tools:
-                    StandardLabel(
-                        f"{tool}_status",
-                        self.root,
-                        image = TkImage(f"{tool}_status", r"images\Status_Good.png").image
-                    ).place(x = 198, y = 55)
+                    StandardLabel.instances[f"{tool}_status"].configure(image = TkImage(f"{tool}_status", r"images\Status_Good.png").image)
                 else:
-                    StandardLabel(
-                        f"{tool}_status",
-                        self.root,
-                        image = TkImage(f"{tool}_status", r"images\Status_Bad.png").image
-                    ).place(x = 198, y = 55)
-        
+                    StandardLabel.instances[f"{tool}_status"].configure(image = TkImage(f"{tool}_status", r"images\Status_Bad.png").image)
             except KeyError:
                 print(f" {tool} not integrated into Front end")
                 
-    #endregion  
+    # endregion  
 
 
 if __name__ == "__main__":
