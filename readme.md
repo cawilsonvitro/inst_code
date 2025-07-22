@@ -12,7 +12,10 @@ measuring:
 
 
 
+to use nidaq systems run
+python -m pip install nidaqmx
 
+python -m nidaqmx installdriver
 
 
 
