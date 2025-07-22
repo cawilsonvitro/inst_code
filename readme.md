@@ -5,9 +5,11 @@ measuring:
 1st. send "MEAS" to put server into measurement mode
 2nd. server sends msg back
 3rd. send sample id to server
-4th. server sends msg back
-5th. send value to server
-6th. server gets value and sends back "data received" 
+4th. server sends awaiting value from OR DESC
+5th if server sends DESC the user is prompted for a description of the sample and then the client sends a description
+(6th). the server sends awaiting value from if previously sent description
+7th. send value or values to server, each value will be broken by a data received
+8th. server gets value and sends back "data received" 
 
 
 

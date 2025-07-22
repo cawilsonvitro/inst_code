@@ -198,7 +198,6 @@ class four_point_app():
                     self.DM.measure()
                     self.value = (sum(self.DM.values)/len(self.DM.values)) * 4.517 * 1 * 1.006
                     
-                    
                     self.tcp.soc.send("MEAS".encode())
                     resp = self.tcp.soc.recv(1024).decode()
                     print(resp)
@@ -206,6 +205,10 @@ class four_point_app():
                     self.tcp.soc.send(str(self.sample_num).encode())
                     resp = self.tcp.soc.recv(1024).decode()
                     print(resp)
+                    if resp == "DESC":
+                        desc = input("Enter a description for the sample: " ) ### PLACE HOLDER
+                        self.tcp.soc.send(desc.encode())
+                        resp = self.tcp.soc.recv(1024).decode()
                     print("sending value")
                     self.tcp.soc.send(str(self.value).encode())
                     
