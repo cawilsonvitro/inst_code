@@ -138,31 +138,49 @@ class inst_suite():
             "hall",
             root,
             image = TkImage("hall_label", r"images\hall_label.png").image
-        ).place(x = 50, y = 10)
+        ).place(x = 50, y = 5)
+        
+        StandardLabel (
+            "hall_status",
+            root,
+            image = TkImage("hall_status", r"images\Status_Bad.png").image
+        ).place(x = 198, y = 10)
         
         StandardLabel (
             "4pp",
             root,
             image = TkImage("4pp_label", r"images\4pp_label.png").image
-        ).place(x = 50, y = 50)
+        ).place(x = 50, y = 75)
         
         StandardLabel(
             "fourpp_status",
             root,
             image = TkImage("fourpp_status", r"images\Status_Bad.png").image
-        ).place(x = 198, y = 55)
+        ).place(x = 198, y = 80)
         
         StandardLabel (
-            "RDT",
+            "rdt",
             root,
-            image= TkImage("RDT_label", r"images\rdt_label.png").image
-        ).place(x = 50, y = 150)
+            image= TkImage("rdt_label", r"images\rdt_label.png").image
+        ).place(x = 50, y = 145)
         
         StandardLabel(
-            "RDT_status",
+            "rdt_status",
             root,
-            image = TkImage("RDT_status_bad", r"images\Status_Bad.png").image
-        ).place(x = 198, y = 155)
+            image = TkImage("rdt_status_bad", r"images\Status_Bad.png").image
+        ).place(x = 198, y = 150)
+        
+        StandardLabel (
+            "nearir",
+            root,
+            image= TkImage("nearir_label", r"images\nir_label.png").image
+        ).place(x = 50, y = 215)
+        
+        StandardLabel (
+            "nearir_status",
+            root,
+            image= TkImage("nearir_status", r"images\Status_Bad.png").image
+        ).place(x = 198, y = 220)
         
         StandardLabel (
             "SQL",
@@ -193,7 +211,7 @@ class inst_suite():
             root,
             image = TkImage("Test", r"images\test_connections.png").image,
             command = self.test_connections,
-        ).place(x = 50, y = 250)
+        ).place(x = 50, y = 300)
     
     #endregion
     #region inst manager
@@ -238,15 +256,13 @@ class inst_suite():
         
         #testing instrument connections
         conc_clients: list[socket] = self.tcphandler.connected_sockets
-        conc_tools: list[str] = []
-        for soc in conc_clients:
-            conc_tools.append(self.toolip[soc.getpeername()[0]])
+        conc_tools: list[str] = [soc.getpeername()[0] for soc in conc_clients]
         for tool in self.tools:
             try:
                 if tool in conc_tools:
-                    StandardLabel.instances[f"{tool}_status"].configure(image = TkImage(f"{tool}_status", r"images\Status_Good.png").image)
+                    StandardLabel.instances[f"{tool}_status"].configure(image = TkImage(f"{tool.lower()}_status", r"images\Status_Good.png").image)
                 else:
-                    StandardLabel.instances[f"{tool}_status"].configure(image = TkImage(f"{tool}_status", r"images\Status_Bad.png").image)
+                    StandardLabel.instances[f"{tool}_status"].configure(image = TkImage(f"{tool.lower()}_status", r"images\Status_Bad.png").image)
             except KeyError:
                 print(f" {tool} not integrated into Front end")
                 
