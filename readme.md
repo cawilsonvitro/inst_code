@@ -59,6 +59,13 @@ make sure to replace in .venv\pyvenv.cfg the c### with current user
 
 
 to do:
+add time outs to sending 
+
+
+fix issues with tcp protcol not being very robust
+
+get working with getting server from config
+
 update venv builder to update declome file path automatically
 
 reduce file open and closing

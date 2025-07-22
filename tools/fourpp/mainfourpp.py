@@ -44,7 +44,7 @@ class four_point_app():
         
         
         #tcp handels init too
-        self.tcp = iu.client.client(ip, port)#, self.message, self.response)
+        self.tcp = iu.client(ip, port)#, self.message, self.response)
         self.tcp.connect()
         self.tcp.id() #tells server the ip is connected
     
@@ -84,15 +84,12 @@ class four_point_app():
    
     #region building GUI
     def update(self) -> None:
-        print("asking")
         self.tcp.soc.send("UPDATE".encode())
         resp:str = self.tcp.soc.recv(1024).decode()
-        print(resp)
         if resp != "None":
             dropdown.instances["samples"].configure(values=resp.split(","))
         else:
             dropdown.instances["samples"].configure(values=[])
-
         
     def buildGUI(self, root):
         '''
@@ -220,8 +217,8 @@ class four_point_app():
                 except Exception as e:
                     self.DM.status = False
                     print("Measuring fail", e)
-            data:list[str | int | float] = [self.sample_num, str(dt.now()), self.value] 
-            self.fmanager.write_data("fourpp", ["sample id", "time", "resistance"], data)
+            data:list[str | int | float] = [self.sample_num, str(dt.now()), self.value]
+            self.fmanager.write_data("fourpp", ["sample id", "time", "resistance"], [data])
             
             if not self.DM.status:
                 self.load_dm()
@@ -238,8 +235,8 @@ if __name__ == "__main__":
     try:
         SERVER = sys.argv[1]
     except:
-        SERVER = "127.0.0.1" 
-        #SERVER = "192.168.1.1"
+        # SERVER = "127.0.0.1" 
+        SERVER = "192.168.1.1"
     
     PORT = 5050
     ADDR = (SERVER, PORT)

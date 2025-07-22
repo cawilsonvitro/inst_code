@@ -46,7 +46,7 @@ class inst_suite():
         try:
             self.host = sys.argv[1]
         except:
-            self.host = "127.0.0.1"
+            self.host = "192.168.1.1"
         self.port = 5050
         self.ADDR = (self.host, self.port)
         self.configpath = 'config.json'
@@ -224,7 +224,7 @@ class inst_suite():
 
         # first testing internet connections
         self.tcphandler.connections()
-        
+        print("Testing connections")
         self.net_stat = self.tcphandler.network_status
         self.db_stat = self.tcphandler.db_status
         
@@ -256,7 +256,8 @@ class inst_suite():
         
         #testing instrument connections
         conc_clients: list[socket] = self.tcphandler.connected_sockets
-        conc_tools: list[str] = [soc.getpeername()[0] for soc in conc_clients]
+        conc_tools: list[str] = [self.toolip[soc.getpeername()[0]] for soc in conc_clients]
+
         for tool in self.tools:
             try:
                 if tool in conc_tools:
@@ -265,7 +266,7 @@ class inst_suite():
                     StandardLabel.instances[f"{tool}_status"].configure(image = TkImage(f"{tool.lower()}_status", r"images\Status_Bad.png").image)
             except KeyError:
                 print(f" {tool} not integrated into Front end")
-                
+        self.root.update()
     # endregion  
 
 

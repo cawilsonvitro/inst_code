@@ -36,7 +36,7 @@ def venv_builder(req = "constraints.txt") -> None:
         for line in lines:
             stripped = line.strip()
             if "delcom" in stripped:
-                stripped = "delcom @ file:///" + os.path.join(cwd,"delcom-0.1.1-py3-none-any.whl")
+                stripped = "delcom @ file:///" + os.path.join(cwd,"install_files","delcom-0.1.1-py3-none-any.whl")
             if stripped != "":
                 stripped_lines.append(stripped)
 
@@ -82,7 +82,6 @@ def launch():
 
     try:
         tool: str = Tool_ip[ip_address]
-        print(tool)
     except KeyError:
         print(f"IP address {ip_address} not found in config.json, tryind debugging ip")
         
@@ -91,7 +90,7 @@ def launch():
 
     file_name: str = "main"
 
-
+    print(tool)
 
     if tool != "host" and tool != "testing":
         if tool == "hall":
@@ -100,7 +99,8 @@ def launch():
                 file_name += "hall_script"
             else:
                 file_name += tool
-        
+        else:
+            file_name += tool
         file_name += ".py"
         file_name = f"tools//{tool}//{file_name}"
         
@@ -131,6 +131,9 @@ if __name__ == "__main__":
             venv_builder()
             launch()
         elif sysargs[-1] == "launch":
+            launch()
+        else:
+            sysargs.append("launch")
             launch()
     except Exception as e:
         print(traceback.format_exc())
