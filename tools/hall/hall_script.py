@@ -105,24 +105,29 @@ class silent_hall:
             after launch
         """
         
+    
+        files:int = 0 #number of files
+        all_files: list[str] = []
         
-        #if self.state == "pre":
-        files:int = 0
         for dirpath,_,filenames in os.walk(self.hms):
-            for f in filenames:
-                files += 1
-        
-        all_files = os.listdir(self.hms)
+            for f in filenames:all_files.append(f)
+            
         all_files.sort(key=lambda x: os.path.getmtime(os.path.join(self.hms, x)))
         timesorted = [os.path.getmtime(os.path.join(self.hms, f)) for f in all_files]
         recent = timesorted[-1]
-        with open(self.tracker, "w") as f:
-                f.write(str(recent))
+        
+        with open(self.tracker, "r") as f:lines = f.readlines()
+            
+        if lines[1].strip().lower() == 'false':
+            update:bool = False
+        elif lines[1].strip().lower() == 'true':
+            update:bool = True
+        
+        if update:
+            with open(self.tracker, "w") as f:f.write(str(recent))
         os.system("\"C:\\Program Files (x86)\\HMS3000 V3.52\\HMS-3000 V3.52.exe\"")
       #  if self.state == "post":
-        pre_file: int
-        with open(self.tracker, "+r") as f:
-            pre_file = float(f.read())
+        pre_file: float = float(lines[0].strip())
         # files:int = 0
         # for dirpath,_,filenames in os.walk(self.hms):
         #     for f in filenames:
@@ -130,34 +135,56 @@ class silent_hall:
         # new_files:int = files - pre_file
 
         all_files = os.listdir(self.hms)
-        a = all_files.sort(key=lambda x: os.path.getmtime(os.path.join(self.hms, x)))
         times = [os.path.getmtime(os.path.join(self.hms, f)) for f in all_files]
         times.sort()
-
-        towrite = times.index(pre_file)
-        # print(towrite)
-        new_files = all_files[towrite + 1:]
+        
+        i:int = 0
+        new_files = []
+        for time in times:
+            if float(time) > pre_file:
+                new_files.append(all_files[i])
+            i += 1
+            
+        print(new_files)
         
         # print(new_files)
         if len(new_files) != 0:
-            self.client = iu.client(self.ip, self.port) 
-            self.client.connect()
-            self.client.id()
-            self.starApp()
-            for file in new_files:
-                # print(file)
-                path = os.path.join("data", file)
-                self.client.soc.send("MEAS".encode())
-                resp = self.client.soc.recv(1024).decode()
-                self.client.soc.send(self.sample_num.encode())
-                resp = self.client.soc.recv(1024).decode()
-                _,data = iu.parse(path)
-                data_str = (",").join(data)
+            try:
+                    # self.client = iu.client(self.ip, self.port) 
+                # self.client.connect()
+                # self.client.id()
+                # self.starApp()
+                # for file in new_files:
+                #     # print(file)
+                #     path = os.path.join("data", file)
+                #     self.client.soc.send("MEAS".encode())
+                #     resp = self.client.soc.recv(1024).decode()
+                #     self.client.soc.send(self.sample_num.encode())
+                #     resp = self.client.soc.recv(1024).decode()
+                #     _,data = iu.parse(path)
+                #     data_str = (",").join(data)
+                    
+                #     self.client.soc.send(data_str.encode())
+                    
+                    
+                # self.client.disconnect()
+                raise Exception
+                with open(self.tracker, "r") as f:lines=f.readlines()
                 
-                self.client.soc.send(data_str.encode())
+                lines[1] = "True"
                 
+                with open(self.tracker, "w") as f: f.writelines(lines)
                 
-            self.client.disconnect()
+            except:
+                with open(self.tracker, "r") as f:lines=f.readlines()
+                
+                lines[1] = "False"
+                
+                with open(self.tracker, "w") as f: f.writelines(lines)
+                
+            
+            
+            
         else:
             print("No new files detected")
 

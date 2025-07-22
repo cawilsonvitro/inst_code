@@ -54,6 +54,20 @@ make sure to replace in .venv\pyvenv.cfg the c### with current user
 
 
 to do:
+update venv builder to update declome file path automatically
+
+reduce file open and closing
+
+clients close poorly
+clients don't work without tcp connection
+clients don't reconnect to server 
+
+redo way to change status light
+StandardLabel.instances["fourpp_status"].configure(image = TkImage("fourpp_status", r"images\Status_Bad.png").image)
+
+
+
+for hall script if it fails to write to server it reverts the file (I don't know if this is needed test)
 add file manager to other tools
 
 add better data storage to rdt for future ai stuff
@@ -64,6 +78,9 @@ add logging
 
 fix setup and make it runoffline
 
+
+
+(last)go through and remove dubugging prints
 (last) remove Any typing
 (last) update gitignore
 
@@ -73,7 +90,6 @@ add to setup.py:
     adjust venv pyvevn.cfg to target exe
 
 get setup working with windows 11 computers
-
 
 need to get sql server better
 
@@ -89,9 +105,11 @@ need to do full test with vdap
 
 add sql installs to setup
 
-auto update connection status when device connects
+
 
 done:
+
+auto update connection status when device connects
 
 package up the file manager and tcp client and other packages want most into packages
 

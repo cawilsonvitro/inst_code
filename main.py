@@ -135,6 +135,12 @@ class inst_suite():
         StandardLabel.remove(None)
         
         StandardLabel (
+            "hall",
+            root,
+            image = TkImage("hall_label", r"images\hall_label.png").image
+        ).place(x = 50, y = 10)
+        
+        StandardLabel (
             "4pp",
             root,
             image = TkImage("4pp_label", r"images\4pp_label.png").image
