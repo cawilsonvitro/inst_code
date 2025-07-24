@@ -127,6 +127,7 @@ class four_point_app():
         '''
         ends application
         '''
+        self.logger.info("Shutting down application")
         self.quit = True
         if self.connected: self.tcp.disconnect()
         self.DM.quit()
@@ -138,7 +139,7 @@ class four_point_app():
     #region  GUI
         
     def toggle_desc(self):
-        print("I ran")
+        self.logger.info("Toggling Description Window")
         state = self.desc_window.state()
         TextBox.instances["desc"].delete("1.0","end-1c")
         if state == "normal": self.desc_window.withdraw()
@@ -309,8 +310,10 @@ class four_point_app():
     
     #region measurement
     def measure(self):
+        self.logger.info("starting measurement")
         self.process_display.set("measuring")
         self.sample_num = dropdown.instances["samples"].get()
+        self.logger.info(f"Sample: {self.sample_num}")
         if self.sample_num == "":
             self.process_display.set("Please select or enter a sample ID")
         else:
@@ -353,7 +356,7 @@ class four_point_app():
         
     #endregion
 if __name__ == "__main__":
-    
+    logging.info("start from main")
     try:
         SERVER = sys.argv[1]
     except:
