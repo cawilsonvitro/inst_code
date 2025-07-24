@@ -61,9 +61,6 @@ make sure to replace in .venv\pyvenv.cfg the c### with current user
 to do:
 add time outs to sending 
 
-
-fix issues with tcp protcol not being very robust
-
 get working with getting server from config
 
 update venv builder to update declome file path automatically
@@ -117,7 +114,7 @@ need to do full test with vdap
 
 add sql installs to setup
 
-
+server crashes if client closes while waiting 
 
 done:
 
@@ -151,3 +148,5 @@ fix pathing to working with venv paths
 update script to work with venv to bypasss other stuff
 
 starts without tcp working
+
+fix issues with tcp protcol not being very robust
