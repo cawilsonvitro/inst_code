@@ -59,6 +59,8 @@ make sure to replace in .venv\pyvenv.cfg the c### with current user
 
 
 to do:
+add reconnect
+add logging to server 
 add time outs to sending 
 
 get working with getting server from config

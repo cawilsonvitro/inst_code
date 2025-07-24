@@ -8,8 +8,25 @@ import sys
 from instutil import inst_util as iu
 import threading
 from socket import socket
-
+from datetime import datetime as dt
+import logging
+from logging.handlers import TimedRotatingFileHandler
+from functools import partial
 #endregion
+
+#region logging
+date = dt.now().strftime("%m-%d-%Y, Hour %H Min %M Sec %S")
+
+logging.basicConfig(
+    level=logging.DEBUG, # Set a global logging level
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(), # Log to console
+        TimedRotatingFileHandler(f'logs\\{date}.log', when = "D", backupCount= 5)
+    ]
+)
+#end region
+
 class inst_suite():
     #region app init
     def __init__(self):
@@ -40,8 +57,13 @@ class inst_suite():
         #resistances
         self.CRM = None #contact sheet R
         self.CLRM = None #contactless sheet R
+        #logging
 
+        class_name = str(type(self))
+        name = class_name.split(" ")[-1][:-1].replace("'", "")
         
+        self.logger = logging.getLogger(name)
+        self.logger.info("Server initalized")
         #tcp vars
         try:
             self.host = sys.argv[1]
