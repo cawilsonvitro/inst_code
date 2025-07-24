@@ -95,16 +95,17 @@ class four_point_app():
             
         if self.connected:
             self.logger.info(f"Connected to server {self.ip}:{self.port}")
+            StandardLabel.instances["Connection"].configure(image = TkImage("connection_status", r"images\Status_Good.png").image)
             try:
                 self.tcp.id()
             except Exception as e:
                 self.logger.error(f"Failed to send id to server")
         else:
+            StandardLabel.instances["Connection"].configure(image = TkImage("connection_status", r"images\Status_Bad.png").image)
             self.logger.error(f"Failed to connect to server, see above for details")
     
     def startApp(self):
         self.logger.info("Starting 4 point probe app")
-        self.connectClient()
         self.root = tk.Tk()
         self.root.title("4 point probe measurement")
         self.root.geometry("480x240")
@@ -115,7 +116,7 @@ class four_point_app():
         self.process_display.set("Booting")
         self.root.update_idletasks()
         self.buildGUI(self.root)
-        
+        self.connectClient()
         self.logger.info("GUI built, starting main loop")
         self.root.mainloop()
     
@@ -211,6 +212,18 @@ class four_point_app():
             command = self.measure
         ).place(x = 0, y = 120)
         
+        StandardButtons(
+            "Reconnect",
+            root,
+            image = TkImage("Reconnect", r"tools\fourpp\images\Reconnect_Button.png").image,
+            command = self.connectClient
+        ).place(x = 0, y = 190)
+        
+        StandardLabel(
+            "Connection",
+            root,
+            image = TkImage("Connect_status",  r"tools\fourpp\images\Status_Bad.png").image
+        ).place(x = 140, y = 190)
         
         Label(
             "Process_Status", 
