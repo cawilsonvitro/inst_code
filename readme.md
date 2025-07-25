@@ -1,17 +1,9 @@
 tcp notes
-protocol
-
-measuring:
-1st. send "MEAS" to put server into measurement mode
-2nd. server sends msg back
-3rd. send sample id to server
-4th. server sends awaiting value from OR DESC
-5th if server sends DESC the user is prompted for a description of the sample and then the client sends a description
-(6th). the server sends awaiting value from if previously sent description
-7th. send value or values to server, each value will be broken by a data received
-8th. server gets value and sends back "data received" 
-
-
+measuring
+1st. Client Requests meta data of sample, if no sample returns blank
+2nd. Client update meta data of sample if needed
+3rd. Client carries out measurement procedure 
+protocol for sample
 
 
 to use nidaq systems run

@@ -296,28 +296,33 @@ class four_point_app():
     def tcp_proptocol(self) -> None:
         self.logger.info("Starting TCP protocol")
         
-        self.logger.debug("Sending MEAS command to server")
-        self.tcp.soc.send("MEAS".encode())
+        self.logger.debug("Sending META command to server")
+        self.tcp.soc.send("META".encode())
         resp = self.tcp.soc.recv(1024).decode()
         self.logger.debug(f"Received response: {resp}")
         self.logger.debug("Sending sample number to server")
         self.tcp.soc.send(str(self.sample_num).encode())
-        resp = self.tcp.soc.recv(1024).decode()
-        self.logger.debug(f"Received response: {resp}")
-        if resp == "DESC":
-            self.logger.debug("Server requested sample description")
-            self.process_display("Please enter sample, if no description needed enter none")
-            self.wait.set(True)
-            self.toggle_desc()
-            self.root.wait_variable(self.wait)
-            # desc = input("Enter a description for the sample: " ) ### PLACE HOLDER
-            self.tcp.soc.send(self.description.encode())
-            resp = self.tcp.soc.recv(1024).decode()
-        print("sending value")
-        self.tcp.soc.send(str(self.value).encode())
+        self.description = self.tcp.soc.recv(1024).decode()
+        TextBox.instances["desc"].insert(self.description)
+        self.logger.debug("Server sent sample description, launched description editor")
+        self.process_display("Please enter sample, if no description needed enter none")
+        self.wait.set(True)
+        self.toggle_desc()
+        self.root.wait_variable(self.wait)
+        self.description = TextBox.instances["desc"].get()
         
+        # desc = input("Enter a description for the sample: " ) ### PLACE HOLDER
+        
+        self.logger.debug("Starting measurement protocol")
+        self.tcp.soc.send("MEAS".encode())
         resp = self.tcp.soc.recv(1024).decode()
-
+        self.logger.debug(f"sending sample id")
+        self.tcp.soc.send(str(self.sample_num).encode())
+        resp = self.tcp.soc.recv(1024).decode()
+        self.logger.debug("sending over description")
+        self.tcp.soc.send(self.description.encode())
+        resp = self.tcp.soc.recv(1024).decode()
+        self.tcp.soc.send(str(self.value).encode())
         if resp != "data received":
             print("ERROR")
     

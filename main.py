@@ -21,7 +21,7 @@ logging.basicConfig(
     level=logging.DEBUG, # Set a global logging level
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.StreamHandler(), # Log to console
+        # logging.StreamHandler(), # Log to console
         TimedRotatingFileHandler(f'logs\\{date}.log', when = "D", backupCount= 5)
     ]
 )
