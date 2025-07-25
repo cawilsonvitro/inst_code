@@ -1,8 +1,8 @@
 #region imports
 from gui_package_cawilvitro import *
 from instutil import inst_util as iu
-# import fourpp as fourpp
-import fourpp_dummy as fourpp
+import fourpp as fourpp
+# import fourpp_dummy as fourpp
 import tkinter as tk
 from tkinter import Misc
 import tkinter.ttk as ttk
@@ -83,14 +83,16 @@ class four_point_app():
         try:            
             self.tcp = iu.client(self.ip, self.port)#, self.message, self.response)
             result = self.tcp.connect()
-            if type(result) == TimeoutError:
+            if not result:
                 self.connection = False
                 self.logger.error(traceback.format_exc())
             else:
-                self.tcp.soc.settimeout(3)
+                # self.tcp.soc.settimeout(3)-
                 #tells server the ip is connected
+                self.logger.info("Connect to server")
                 self.connected = True
         except Exception as e:
+            traceback.print_exc()
             self.connected = False
             
         if self.connected:
