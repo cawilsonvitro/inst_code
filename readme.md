@@ -51,6 +51,8 @@ make sure to replace in .venv\pyvenv.cfg the c### with current user
 
 
 to do:
+four pp reconnect is not auto updating
+
 add better logging to inst utils
 
 add reconnect

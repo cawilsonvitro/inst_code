@@ -53,7 +53,7 @@ class inst_suite():
 
         #RDT 
         self.R_D_T = None
-
+        self.test = "HI"
         #resistances
         self.CRM = None #contact sheet R
         self.CLRM = None #contactless sheet R

@@ -1,8 +1,8 @@
 #region imports
 from gui_package_cawilvitro import *
 from instutil import inst_util as iu
-# import fourpp as fourpp
-import fourpp_dummy as fourpp
+import fourpp as fourpp
+# import fourpp_dummy as fourpp
 import tkinter as tk
 from tkinter import Misc
 import tkinter.ttk as ttk
@@ -146,16 +146,14 @@ class four_point_app():
     def toggle_desc(self):
         self.logger.info("Toggling Description Window")
         state = self.desc_window.state()
-        # TextBox.instances["desc"].delete("1.0","end-1c")
         if state == "normal": self.desc_window.withdraw()
         if state == "withdrawn": self.desc_window.deiconify()
 
     
     def get_desc(self, event) ->None:
         #closes out window and gets info
-        
         self.description = TextBox.instances["desc"].get("1.0","end-1c")
-    
+        TextBox.instances["desc"].delete("1.0","end-1c")
         self.toggle_desc()
         
         self.wait.set(False)
@@ -306,27 +304,37 @@ class four_point_app():
         self.tcp.soc.send(str(self.sample_num).encode())
 
         self.description = self.tcp.soc.recv(1024).decode()
+        print(self.description)
         TextBox.instances["desc"].insert("1.0", self.description)
         self.logger.debug("Server sent sample description, launched description editor")
         self.process_display.set("Please enter sample, if no description needed enter none")
         self.wait.set(True)
         self.toggle_desc()
         self.root.wait_variable(self.wait)
-        self.description = TextBox.instances["desc"].get("1.0","end-1c")
+        print(self.description)
         # desc = input("Enter a description for the sample: " ) ### PLACE HOLDER
-        
-        # self.logger.debug("Starting measurement protocol")
-        # self.tcp.soc.send("MEAS".encode())
-        # resp = self.tcp.soc.recv(1024).decode()
-        # self.logger.debug(f"sending sample id")
-        # self.tcp.soc.send(str(self.sample_num).encode())
-        # resp = self.tcp.soc.recv(1024).decode()
-        # self.logger.debug("sending over description")
-        # self.tcp.soc.send(self.description.encode())
-        # resp = self.tcp.soc.recv(1024).decode()
-        # self.tcp.soc.send(str(self.value).encode())
-        # if resp != "data received":
-        #     print("ERROR")
+                
+        self.logger.debug("Starting measurement protocol")
+        self.tcp.soc.send("MEAS".encode())
+        resp = self.tcp.soc.recv(1024).decode()
+        self.logger.debug(f"received {resp}")
+        self.logger.debug(f"sending sample id")
+        self.tcp.soc.send(str(self.sample_num).encode())
+        resp = self.tcp.soc.recv(1024).decode()
+        self.logger.debug(f"received {resp}")
+        self.logger.debug("sending over description")
+        temp = str(self.description)
+        print(temp)
+        print(temp.encode())
+        print("TESTs".encode())
+        self.tcp.soc.send(self.description.encode())
+        resp = self.tcp.soc.recv(1024).decode()
+        self.logger.debug(f"received {resp}")
+        self.tcp.soc.send(str(self.value).encode())
+        resp = self.tcp.soc.recv(1024).decode()
+        self.logger.debug(f"received {resp}")
+        if resp != "data received":
+            print("ERROR")
     
     #endregion
     
