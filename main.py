@@ -123,7 +123,7 @@ class inst_suite():
         self.root.title("Insturment Control Suite")
         self.root.geometry("430x485")
         self.root.bind("<Escape>", self.endApp) #type: ignore
-        self.root.protocol("WM_DELETE_WINDOW",self.endProto)
+        self.root.protocol("WM_DELETE_WINDOW",partial(self.endApp, None))
         self.process_display = tk.StringVar() 
         self.process_display.set("Booting")
         self.root.update_idletasks()
@@ -142,13 +142,8 @@ class inst_suite():
         self.tcphandler.quit()
         self.root.quit()
         sys.exit(0)
-              
-    def endProto(self):
-        '''
-        wrapper to end app
-        '''
-        self.endApp(None)
     #endregion
+    
     #region GUI building
     def buildGUI(self, root: tk.Tk) -> None:
         '''
