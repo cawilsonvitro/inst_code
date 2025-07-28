@@ -162,6 +162,7 @@ class four_point_app():
         self.logger.info("Updating sample dropdown")
         self.tcp.soc.send("UPDATE".encode())
         resp:str = self.tcp.soc.recv(1024).decode()
+        print(resp)
         if resp != "None":
             dropdown.instances["samples"].configure(values=resp.split(","))
         else:
@@ -190,7 +191,26 @@ class four_point_app():
             width = 28,
             postcommand= self.update,
         ).place(x = 0, y = 60)
-        
+        dropdown(
+            "position",
+            root,
+            values = ["LT", "LC", "LL", "CT", "CC", "CL", "RT", "RC", "RL"],
+            width = 5,
+        ).place(x = 200, y = 60)
+        Label(
+            "positions",
+            root,
+            text = "position:",
+            anchor=tk.W,           
+            height=1,              
+            width=30,              
+            bd=1,                  
+            font=("Arial", 10), 
+            cursor="hand2",   
+            fg="black",                           
+            justify = tk.LEFT,  
+            wraplength=100   
+            ).place(x = 200, y = 40, width = 80,height = 20)
         Label(
             "Samples",
             root,
@@ -302,39 +322,39 @@ class four_point_app():
         self.logger.debug(f"Received response: {resp}")
         self.logger.debug("Sending sample number to server")
         self.tcp.soc.send(str(self.sample_num).encode())
-
         self.description = self.tcp.soc.recv(1024).decode()
-        print(self.description)
+        self.logger.debug(f"got {self.description} from server")
         TextBox.instances["desc"].insert("1.0", self.description)
-        self.logger.debug("Server sent sample description, launched description editor")
+        self.logger.debug(f"Server sent sample description {self.description}, launched description editor")
         self.process_display.set("Please enter sample, if no description needed enter none")
         self.wait.set(True)
         self.toggle_desc()
         self.root.wait_variable(self.wait)
-        print(self.description)
-        # desc = input("Enter a description for the sample: " ) ### PLACE HOLDER
-                
-        self.logger.debug("Starting measurement protocol")
+        self.logger.debug(f"user set description to {self.description}")
+
+        self.logger.info("Starting TCP MEAS protocol")
+
+        self.logger.debug("Sending MEAS command")
         self.tcp.soc.send("MEAS".encode())
         resp = self.tcp.soc.recv(1024).decode()
-        self.logger.debug(f"received {resp}")
-        self.logger.debug(f"sending sample id")
-        self.tcp.soc.send(str(self.sample_num).encode())
+        self.logger.debug(f"got {resp} from Server")
+        self.logger.debug(f"sending sample id {self.sample_num}")
+        self.tcp.soc.send(self.sample_num.encode())
         resp = self.tcp.soc.recv(1024).decode()
-        self.logger.debug(f"received {resp}")
-        self.logger.debug("sending over description")
-        temp = str(self.description)
-        print(temp)
-        print(temp.encode())
-        print("TESTs".encode())
+        self.logger.debug(f"Received response: {resp}")
         self.tcp.soc.send(self.description.encode())
         resp = self.tcp.soc.recv(1024).decode()
-        self.logger.debug(f"received {resp}")
+        self.logger.debug(f"Received response: {resp}")
         self.tcp.soc.send(str(self.value).encode())
         resp = self.tcp.soc.recv(1024).decode()
-        self.logger.debug(f"received {resp}")
+        self.logger.debug(f"Received response: {resp}")
         if resp != "data received":
-            print("ERROR")
+           self.logger.error(f"unexcpeted response from server {resp}")
+        else:
+            self.logger.info("TCP protocol complete")
+
+
+
     
     #endregion
     
@@ -342,7 +362,7 @@ class four_point_app():
     def measure(self):
         self.logger.info("starting measurement")
         self.process_display.set("measuring")
-        self.sample_num = dropdown.instances["samples"].get()
+        self.sample_num:str = dropdown.instances["samples"].get()
         self.logger.info(f"Sample: {self.sample_num}")
         if self.sample_num == "":
             self.process_display.set("Please select or enter a sample ID")
@@ -351,7 +371,6 @@ class four_point_app():
                 try:
                     self.DM.measure()
                     self.value = (sum(self.DM.values)/len(self.DM.values)) * 4.517 * 1 * 1.006
-                    
                     if self.connected:
                         self.tcp_proptocol()
                     self.process_display.set("Ready")
