@@ -27,7 +27,7 @@ logging.basicConfig(
     level=logging.DEBUG, # Set a global logging level
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.StreamHandler(), # Log to console
+        # logging.StreamHandler(), # Log to console
         TimedRotatingFileHandler(f'tools\\fourpp\\logs\\{date}.log', when = "D", backupCount= 5)
     ]
 )
@@ -56,7 +56,7 @@ class four_point_app():
         self.sample_num:int
         self.exst = ".csv"
         self.fmanager:iu.FileManager = iu.FileManager("fourpp", "5")
-        self.description: str = ""
+        self.description: str = "None"
         #threading
         # self.message: Queue[Any] = Queue(maxsize=1)
         # self.response: Queue[Any] = Queue(maxsize=1)
@@ -83,12 +83,10 @@ class four_point_app():
         try:            
             self.tcp = iu.client(self.ip, self.port)#, self.message, self.response)
             result = self.tcp.connect()
-            if not result:
+            if result != None:
                 self.connection = False
                 self.logger.error(traceback.format_exc())
             else:
-                # self.tcp.soc.settimeout(3)-
-                #tells server the ip is connected
                 self.logger.info("Connect to server")
                 self.connected = True
         except Exception as e:
@@ -132,7 +130,11 @@ class four_point_app():
         '''
         self.logger.info("Shutting down application")
         self.quit = True
-        if self.connected: self.tcp.disconnect()
+        try:
+            if self.connected: 
+                self.tcp.disconnect()
+        except:
+            self.logger.debug("client already shut down")
         self.DM.quit()
         self.root.quit()
         
@@ -144,16 +146,14 @@ class four_point_app():
     def toggle_desc(self):
         self.logger.info("Toggling Description Window")
         state = self.desc_window.state()
-        TextBox.instances["desc"].delete("1.0","end-1c")
         if state == "normal": self.desc_window.withdraw()
         if state == "withdrawn": self.desc_window.deiconify()
 
     
     def get_desc(self, event) ->None:
         #closes out window and gets info
-        
         self.description = TextBox.instances["desc"].get("1.0","end-1c")
-    
+        TextBox.instances["desc"].delete("1.0","end-1c")
         self.toggle_desc()
         
         self.wait.set(False)
@@ -302,27 +302,37 @@ class four_point_app():
         self.logger.debug(f"Received response: {resp}")
         self.logger.debug("Sending sample number to server")
         self.tcp.soc.send(str(self.sample_num).encode())
+
         self.description = self.tcp.soc.recv(1024).decode()
-        TextBox.instances["desc"].insert(self.description)
+        print(self.description)
+        TextBox.instances["desc"].insert("1.0", self.description)
         self.logger.debug("Server sent sample description, launched description editor")
-        self.process_display("Please enter sample, if no description needed enter none")
+        self.process_display.set("Please enter sample, if no description needed enter none")
         self.wait.set(True)
         self.toggle_desc()
         self.root.wait_variable(self.wait)
-        self.description = TextBox.instances["desc"].get()
-        
+        print(self.description)
         # desc = input("Enter a description for the sample: " ) ### PLACE HOLDER
-        
+                
         self.logger.debug("Starting measurement protocol")
         self.tcp.soc.send("MEAS".encode())
         resp = self.tcp.soc.recv(1024).decode()
+        self.logger.debug(f"received {resp}")
         self.logger.debug(f"sending sample id")
         self.tcp.soc.send(str(self.sample_num).encode())
         resp = self.tcp.soc.recv(1024).decode()
+        self.logger.debug(f"received {resp}")
         self.logger.debug("sending over description")
+        temp = str(self.description)
+        print(temp)
+        print(temp.encode())
+        print("TESTs".encode())
         self.tcp.soc.send(self.description.encode())
         resp = self.tcp.soc.recv(1024).decode()
+        self.logger.debug(f"received {resp}")
         self.tcp.soc.send(str(self.value).encode())
+        resp = self.tcp.soc.recv(1024).decode()
+        self.logger.debug(f"received {resp}")
         if resp != "data received":
             print("ERROR")
     
@@ -344,9 +354,6 @@ class four_point_app():
                     
                     if self.connected:
                         self.tcp_proptocol()
-                        # self.connectClient()
-                        # if self.connected:
-                        #     self.tcp_proptocol()
                     self.process_display.set("Ready")
                 except Exception as e:
                     traceback.print_exc()
@@ -360,10 +367,13 @@ class four_point_app():
                 self.wait.set(True)
                 self.toggle_desc()
                 self.root.wait_variable(self.wait)
-                data.append(self.description)
-                self.fmanager.write_data("fourpp", ["sample id", "time", "resistance", "description"], [data])
+            
+            
+            
+            data.append(self.description)
+            self.fmanager.write_data("fourpp", ["sample id", "time", "resistance", "description"], [data])
                 
-            else:self.fmanager.write_data("fourpp", ["sample id", "time", "resistance"], [data])
+            
             
             if not self.DM.status:
                 self.load_dm()
