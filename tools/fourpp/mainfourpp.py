@@ -1,8 +1,8 @@
 #region imports
 from gui_package_cawilvitro import *
 from instutil import inst_util as iu
-import fourpp as fourpp
-# import fourpp_dummy as fourpp
+# import fourpp as fourpp
+import fourpp_dummy as fourpp
 import tkinter as tk
 from tkinter import Misc
 import tkinter.ttk as ttk
@@ -340,14 +340,11 @@ class four_point_app():
         if self.position == "": self.position = "None"
         
         self.tcp.soc.send(self.position.encode())
-        resp = self.tcp.soc.recv(1024).decode()
-        
-        self.logger.debug(f"Received response: {resp}")
-        self.logger.debug("Sending description request to server")
         self.description = self.tcp.soc.recv(1024).decode()
         
         self.logger.debug(f"got {self.description} from server")
-        
+        self.logger.debug("Sending description request to server")
+
         TextBox.instances["desc"].insert("1.0", self.description)
         self.logger.debug(f"Server sent sample description {self.description}, launched description editor")
         self.process_display.set("Please enter sample, if no description needed enter none")
@@ -384,8 +381,6 @@ class four_point_app():
            self.logger.error(f"unexcpeted response from server {resp}")
         else:
             self.logger.info("TCP protocol complete")
-
-
 
     
     #endregion
