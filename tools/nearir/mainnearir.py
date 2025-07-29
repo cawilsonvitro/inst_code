@@ -155,7 +155,13 @@ class near_ir_app():
         self.toggle_desc()
         
         self.wait.set(False)
-        
+
+    def get_pos(self,event) -> None:        
+        self.logger.debug("Getting pos")
+        self.position = "" 
+        self.position = dropdown.instances["position"].get()
+        self.logger.debug(f"{self.position} selected")
+             
     def update(self) -> None:
         self.logger.info("Updating sample dropdown")
         self.tcp.soc.send("UPDATE".encode())
@@ -196,7 +202,7 @@ class near_ir_app():
             values = ["LT", "LC", "LL", "CT", "CC", "CL", "RT", "RC", "RL"],
             width = 5,
         ).place(x = 200, y = 60)
-        
+        dropdown.instances["position"].bind('<<ComboboxSelected>>', self.get_pos)
         Label(
             "positions",
             root,
@@ -320,13 +326,26 @@ class near_ir_app():
         self.logger.info("Starting TCP protocol")
         
         self.logger.debug("Sending META command to server")
+        
         self.tcp.soc.send("META".encode())
         resp = self.tcp.soc.recv(1024).decode()
+        
         self.logger.debug(f"Received response: {resp}")
         self.logger.debug("Sending sample number to server")
+        
         self.tcp.soc.send(str(self.sample_num).encode())
+        resp = self.tcp.soc.recv(1024).decode()
+        
+        self.logger.debug(f"Received response: {resp}")
+        self.logger.debug("Sending position to server")
+        if self.position == "": self.position = "None"
+        
+        self.tcp.soc.send(self.position.encode())
         self.description = self.tcp.soc.recv(1024).decode()
+        
         self.logger.debug(f"got {self.description} from server")
+        self.logger.debug("Sending description request to server")
+
         TextBox.instances["desc"].insert("1.0", self.description)
         self.logger.debug(f"Server sent sample description {self.description}, launched description editor")
         self.process_display.set("Please enter sample, if no description needed enter none")
@@ -336,69 +355,60 @@ class near_ir_app():
         self.logger.debug(f"user set description to {self.description}")
 
         self.logger.info("Starting TCP MEAS protocol")
-
         self.logger.debug("Sending MEAS command")
+        
         self.tcp.soc.send("MEAS".encode())
+        
         resp = self.tcp.soc.recv(1024).decode()
         self.logger.debug(f"got {resp} from Server")
         self.logger.debug(f"sending sample id {self.sample_num}")
+        
         self.tcp.soc.send(self.sample_num.encode())
         resp = self.tcp.soc.recv(1024).decode()
+        
         self.logger.debug(f"Received response: {resp}")
+        
         self.tcp.soc.send(self.description.encode())
         resp = self.tcp.soc.recv(1024).decode()
+        
         self.logger.debug(f"Received response: {resp}")
+        
         self.tcp.soc.send(str(self.value).encode())
         resp = self.tcp.soc.recv(1024).decode()
+        
         self.logger.debug(f"Received response: {resp}")
         if resp != "data received":
            self.logger.error(f"unexcpeted response from server {resp}")
         else:
-            self.logger.info("TCP protocol complete")
-
-
+            self.logger.info("TCP check complete, sending spectra")
+            
+        self.tcp.soc.send("".encode())
 
     
     #endregion
     
     #region measurement
     def measure(self):
-        self.logger.info("starting measurement")
-        self.process_display.set("measuring")
-        self.sample_num:str = dropdown.instances["samples"].get()
-        self.logger.info(f"Sample: {self.sample_num}")
-        if self.sample_num == "":
-            self.process_display.set("Please select or enter a sample ID")
-        else:
-            if self.DM.status:
-                try:
-                    self.DM.measure()
-                    self.value = (sum(self.DM.values)/len(self.DM.values)) * 4.517 * 1 * 1.006
-                    if self.connected:
-                        self.tcp_proptocol()
-                    self.process_display.set("Ready")
-                except Exception as e:
-                    traceback.print_exc()
-                    self.DM.status = False
-                    print("Measuring fail", e)
-            data:list[str | int | float] = [self.sample_num, str(dt.now()), self.value]
-            
-            
-            if not self.connected: #always get a sample description if not connected
-                self.logger.info("Not connected to server, having user manual enter sample description")
-                self.wait.set(True)
-                self.toggle_desc()
-                self.root.wait_variable(self.wait)
-            
-            
-            
-            data.append(self.description)
-            self.fmanager.write_data("nearir", ["sample id", "time", "resistance", "description"], [data])
-                
-            
-            
-            if not self.DM.status:
-                self.init_spec()
+            self.process_display.set("measuring")
+            self.root.update_idletasks()
+            self.sample_num = dropdown.instances["samples"].get()
+            if self.sample_num == "":
+                self.process_display.set("Please select or enter a sample ID")
+            else:
+                if self.spectrometer.status:
+                    self.spectrometer.measure()
+                else:
+                    self.spec_init()
+                str_wvs: str = ""
+                str_spec: str = ""
+                i: int = 0
+                for wv in self.spectrometer.wv:
+                    str_wvs += str(wv[0]) + ","
+                    str_spec += str(self.spectrometer.spectra[i]) + ","
+                    i += 1
+
+                self.wvs = str_wvs
+                self.spec = str_spec
     #endregion
     
 
