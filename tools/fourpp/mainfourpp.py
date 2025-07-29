@@ -131,12 +131,13 @@ class four_point_app():
         self.logger.info("Shutting down application")
         self.quit = True
         try:
+            self.DM.quit()
+            self.root.quit()
             if self.connected: 
                 self.tcp.disconnect()
         except:
             self.logger.debug("client already shut down")
-        self.DM.quit()
-        self.root.quit()
+       
         
         
     #endregion
@@ -157,6 +158,12 @@ class four_point_app():
         self.toggle_desc()
         
         self.wait.set(False)
+    
+    def get_pos(self,event) -> None:        
+        self.logger.debug("Getting pos")
+        self.position = "" 
+        self.position = dropdown.instances["position"].get()
+        self.logger.debug(f"{self.position} selected")
         
     def update(self) -> None:
         self.logger.info("Updating sample dropdown")
@@ -189,7 +196,7 @@ class four_point_app():
             root,
             values = "",
             width = 28,
-            postcommand= self.update,
+            postcommand = self.update,
         ).place(x = 0, y = 60)
         dropdown(
             "position",
@@ -197,6 +204,7 @@ class four_point_app():
             values = ["LT", "LC", "LL", "CT", "CC", "CL", "RT", "RC", "RL"],
             width = 5,
         ).place(x = 200, y = 60)
+        dropdown.instances["position"].bind('<<ComboboxSelected>>', self.get_pos)
         Label(
             "positions",
             root,
@@ -317,13 +325,29 @@ class four_point_app():
         self.logger.info("Starting TCP protocol")
         
         self.logger.debug("Sending META command to server")
+        
         self.tcp.soc.send("META".encode())
         resp = self.tcp.soc.recv(1024).decode()
+        
         self.logger.debug(f"Received response: {resp}")
         self.logger.debug("Sending sample number to server")
+        
         self.tcp.soc.send(str(self.sample_num).encode())
+        resp = self.tcp.soc.recv(1024).decode()
+        
+        self.logger.debug(f"Received response: {resp}")
+        self.logger.debug("Sending position to server")
+        if self.position == "": self.position = "None"
+        
+        self.tcp.soc.send(self.position.encode())
+        resp = self.tcp.soc.recv(1024).decode()
+        
+        self.logger.debug(f"Received response: {resp}")
+        self.logger.debug("Sending description request to server")
         self.description = self.tcp.soc.recv(1024).decode()
+        
         self.logger.debug(f"got {self.description} from server")
+        
         TextBox.instances["desc"].insert("1.0", self.description)
         self.logger.debug(f"Server sent sample description {self.description}, launched description editor")
         self.process_display.set("Please enter sample, if no description needed enter none")
@@ -335,18 +359,26 @@ class four_point_app():
         self.logger.info("Starting TCP MEAS protocol")
 
         self.logger.debug("Sending MEAS command")
+        
         self.tcp.soc.send("MEAS".encode())
+        
         resp = self.tcp.soc.recv(1024).decode()
         self.logger.debug(f"got {resp} from Server")
         self.logger.debug(f"sending sample id {self.sample_num}")
+        
         self.tcp.soc.send(self.sample_num.encode())
         resp = self.tcp.soc.recv(1024).decode()
+        
         self.logger.debug(f"Received response: {resp}")
+        
         self.tcp.soc.send(self.description.encode())
         resp = self.tcp.soc.recv(1024).decode()
+        
         self.logger.debug(f"Received response: {resp}")
+        
         self.tcp.soc.send(str(self.value).encode())
         resp = self.tcp.soc.recv(1024).decode()
+        
         self.logger.debug(f"Received response: {resp}")
         if resp != "data received":
            self.logger.error(f"unexcpeted response from server {resp}")
@@ -390,7 +422,8 @@ class four_point_app():
             
             
             data.append(self.description)
-            self.fmanager.write_data("fourpp", ["sample id", "time", "resistance", "description"], [data])
+            data.append(self.position)
+            self.fmanager.write_data("fourpp", ["sample id", "time", "resistance", "description", "pos"], [data])
                 
             
             
