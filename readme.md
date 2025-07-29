@@ -50,29 +50,26 @@ make sure Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 make sure to replace in .venv\pyvenv.cfg the c### with current user
 
 
+V3:
+settings window
+tools in one package
+tcp improvement
+
 to do:
-four pp reconnect is not auto updating
+get list of params we can changes
+
+
+improve logging in all tools
+
+add pos to tcp protocol during "META" 
+
+add instrument settups to config
+
+add math to nearir
+
+propagate v2
 
 add better logging to inst utils
-
-add reconnect
-add logging to server 
-add time outs to sending 
-
-get working with getting server from config
-
-update venv builder to update declome file path automatically
-
-reduce file open and closing
-
-clients close poorly
-clients don't work without tcp connection
-clients don't reconnect to server 
-
-redo way to change status light
-StandardLabel.instances["fourpp_status"].configure(image = TkImage("fourpp_status", r"images\Status_Bad.png").image)
-
-
 
 for hall script if it fails to write to server it reverts the file (I don't know if this is needed test)
 add file manager to other tools
@@ -81,28 +78,17 @@ add better data storage to rdt for future ai stuff
 
 need to update setup.py 
 
-add logging
-
 fix setup and make it runoffline
-
 
 
 (last)go through and remove dubugging prints
 (last) remove Any typing
 (last) update gitignore
 
-
-
 add to setup.py:
     adjust venv pyvevn.cfg to target exe
 
 get setup working with windows 11 computers
-
-need to get sql server better
-
-add front end functionality to main
-
-get better status lights working
 
 add better error handling
 
@@ -110,11 +96,40 @@ clean up imports
 
 need to do full test with vdap
 
+test installs and fix them
+
 add sql installs to setup
+
+
+done:
+
+add time outs to sending 
+
+get working with getting server from config
+
+update venv builder to update declome file path automatically
+clients close poorly
+clients don't work without tcp connection
+clients don't reconnect to server 
+add logging
+redo way to change status light
+StandardLabel.instances["fourpp_status"].configure(image = TkImage("fourpp_status", r"images\Status_Bad.png").image)
+reduce file open and closing
+need to get sql server better
+
+add front end functionality to main
+
+get better status lights working
+
 
 server crashes if client closes while waiting 
 
-done:
+
+add reconnect
+
+add logging to server 
+
+four pp reconnect is not auto updating
 
 auto update connection status when device connects
 
