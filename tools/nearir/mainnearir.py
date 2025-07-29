@@ -33,7 +33,7 @@ logging.basicConfig(
 
 #endregion
 
-class four_point_app():
+class near_ir_app():
     
     #region application start up
     def __init__(self, ip, port):
@@ -418,7 +418,7 @@ if __name__ == "__main__":
     PORT = 5050
     ADDR = (SERVER, PORT)
     
-    temp = four_point_app(SERVER, PORT)
+    temp = near_ir_app(SERVER, PORT)
     temp.startApp()
 
  
