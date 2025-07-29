@@ -382,33 +382,63 @@ class near_ir_app():
         else:
             self.logger.info("TCP check complete, sending spectra")
             
-        self.tcp.soc.send("".encode())
+        self.tcp.soc.send(self.spec.encode())
+        
+        resp = self.tcp.soc.recv(1024).decode()
 
     
     #endregion
     
     #region measurement
     def measure(self):
-            self.process_display.set("measuring")
-            self.root.update_idletasks()
-            self.sample_num = dropdown.instances["samples"].get()
-            if self.sample_num == "":
-                self.process_display.set("Please select or enter a sample ID")
-            else:
-                if self.spectrometer.status:
+        
+    
+        self.process_display.set("measuring")
+        self.root.update_idletasks()
+        self.sample_num = dropdown.instances["samples"].get()
+        if self.sample_num == "":
+            self.process_display.set("Please select or enter a sample ID")
+        else:
+            if self.spectrometer.status:
+                try:
                     self.spectrometer.measure()
-                else:
-                    self.spec_init()
-                str_wvs: str = ""
-                str_spec: str = ""
-                i: int = 0
-                for wv in self.spectrometer.wv:
-                    str_wvs += str(wv[0]) + ","
-                    str_spec += str(self.spectrometer.spectra[i]) + ","
-                    i += 1
+                    
+                    str_wvs: str = ""
+                    str_spec: str = ""
+                    i: int = 0
+                    for wv in self.spectrometer.wv:
+                        str_wvs += str(wv[0]) + ","
+                        str_spec += str(self.spectrometer.spectra[i]) + ","
+                        i += 1
+                    self.wvs = str_wvs
+                    self.spec = str_spec
+                    if not self.connected:
+                        self.logger.error("Not connected to server, cannot send data, having user enter sample description")
+                        self.wait.set(True)
+                        self.toggle_desc()
+                        self.root.wait_variable(self.wait)
+                    
+                    data:list[str | int | float] = [self.sample_num, str(dt.now()), 
+                                                    self.description, self.position]
+                    for val in self.spec.split(","): data.append(val)
+                    
+                    headers:list[str] = ["Sample ID", "TIME", "Description", "Position"]
+                    
+                    for wv in self.wvs.split(","): headers.append(wv)
+                    
+                    
+                    self.fmanager.write_data("NIR", headers, data)
+                    
+                except:
+                    self.logger.error("Failed to measure, reinitializing spectrometer")
+                    self.spectrometer.status = False
+                
+            if not self.spectrometer.status:
+                self.spec_init()
+                    
+                
 
-                self.wvs = str_wvs
-                self.spec = str_spec
+
     #endregion
     
 

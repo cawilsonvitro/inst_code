@@ -54,6 +54,10 @@ V3:
 settings window
 tools in one package
 tcp improvement
+change string builders to (",").join func
+add automatic reinit to ddrivers
+
+
 
 to do:
 get list of params we can changes
