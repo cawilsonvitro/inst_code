@@ -125,6 +125,11 @@ if __name__ == "__main__":
     sysargs = sys.argv
     print(sysargs)
     try:
+        if sysargs[-1] == "test":      
+            with open ('config.json', 'r') as f:
+                config = json.load(f)
+                
+                
         if sysargs[-1] == "build":
             venv_builder() #builds venv, requires internet connections
         elif sysargs[-1] == "launch+build":

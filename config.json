@@ -9,6 +9,19 @@
     "Hall": {
         "sys": "HMS"
     },
+    "RDT": {
+        "sys":{
+        "T_Bias_on": "150.0",
+        "t_run": "1",
+        "t_delay": "1",
+        "fan_delay": "30",
+        "T_cool": "130"
+        },
+        "USB-9211A": {
+            "Min_val": "-0.05",
+            "Max_val": "0.05"
+        } 
+    },
     "Database_Config":{
         "host": "WHAMNUC1",
         "db": "glass_test",
@@ -20,13 +33,6 @@
         "rdt": "rdt",
         "nearir": "nir",
         "test": "t"
-    },
-    "RDT": {
-        "T_bias_on": "150.0",
-        "t_run": "1",
-        "t_delay": "1",
-        "fan_delay": "30",
-        "T_cool": "130"
     },
     "Spectrometer1": {
         "integrationtime": "10000",

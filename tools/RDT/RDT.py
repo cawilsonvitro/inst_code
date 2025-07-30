@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import json
 import traceback
 import nidaqmx.task
+import time as t
 #endregion
 
 
@@ -14,7 +15,7 @@ class NI_RDT():
     """_summary_ Class for connecting to and controlling a National Instruments device for RDT measurements.
     """
     #region init
-    def __init__(self,config_path:str = "rdt_config.json"):
+    def __init__(self, root, c1, t1, t2, config_path:str = r"C:\Users\c376038\Desktop\inst_suite\working\tools\RDT\rdt_config.json"):
         #control flags
         self.T_bias_flag:bool = False
         
@@ -26,11 +27,24 @@ class NI_RDT():
         self.Current_Tc: nidaqmx.Task  #USB9211A
         self.Relay_Controller: nidaqmx.Task  #USB6525
         
+        #front end interface
+        self.root = root
+        self.c1 = c1
+        self.t1 = t1
+        self.t2 = t2
+        
+        
         #data buses
         self.Current_1:str 
         self.Temp_1:str
         self.Temp_2:str
+        self.data:list[list[float|str|int]] = [] 
         
+        #stuff to pull from config 
+        self.t_run:float = 0.0
+        self.t_delay:float = 1.0
+        self.T_cool:int = 130
+        self.N_meas:int = 0
         
         #config 
         self.config_path:str  = config_path
@@ -44,6 +58,7 @@ class NI_RDT():
             "Cool": [False, False, True],
             "Bias_on": [True, True, False]
         }
+        self.Status = False
         
     def load_config(self): #this will need to be replaced with front end config loading
         """_summary_ Load the configuration from the JSON file.
@@ -94,6 +109,7 @@ class NI_RDT():
         self.Relay_Controller.start()        
         
     def init_rdt(self):
+        self.Status = False
         for device in self.local_system.devices:
             prod:str = str(device.product_type)
             name:str = device.name
@@ -107,39 +123,116 @@ class NI_RDT():
         except Exception as e:
             print(f"Error initializing device {keys[0]}: {e}")
             traceback.print_exc()
-
+            self.Status = False
+        
 
         try:
             self.dev2_init(keys[1])
         except Exception as e:  
             print(f"Error initializing device {keys[1]}: {e}")
             traceback.print_exc()
+            self.Status = False
             
         #initalizing system
-        
+        self.Status = True
         self.Relay_Controller.write(self.States["Off"])    
+        self.Current_1, self.Temp_1, self.Temp_2  = self.Current_Tc.read()
+        self.update_gui()
+    #endregion
+    #region front end interface
+    def update_gui(self):
+        """_summary_ Update the GUI with the current values.
+        """
+        # print(f"Current: {self.Current_1} A, T_HotPlate: {self.Temp_1} C, T_HotPlate2: {self.Temp_2} C")
         
-        temp: list[str]
-        temp = self.Current_Tc.read()
-        print(temp)
+        cur1 = str(self.Current_1)
+        print(cur1)
+        cur1e = cur1[cur1.index("e"):] if "e" in cur1 else ""
+        cur1 = cur1[:cur1.index(".") + 3] if "." in cur1 else cur1
+        if cur1e != "":cur1 = f"{cur1}{cur1e}"
+        temp1 = str(self.Temp_1)
+        temp1 = temp1[:temp1.index(".") + 3] if "." in temp1 else temp1
+        temp2 = str(self.Temp_2)
+        temp2 = temp2[:temp2.index(".") + 3] if "." in temp2 else temp2
+        temp1 += " C"
+        temp2 += " C"   
+        self.c1.set(cur1)
+        self.t1.set(temp1)
+        self.t2.set(temp2)
+        self.root.update_idletasks()
         
-        # self.Current_1, self.Temp_1, self.Temp_2 
-        
-        
-        
-        # if self.Temp_1 > self.T_bias:self.T_bias_flag = True
-        # else:self.T_bias_flag = False
+    #end region
+    #region Data Processing
+    def flatten(self, data:list[list[float|str]]) -> list[float]:
+        """_summary_ Flatten a 2D list into a 1D list."""
+        flat:list[float|str] = []
+        for object in data:
+            if isinstance(object, list):
+                for item in object:
+                    if isinstance(item, (float, int, str)):
+                        flat.append(item)
+            else:
+                if isinstance(object, (float, int, str)):
+                    flat.append(object)
+        return flat
         
     #endregion
     #region measurement
     def standard_procedure(self):
         """_summary_ Standard procedure for RDT measurements.
         """
-        # Initialize the RDT device
-        self.init_rdt()
+
+
+        if self.Temp_1 < self.T_bias:
+            self.T_bias_flag = True
+            while self.Temp_1 < self.T_bias:
+                self.Relay_Controller.write(self.States["Heat"])
+                self.Current_1, self.Temp_1, self.Temp_2  = self.Current_Tc.read()
+                self.update_gui()
+                print(f"Current: {self.Current_1} A, T_HotPlate: {self.Temp_1} C, T_HotPlate2: {self.Temp_2} C")        
+                t.sleep(1)
+        else:
+            print("PreHeated")
+            self.T_bias_flag = False
         
-        # # Perform the measurement
-        # self.perform_measurement()
+        self.Relay_Controller.write(self.States["Bias_on"])
+        
+        self.N_meas:int = 60
+        
+        t_total:float = self.N_meas * self.t_delay 
+        
+        print(f"Total time for measurement: {t_total} seconds")
+        
+        N:int = 0
+        self.data = [] 
+        
+        t_start:float = t.time()
+        while N <= self.N_meas:
+            temp:list[float|str] = []
+            temp.append(t_start - t.time())
+            self.Current_1, self.Temp_1, self.Temp_2  = self.Current_Tc.read()
+            self.update_gui()
+            temp.append([self.Current_1, self.Temp_1, self.Temp_2])
+            self.data.append(temp)
+                
+             #struct of data
+             # data = [[time, [current, T_hotplate, T_hotplate2]], ...]
+            print(f"Current: {self.Current_1} A, T_HotPlate: {self.Temp_1} C, T_HotPlate2: {self.Temp_2} C")
+            print(N)
+            N +=1
+            t.sleep(self.t_delay)
+
+        self.Relay_Controller.write(self.States["Cool"])
+        
+        print("Cooling down...")
+        
+        while self.T_cool < self.Current_Tc.read()[1]:
+            self.Current_1, self.Temp_1, self.Temp_2  = self.Current_Tc.read()
+            self.update_gui()
+            print(f"Current: {self.Current_1} A, T_HotPlate: {self.Temp_1} C, T_HotPlate2: {self.Temp_2} C")
+            t.sleep(1)
+        self.Relay_Controller.write(self.States["Off"])
+        
         
         # # Process the results
         # self.process_results()
@@ -153,20 +246,32 @@ class NI_RDT():
         self.Relay_Controller.write(self.States["Off"])
         self.Current_Tc.stop()
         self.Current_Tc.close()
-
         self.Relay_Controller.stop()
         self.Relay_Controller.close()   
+        
     #endregion
 if __name__ == "__main__":
-    rdt = NI_RDT()
+    rdt:NI_RDT = NI_RDT("", "", "", "")
     try:
         rdt.load_config()
         rdt.init_rdt()
-        rdt.quit()
+        print(rdt.T_cool)
+        rdt.Relay_Controller.write(rdt.States["Cool"])
+        while 0 < rdt.Current_Tc.read()[1]:
+            rdt.Current_1, rdt.Temp_1, rdt.Temp_2  = rdt.Current_Tc.read()
+            print(f"Current: {rdt.Current_1} A, T_HotPlate: {rdt.Temp_1} C, T_HotPlate2: {rdt.Temp_2} C")
+            t.sleep(1)
+        rdt.Relay_Controller.write(rdt.States["Off"])
+        # rdt.standard_procedure()
+        # rdt.quit()
+        # print(rdt.data)
     except:
         traceback.print_exc()
         print("ERROR")
-        rdt.Current_Tc.stop()
-        rdt.Current_Tc.close()
-        rdt.Relay_Controller.stop()
-        rdt.Relay_Controller.close()
+        try:
+            rdt.quit()
+        except:
+            rdt.Current_Tc.stop()
+            rdt.Current_Tc.close()
+            rdt.Relay_Controller.stop()
+            rdt.Relay_Controller.close()
