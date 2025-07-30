@@ -8,8 +8,22 @@ import json
 import traceback
 import nidaqmx.task
 import time as t
+import logging
+from logging.handlers import TimedRotatingFileHandler
 #endregion
+date = dt.now().strftime("%m-%d-%Y, Hour %H Min %M Sec %S")
 
+logging.basicConfig(
+    level=logging.DEBUG, # Set a global logging level
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        # logging.StreamHandler(), # Log to console
+        TimedRotatingFileHandler(f'tools\\RDT\\logs\\{date}.log', when = "D", backupCount= 5)
+    ]
+)
+
+
+#endregion
 
 class NI_RDT():
     """_summary_ Class for connecting to and controlling a National Instruments device for RDT measurements.
@@ -59,6 +73,9 @@ class NI_RDT():
             "Bias_on": [True, True, False]
         }
         self.Status = False
+        
+        #graphing
+        self.fig, self.axs, = plt.subplots(2,1)
         
     def load_config(self): #this will need to be replaced with front end config loading
         """_summary_ Load the configuration from the JSON file.
@@ -205,16 +222,37 @@ class NI_RDT():
         
         N:int = 0
         self.data = [] 
-        
+        #measuring cde
         t_start:float = t.time()
+        graph_T1 = []
+        graph_T2 = []
+        graph_C1 = []
+        graph_t = []
+        for ax in self.axs:ax.clear()
         while N <= self.N_meas:
             temp:list[float|str] = []
             temp.append(t_start - t.time())
             self.Current_1, self.Temp_1, self.Temp_2  = self.Current_Tc.read()
+            
+            graph_T1.append(self.Temp_1)
+            graph_T2.append(self.Temp_2)
+            graph_C1.append(graph_C1)
+            graph_t.append(N)
             self.update_gui()
+            
             temp.append([self.Current_1, self.Temp_1, self.Temp_2])
             self.data.append(temp)
-                
+            
+            self.axs[0].plot(graph_t, graph_T1, c = 'b', label = 'Hotplate T1')
+            self.axs[0].plot(graph_t, graph_T1, c = 'r', label = 'Hotplate T2')
+            self.axs[0].legend()
+            self.axs[1].plot(graph_t, graph_C1, c = 'y', label = 'Current')
+            self.axs[0].legend()
+            
+            self.fig.canvas.draw()
+            self.fig.canvas.flush_events()
+            
+            
              #struct of data
              # data = [[time, [current, T_hotplate, T_hotplate2]], ...]
             print(f"Current: {self.Current_1} A, T_HotPlate: {self.Temp_1} C, T_HotPlate2: {self.Temp_2} C")
@@ -233,6 +271,7 @@ class NI_RDT():
             t.sleep(1)
         self.Relay_Controller.write(self.States["Off"])
         
+        plt.close(self.fig)
         
         # # Process the results
         # self.process_results()

@@ -60,6 +60,10 @@ add automatic reinit to ddrivers
 
 
 to do:
+RDT: fix conifg with launcher
+
+change timers to match JIMS leave mine as comments and talk to
+
 get list of params we can changes
 
 
