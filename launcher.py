@@ -60,7 +60,17 @@ def venv_builder(req = "constraints.txt") -> None:
 def launch():
     """_summary_ launches correct path
     """
-    virt_path: str = os.path.join(os.getcwd(), '.venv', 'scripts', 'python.exe')
+    venv_dir = os.path.join(os.getcwd(), '.venv')
+    
+    # Use appropriate subdirectory based on platform
+    if sys.platform.startswith('win'):
+        scripts_dir = 'Scripts'
+        python_exe = 'python.exe'
+    else:
+        scripts_dir = 'bin'
+        python_exe = 'python'
+        
+    virt_path = os.path.join(venv_dir, scripts_dir, python_exe)
 
     with open ('config.json', 'r') as f:
         config = json.load(f)
@@ -95,23 +105,21 @@ def launch():
     if tool != "host" and tool != "testing":
         if tool == "hall":
             if hall == "HMS":
-                file_name == ""
-                file_name += "hall_script"
+                file_name = "hall_script"  # Fixed the == bug (should be =)
             else:
-                file_name += tool
+                file_name = tool
         else:
-            file_name += tool
+            file_name = tool
         file_name += ".py"
-        file_name = f"tools//{tool}//{file_name}"
+        file_name = os.path.join("tools", tool, file_name)  # Use proper path joining
         
     elif tool != "testing":
         file_name = f"{file_name}.py"
 
     else:
         server_ip = "127.0.0.1"
-        file_name =  r"hall_v2_test\hall_script"
-        file_name += ".py"
-        file_name = f"tools//hall//{file_name}"
+        file_name = "hall_v2_test_hall_script.py"  # Fixed path construction
+        file_name = os.path.join("tools", "hall", file_name)  # Use proper path joining
 
     print(file_name)
     py = virt_path
