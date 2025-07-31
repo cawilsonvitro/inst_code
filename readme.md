@@ -60,6 +60,8 @@ add automatic reinit to ddrivers
 
 
 to do:
+main: test sql and run before moving over
+
 RDT: fix conifg with launcher
 RDT: get repeated measure to graph name
 RDT: get tcp stuff up
@@ -78,8 +80,6 @@ add instrument settups to config
 
 add math to nearir
 
-propagate v2
-
 add better logging to inst utils
 
 for hall script if it fails to write to server it reverts the file (I don't know if this is needed test)
@@ -88,9 +88,6 @@ add file manager to other tools
 add better data storage to rdt for future ai stuff
 
 need to update setup.py 
-
-fix setup and make it runoffline
-
 
 (last)go through and remove dubugging prints
 (last) remove Any typing
@@ -111,6 +108,10 @@ add sql installs to setup
 
 
 done:
+propagate v2
+
+fix setup and make it runoffline
+
 clean up imports
 
 add time outs to sending 

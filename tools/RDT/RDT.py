@@ -156,11 +156,13 @@ class NI_RDT():
         self.update_gui()
     #endregion
     #region front end interface
-    def update_gui(self):
+    def update_gui(self, event = None):
         """_summary_ Update the GUI with the current values.
         """
         # print(f"Current: {self.Current_1} A, T_HotPlate: {self.Temp_1} C, T_HotPlate2: {self.Temp_2} C")
-        
+        if event is not None:
+            self.Current_1, self.Temp_1, self.Temp_2  = self.Current_Tc.read()
+            
         cur1 = str(self.Current_1)
         print(cur1)
         cur1e = cur1[cur1.index("e"):] if "e" in cur1 else ""
@@ -175,6 +177,7 @@ class NI_RDT():
         self.c1.set(cur1)
         self.t1.set(temp1)
         self.t2.set(temp2)
+        print()
         self.root.update_idletasks()
         
     #end region
@@ -192,6 +195,11 @@ class NI_RDT():
                     flat.append(object)
         return flat
         
+    #endregion
+    #region measurement func
+    
+    
+    
     #endregion
     #region measurement
     def standard_procedure(self):
@@ -213,7 +221,7 @@ class NI_RDT():
         
         self.Relay_Controller.write(self.States["Bias_on"])
         
-        self.N_meas:int = 60
+        self.N_meas:int = 1
         
         t_total:float = self.N_meas * self.t_delay 
         
@@ -288,11 +296,20 @@ class NI_RDT():
         self.axs[1].set_title("Current vs Time")
         self.axs[1].set_xlabel("Time (s)")
         self.axs[1].set_ylabel("Current (A)")
+        self.T1 = graph_T1
+        self.T2 = graph_T2
+        self.C1 = graph_C1
+        self.t = graph_t
+        
+        
+
+    def cooldown(self):
         graph_T1 = []
         graph_T2 = []
         graph_C1 = []
         graph_t = []
-        
+        plt.close(self.fig)
+        plt.fig.show()
         self.Relay_Controller.write(self.States["Cool"])
         
         print("Cooling down...")
@@ -344,15 +361,16 @@ if __name__ == "__main__":
         rdt.load_config()
         rdt.init_rdt()
         print(rdt.T_cool)
-        rdt.Relay_Controller.write(rdt.States["Cool"])
-        while 0 < rdt.Current_Tc.read()[1]:
-            rdt.Current_1, rdt.Temp_1, rdt.Temp_2  = rdt.Current_Tc.read()
-            print(f"Current: {rdt.Current_1} A, T_HotPlate: {rdt.Temp_1} C, T_HotPlate2: {rdt.Temp_2} C")
-            t.sleep(1)
-        rdt.Relay_Controller.write(rdt.States["Off"])
-        # rdt.standard_procedure()
-        # rdt.quit()
-        # print(rdt.data)
+        rdt.cooldown()
+        # rdt.Relay_Controller.write(rdt.States["Cool"])
+        # while 0 < rdt.Current_Tc.read()[1]:
+        #     rdt.Current_1, rdt.Temp_1, rdt.Temp_2  = rdt.Current_Tc.read()
+        #     print(f"Current: {rdt.Current_1} A, T_HotPlate: {rdt.Temp_1} C, T_HotPlate2: {rdt.Temp_2} C")
+        #     t.sleep(1)
+        # rdt.Relay_Controller.write(rdt.States["Off"])
+        # # rdt.standard_procedure()
+        # # rdt.quit()
+        # # print(rdt.data)
     except:
         traceback.print_exc()
         print("ERROR")

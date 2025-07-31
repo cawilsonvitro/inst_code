@@ -73,7 +73,7 @@ class rdt_app():
         self.logger.info("rdt app initalized")
         
         #tcp 
-        self.ip, self.port = (ip, port)  
+        self.ip, self.port = (ip, port)     
         
 
     
@@ -347,6 +347,7 @@ class rdt_app():
             justify = tk.LEFT,  
             wraplength=100   
             ).place(x = 350, y = 70, width = 80,height = 20)
+        
         Label(
             "Process_Status", 
             root,
@@ -358,7 +359,7 @@ class rdt_app():
             font=("Arial", 10), 
             cursor="hand2",   
             fg="black",                           
-            justify = tk.LEFT,  
+            justify = tk.LEFT,
             wraplength=100   
             ).place(x = 300, y = 100, width = 180,height = 100)
         
@@ -381,7 +382,9 @@ class rdt_app():
         self.process_display.set("GUI Built, initalizing Driver")
         self.logger.info("GUI built, initializing Driver")
         self.load_rdt()
-
+        Label.instances["T1"].bind("<Button-1>", self.rdt.update_gui)
+        Label.instances["T2"].bind("<Button-1>", self.rdt.update_gui)
+        Label.instances["Current"].bind("<Button-1>", self.rdt.update_gui)
     #endregion
     
     #region rdt
@@ -487,34 +490,54 @@ class rdt_app():
         if self.sample_num == "":
             self.process_display.set("Please select or enter a sample ID")
         else:
-            self.rdt.standard_procedure()
-        #     if self.rdt.Status:
-        #         try:
-        #             self.rdt.measure()
-        #             self.value = (sum(self.rdt.values)/len(self.rdt.values)) * 4.517 * 1 * 1.006
-        #             if self.connected:
-        #                 self.tcp_proptocol()
-        #             self.process_display.set("Ready")
-        #         except Exception as e:
-        #             traceback.print_exc()
-        #             self.rdt.Status = False
-        #             print("Measuring fail", e)
-        #     data:list[str | int | float] = [self.sample_num, str(dt.now()), self.value]
-            
-            
-        #     if not self.connected: #always get a sample description if not connected
-        #         self.logger.info("Not connected to server, having user manual enter sample description")
-        #         self.wait.set(True)
-        #         self.toggle_desc()
-        #         self.root.wait_variable(self.wait)
-            
-            
-            
-        #     data.append(self.description)
-        #     data.append(self.position)
-        #     self.fmanager.write_data("RDT", ["sample id", "time", "resistance", "description", "pos"], data)
+            try:
+                self.rdt.standard_procedure()
+            #     if self.rdt.Status:
+            #         try:
+            #             self.rdt.measure()
+            #             self.value = (sum(self.rdt.values)/len(self.rdt.values)) * 4.517 * 1 * 1.006
+            #             if self.connected:
+            #                 self.tcp_proptocol()
+            #             self.process_display.set("Ready")
+            #         except Exception as e:
+            #             traceback.print_exc()
+            #             self.rdt.Status = False
+            #             print("Measuring fail", e)
+                data:list[str | int | float] = [self.sample_num, str(dt.now())]
                 
-            
+                
+            #     if not self.connected: #always get a sample description if not connected
+            #         self.logger.info("Not connected to server, having user manual enter sample description")
+            #         self.wait.set(True)
+            #         self.toggle_desc()
+            #         self.root.wait_variable(self.wait)
+                
+                
+                
+                data.append(self.description)
+                data.append(self.position)
+                datas = []
+                print(self.rdt.t)
+                print(self.rdt.C1)
+                print(self.rdt.T1)
+                print(self.rdt.T2)
+                
+                i = 0
+                for Temp in self.rdt.T1:
+                    temp = [d for d in data]
+                    new_data = [self.rdt.t[i], self.rdt.C1[i], Temp, self.rdt.T2[i]]
+                    for j in new_data:temp.append(j)
+                    
+                    datas.append(temp)
+                    
+                    i += 1
+                    
+                self.fmanager.write_data("RDT", ["sample id", "time", "desc", "pos" "time of sample", "Current", "T_hotplate", "T_hotplate2"])
+                self.rdt.cooldown()
+                
+            except:
+                print("ERROR")
+                self.rdt.cooldown()
             
             if not self.rdt.Status:
                 self.load_rdt()
