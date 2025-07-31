@@ -29,6 +29,10 @@
         "x_smooth": "0",
         "x_timing": "3"
     },
+    "fourpp":{
+        "resource_addy":"USB0::0xF4EC::0x1208::SDM36HCD801150::INSTR",
+        "sample_count": "30"
+    },
     "Database_Config":{
         "host": "WHAMNUC1",
         "db": "glass_test",

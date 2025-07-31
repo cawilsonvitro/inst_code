@@ -53,7 +53,7 @@ class NI_RDT():
         self.data:list[list[float|str|int]] = [] 
         
         #stuff to pull from config 
-        self.t_run:float = 0.0
+        # self.t_run:float = 0.0
         self.t_delay:float = 1.0
         self.T_cool:int = 130
         self.N_meas:int = 0
