@@ -532,11 +532,12 @@ class rdt_app():
                     
                     i += 1
                     
-                self.fmanager.write_data("RDT", ["sample id", "time", "desc", "pos" "time of sample", "Current", "T_hotplate", "T_hotplate2"])
+                self.fmanager.write_data("RDT", ["sample id", "time", "desc", "pos" "time of sample", "Current", "T_hotplate", "T_hotplate2"],datas)
                 self.rdt.cooldown()
                 
             except:
                 print("ERROR")
+                traceback.print_exc()
                 self.rdt.cooldown()
             
             if not self.rdt.Status:

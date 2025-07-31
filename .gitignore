@@ -185,3 +185,4 @@ unittest/*
 
 
 *.log
+tools/RDT/graphs/*.png

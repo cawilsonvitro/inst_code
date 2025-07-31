@@ -36,7 +36,7 @@ class NI_RDT():
         
         #Daq systems
         self.local_system = nidaqmx.system.System.local()
-        self.Current_Tc: nidaqmx.Task  #USB9211A
+        self.R: nidaqmx.Task  #USB9211A
         self.Relay_Controller: nidaqmx.Task  #USB6525
         
         #front end interface
@@ -213,7 +213,7 @@ class NI_RDT():
                 self.Relay_Controller.write(self.States["Heat"])
                 self.Current_1, self.Temp_1, self.Temp_2  = self.Current_Tc.read()
                 self.update_gui()
-                print(f"Current: {self.Current_1} A, T_HotPlate: {self.Temp_1} C, T_HotPlate2: {self.Temp_2} C")        
+                # print(f"Current: {self.Current_1} A, T_HotPlate: {self.Temp_1} C, T_HotPlate2: {self.Temp_2} C")        
                 t.sleep(1)
         else:
             print("PreHeated")
@@ -283,19 +283,7 @@ class NI_RDT():
             t.sleep(self.t_delay)
         self.fig.savefig(f'tools\\RDT\\graphs\\{date}.png')
 
-        for ax in self.axs:ax.clear()
-        self.axs[0].plot(graph_t, graph_T1, c = 'b', label = 'Hotplate T1')
-        self.axs[0].plot(graph_t, graph_T1, c = 'r', label = 'Hotplate T2')
-        self.axs[0].legend()
-        self.axs[1].plot(graph_t, graph_C1, c = 'y', label = 'Current')
-        self.axs[1].legend()
-        
-        self.axs[0].set_title("Temperature vs Time")
-        self.axs[0].set_xlabel("Time (s)")
-        self.axs[0].set_ylabel("Temperature (C)")
-        self.axs[1].set_title("Current vs Time")
-        self.axs[1].set_xlabel("Time (s)")
-        self.axs[1].set_ylabel("Current (A)")
+
         self.T1 = graph_T1
         self.T2 = graph_T2
         self.C1 = graph_C1
@@ -309,7 +297,21 @@ class NI_RDT():
         graph_C1 = []
         graph_t = []
         plt.close(self.fig)
-        plt.fig.show()
+        self.fig, self.axs = plt.subplots(2,1)
+        for ax in self.axs:ax.clear()
+        self.axs[0].plot(graph_t, graph_T1, c = 'b', label = 'Hotplate T1')
+        self.axs[0].plot(graph_t, graph_T1, c = 'r', label = 'Hotplate T2')
+        self.axs[0].legend()
+        self.axs[1].plot(graph_t, graph_C1, c = 'y', label = 'Current')
+        self.axs[1].legend()
+        
+        self.axs[0].set_title("Temperature vs Time")
+        self.axs[0].set_xlabel("Time (s)")
+        self.axs[0].set_ylabel("Temperature (C)")
+        self.axs[1].set_title("Current vs Time")
+        self.axs[1].set_xlabel("Time (s)")
+        self.axs[1].set_ylabel("Current (A)")
+        self.fig.show()
         self.Relay_Controller.write(self.States["Cool"])
         
         print("Cooling down...")
@@ -320,7 +322,7 @@ class NI_RDT():
         while self.T_cool < currenttemp:
             self.Current_1, self.Temp_1, self.Temp_2  = self.Current_Tc.read()
             self.update_gui()
-            print(f"Current: {self.Current_1} A, T_HotPlate: {self.Temp_1} C, T_HotPlate2: {self.Temp_2} C")
+            # print(f"Current: {self.Current_1} A, T_HotPlate: {self.Temp_1} C, T_HotPlate2: {self.Temp_2} C")
             currenttemp = self.Temp_1
             graph_T1.append(self.Temp_1)
             graph_T2.append(self.Temp_2)
@@ -361,7 +363,11 @@ if __name__ == "__main__":
         rdt.load_config()
         rdt.init_rdt()
         print(rdt.T_cool)
-        rdt.cooldown()
+        rdt.Relay_Controller.write(rdt.States["Bias_on"])
+        t.sleep(5)
+        
+        rdt.Relay_Controller.write(rdt.States["Off"])
+        # rdt.cooldown()
         # rdt.Relay_Controller.write(rdt.States["Cool"])
         # while 0 < rdt.Current_Tc.read()[1]:
         #     rdt.Current_1, rdt.Temp_1, rdt.Temp_2  = rdt.Current_Tc.read()
