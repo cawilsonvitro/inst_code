@@ -15,12 +15,19 @@
         "t_run": "1",
         "t_delay": "1",
         "fan_delay": "30",
-        "T_cool": "130"
+        "T_cool": "130",
+        "num_of_meas": "10"
         },
         "USB-9211A": {
-            "Min_val": "-0.05",
+            "Min_val": "-0.05", 
             "Max_val": "0.05"
         } 
+    },
+    "Nir":{
+        "int_tim": "50",
+        "scans_to_avg": "1",
+        "x_smooth": "0",
+        "x_timing": "3"
     },
     "Database_Config":{
         "host": "WHAMNUC1",
@@ -33,23 +40,5 @@
         "rdt": "rdt",
         "nearir": "nir",
         "test": "t"
-    },
-    "Spectrometer1": {
-        "integrationtime": "10000",
-        "model": "USB2000PLUS",
-        "darkAvgs": "10",
-        "lightAvgs": "10",
-        "BoxCar": "5",
-        "startPt":"300",
-        "stopPt":"1550"
-    },
-    "Spectrometer2": {
-        "integrationtime": "10000",
-        "model": "USB2000PLUS",
-        "darkAvgs": "10",
-        "lightAvgs": "10",
-        "BoxCar": "5",
-        "startPt":"300",
-        "stopPt":"1550"
     }
 }
