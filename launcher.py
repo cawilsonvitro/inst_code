@@ -38,7 +38,7 @@ def venv_builder(req = "constraints.txt") -> None:
     
     lines: list[str]
     req_file:str = req
-    with open( req_file, '+r') as f:
+    with open( req_file, 'r') as f:
         lines = list(f.readlines())
 
 
@@ -54,7 +54,7 @@ def venv_builder(req = "constraints.txt") -> None:
             if stripped != "":
                 stripped_lines.append(stripped)
 
-        with open(req_file, "+w") as f:
+        with open(req_file, "w") as f:
             for line in stripped_lines:
                 f.write("\n" + line)
                 
@@ -119,7 +119,7 @@ def launch():
     if tool != "host" and tool != "testing":
         if tool == "hall":
             if hall == "HMS":
-                file_name == ""
+                file_name = ""
                 file_name += "hall_script"
             else:
                 file_name += tool
@@ -150,13 +150,13 @@ def launch():
     elif tool != "testing":
         file_name = f"{file_name}.py"
 
-    else:
-        server_ip = "127.0.0.1"
-        file_name =  r"hall_v2_test\hall_script"
-        file_name += ".py"
-        file_name = f"tools//hall//{file_name}"
+    # else:
+    #     server_ip = "127.0.0.1"
+    #     # file_name =  r"hall_v2_test\hall_script"
+    #     # file_name += ".py"
+    #     # file_name = f"tools//hall//{file_name}"
     py = virt_path
-    if ".py" not in file_name: file_name += ".py"
+    if not file_name.endswith('.py'): file_name += '.py'
     if file_name != "testing":
         # print("FILENAME", file_name)
         program = [py, file_name, server_ip]
@@ -164,7 +164,6 @@ def launch():
         spawn_program_and_die(program)
 
 
-    stop = True
 
 if __name__ == "__main__":
     sysargs = sys.argv
