@@ -420,13 +420,15 @@ class near_ir_app():
                     
                     data:list[str | int | float] = [self.sample_num, str(dt.now()), 
                                                     self.description, self.position]
-                    for val in self.spec.split(","): data.append(val)
+                    for val in self.spec.split(","): 
+                        if val != "":data.append(val)
                     
                     headers:list[str] = ["Sample ID", "TIME", "Description", "Position"]
                     
-                    for wv in self.wvs.split(","): headers.append(wv)
+                    for wv in self.wvs.split(","): 
+                        if val != "":headers.append(wv)
                     
-                    
+                    print(data)
                     self.fmanager.write_data("NIR", headers, data)
                     
                 except:

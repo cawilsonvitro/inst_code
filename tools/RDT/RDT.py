@@ -1,6 +1,6 @@
 #region imports
 import sys, nidaqmx, time, csv
-import datetime as dt
+from datetime import datetime as dt
 from nidaqmx.constants import (ThermocoupleType)
 import nidaqmx.system
 import matplotlib.pyplot as plt
@@ -10,7 +10,6 @@ import nidaqmx.task
 import time as t
 import logging
 from logging.handlers import TimedRotatingFileHandler
-#endregion
 date = dt.now().strftime("%m-%d-%Y, Hour %H Min %M Sec %S")
 
 logging.basicConfig(
@@ -76,6 +75,7 @@ class NI_RDT():
         
         #graphing
         self.fig, self.axs, = plt.subplots(2,1)
+        self.fig.set_size_inches(8,6)
         
     def load_config(self): #this will need to be replaced with front end config loading
         """_summary_ Load the configuration from the JSON file.
@@ -222,13 +222,29 @@ class NI_RDT():
         
         N:int = 0
         self.data = [] 
-        #measuring cde
+        #measuring code
+        
         t_start:float = t.time()
         graph_T1 = []
         graph_T2 = []
         graph_C1 = []
         graph_t = []
         for ax in self.axs:ax.clear()
+        
+        self.axs[0].plot(graph_t, graph_T1, c = 'b', label = 'Hotplate T1')
+        self.axs[0].plot(graph_t, graph_T1, c = 'r', label = 'Hotplate T2')
+        self.axs[0].legend()
+        self.axs[1].plot(graph_t, graph_C1, c = 'y', label = 'Current')
+        self.axs[1].legend()
+        
+        self.axs[0].set_title("Temperature vs Time")
+        self.axs[0].set_xlabel("Time (s)")
+        self.axs[0].set_ylabel("Temperature (C)")
+        self.axs[1].set_title("Current vs Time")
+        self.axs[1].set_xlabel("Time (s)")
+        self.axs[1].set_ylabel("Current (A)")
+        self.fig.show()
+        
         while N <= self.N_meas:
             temp:list[float|str] = []
             temp.append(t_start - t.time())
@@ -236,7 +252,7 @@ class NI_RDT():
             
             graph_T1.append(self.Temp_1)
             graph_T2.append(self.Temp_2)
-            graph_C1.append(graph_C1)
+            graph_C1.append(self.Current_1)
             graph_t.append(N)
             self.update_gui()
             
@@ -244,30 +260,64 @@ class NI_RDT():
             self.data.append(temp)
             
             self.axs[0].plot(graph_t, graph_T1, c = 'b', label = 'Hotplate T1')
-            self.axs[0].plot(graph_t, graph_T1, c = 'r', label = 'Hotplate T2')
-            self.axs[0].legend()
+            self.axs[0].plot(graph_t, graph_T2, c = 'r', label = 'Hotplate T2')
+
             self.axs[1].plot(graph_t, graph_C1, c = 'y', label = 'Current')
-            self.axs[0].legend()
             
             self.fig.canvas.draw()
             self.fig.canvas.flush_events()
-            
-            
+
+            # plt.pause(0.005)  # Allow the plot to update
              #struct of data
              # data = [[time, [current, T_hotplate, T_hotplate2]], ...]
-            print(f"Current: {self.Current_1} A, T_HotPlate: {self.Temp_1} C, T_HotPlate2: {self.Temp_2} C")
+            print(f"Time: {t_start - t.time()},Current: {self.Current_1} A, T_HotPlate: {self.Temp_1} C, T_HotPlate2: {self.Temp_2} C")
             print(N)
             N +=1
             t.sleep(self.t_delay)
+        self.fig.savefig(f'tools\\RDT\\graphs\\{date}.png')
 
+        for ax in self.axs:ax.clear()
+        self.axs[0].plot(graph_t, graph_T1, c = 'b', label = 'Hotplate T1')
+        self.axs[0].plot(graph_t, graph_T1, c = 'r', label = 'Hotplate T2')
+        self.axs[0].legend()
+        self.axs[1].plot(graph_t, graph_C1, c = 'y', label = 'Current')
+        self.axs[1].legend()
+        
+        self.axs[0].set_title("Temperature vs Time")
+        self.axs[0].set_xlabel("Time (s)")
+        self.axs[0].set_ylabel("Temperature (C)")
+        self.axs[1].set_title("Current vs Time")
+        self.axs[1].set_xlabel("Time (s)")
+        self.axs[1].set_ylabel("Current (A)")
+        graph_T1 = []
+        graph_T2 = []
+        graph_C1 = []
+        graph_t = []
+        
         self.Relay_Controller.write(self.States["Cool"])
         
         print("Cooling down...")
         
-        while self.T_cool < self.Current_Tc.read()[1]:
+        self.fig.suptitle("Cooling Down")
+        N = 0
+        currenttemp = self.Current_Tc.read()[1]
+        while self.T_cool < currenttemp:
             self.Current_1, self.Temp_1, self.Temp_2  = self.Current_Tc.read()
             self.update_gui()
             print(f"Current: {self.Current_1} A, T_HotPlate: {self.Temp_1} C, T_HotPlate2: {self.Temp_2} C")
+            currenttemp = self.Temp_1
+            graph_T1.append(self.Temp_1)
+            graph_T2.append(self.Temp_2)
+            graph_C1.append(self.Current_1)
+            graph_t.append(N)
+            self.axs[0].plot(graph_t, graph_T1, c = 'b', label = 'Hotplate T1')
+            self.axs[0].plot(graph_t, graph_T2, c = 'r', label = 'Hotplate T2')
+
+            self.axs[1].plot(graph_t, graph_C1, c = 'y', label = 'Current')
+            self.fig.canvas.draw()
+            self.fig.canvas.flush_events()
+            
+            N += 1
             t.sleep(1)
         self.Relay_Controller.write(self.States["Off"])
         
