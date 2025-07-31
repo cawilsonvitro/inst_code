@@ -16,6 +16,7 @@ def spawn_program_and_die(program, exit_code=0):
     that corresponds to the argv of your command.
     """
     # Start the external program
+    # print("code to cmd", program)
     subprocess.Popen(program)
     # We have started the program, and can suspend this interpreter
     sys.exit(exit_code)
@@ -61,7 +62,7 @@ def launch():
     """_summary_ launches correct path
     """
     
-    kwargs = ""
+    kwargs = []
     virt_path: str = os.path.join(os.getcwd(), '.venv', 'scripts', 'python.exe')
 
     with open ('config.json', 'r') as f:
@@ -85,14 +86,14 @@ def launch():
     try:
         tool: str = Tool_ip[ip_address]
     except KeyError:
-        print(f"IP address {ip_address} not found in config.json, tryind debugging ip")
+        # print(f"IP address {ip_address} not found in config.json, tryind debugging ip")
         
         tool = "testing"
 
 
     file_name: str = "main"
 
-    print(tool)
+    # print(tool)
 
     if tool != "host" and tool != "testing":
         if tool == "hall":
@@ -101,17 +102,15 @@ def launch():
                 file_name += "hall_script"
             else:
                 file_name += tool
-        if tool == "fourpp":
+        elif tool == "fourpp":
             fpp_config = config['fourpp']
-            resource_addy = fpp_config['resource_addy']
-            sample_count = fpp_config['sample_count']
-            
             for key,value in fpp_config.items():
-                kwargs = f"{key}={value}"
+                # print(key,value)
+                kwargs.append(f"{key}={value}")
 
             file_name += tool
             
-        if tool == "RDT":
+        elif tool == "RDT":
             rdt_config = config['RDT']
             T_bias_on = rdt_config['t_bias']
             t_run = rdt_config['t_run']
@@ -125,7 +124,6 @@ def launch():
             file_name += tool
         else:
             file_name += tool
-        file_name += ".py"
         file_name = f"tools//{tool}//{file_name}"
         
     elif tool != "testing":
@@ -136,18 +134,20 @@ def launch():
         file_name =  r"hall_v2_test\hall_script"
         file_name += ".py"
         file_name = f"tools//hall//{file_name}"
-
-    print(file_name)
     py = virt_path
+    if ".py" not in file_name: file_name += ".py"
     if file_name != "testing":
-        spawn_program_and_die([py, file_name, server_ip, kwargs])
+        # print("FILENAME", file_name)
+        program = [py, file_name, server_ip]
+        for i in kwargs: program.append(i)
+        spawn_program_and_die(program)
 
 
     stop = True
 
 if __name__ == "__main__":
     sysargs = sys.argv
-    print(sysargs)
+    # print(sysargs)
     try:
         if sysargs[-1] == "test":      
             with open ('config.json', 'r') as f:
@@ -166,5 +166,5 @@ if __name__ == "__main__":
             launch()
     except Exception as e:
         print(traceback.format_exc())
-        print("I ran")
+        # print("I ran")
 
