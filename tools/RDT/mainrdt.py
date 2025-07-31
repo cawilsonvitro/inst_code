@@ -9,14 +9,7 @@ from instutil import inst_util as iu
 import RDT as rdt_Driver
 # import RDT_dummy as rdt_Driver
 import tkinter as tk
-from tkinter import Misc
-import tkinter.ttk as ttk
-from multiprocessing import Process, Queue
-from queue import Empty
-import time
-import json
 import sys
-import threading
 from datetime import datetime as dt
 import traceback
 import logging

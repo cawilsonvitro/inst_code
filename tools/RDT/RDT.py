@@ -1,12 +1,11 @@
 #region imports
-import sys, nidaqmx, time, csv
+import nidaqmx
 from datetime import datetime as dt
 from nidaqmx.constants import (ThermocoupleType)
 import nidaqmx.system
 import matplotlib.pyplot as plt
 import json
 import traceback
-import nidaqmx.task
 import time as t
 import logging
 from logging.handlers import TimedRotatingFileHandler

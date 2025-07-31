@@ -99,11 +99,9 @@ fix setup and make it runoffline
 add to setup.py:
     adjust venv pyvevn.cfg to target exe
 
-get setup working with windows 11 computers
-
+build plant system
 add better error handling
 
-clean up imports
 
 need to do full test with vdap
 
@@ -113,6 +111,7 @@ add sql installs to setup
 
 
 done:
+clean up imports
 
 add time outs to sending 
 
