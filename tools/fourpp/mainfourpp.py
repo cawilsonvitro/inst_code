@@ -57,14 +57,11 @@ class four_point_app():
         self.samples = []
         #siglent
         self.DM = None
-        self.resource_string = "USB0::0xF4EC::0x1208::SDM36HCD801150::INSTR"
 
         #data management
         self.value = None
         self.dataPath = r"data/"
-        self.sample_num: int = ""
-        self.exst = ".csv"
-        self.fmanager:iu.FileManager = iu.FileManager("fourpp", "5")
+        self.sample_num: str = ""
         self.description: str = "None"
         self.position: str = ""  # Initialize position to avoid attribute errors
         #threading
@@ -78,7 +75,7 @@ class four_point_app():
         
         self.logger = logging.getLogger(name)
         
-        self.logger.info("4 point probe app initalized")
+        self.logger.info("4 point probe app initialized")
         
         #tcp 
         self.ip, self.port = (ip, port)  
@@ -292,12 +289,12 @@ class four_point_app():
         self.desc_window = tk.Toplevel(self.root)
         self.desc_window.geometry("300x800")
         self.desc_window.title("Sample Description")
-        self.desc_window.bind('<<Escape>>', self.get_desc)
+        self.desc_window.bind('<Escape>', self.get_desc)
         self.desc_window.protocol("WM_DELETE_WINDOW", partial(self.get_desc, None))
         TextBox("desc", self.desc_window, height = 20, width = 32).place(x = 10, y = 50)
         self.desc_window.withdraw()
         
-        self.process_display.set("GUI Built, initalizing Driver")
+        self.process_display.set("GUI Built, initializing Driver")
         self.logger.info("GUI built, initializing Driver")
         self.load_dm()
 
@@ -332,7 +329,7 @@ class four_point_app():
     #endregion
     
     #region data management
-    def tcp_proptocol(self) -> None:
+    def tcp_protocol(self) -> None:
         self.logger.info("Starting TCP protocol")
         
         self.logger.debug("Sending META command to server")
@@ -389,7 +386,7 @@ class four_point_app():
         
         self.logger.debug(f"Received response: {resp}")
         if resp != "data received":
-           self.logger.error(f"unexcpeted response from server {resp}")
+           self.logger.error(f"unexpected response from server {resp}")
         else:
             self.logger.info("TCP protocol complete")
 
@@ -410,7 +407,7 @@ class four_point_app():
                     self.DM.measure()
                     self.value = (sum(self.DM.values)/len(self.DM.values)) * 4.517 * 1 * 1.006
                     if self.connected:
-                        self.tcp_proptocol()
+                        self.tcp_protocol()
                     self.process_display.set("Ready")
                 except Exception as e:
                     traceback.print_exc()

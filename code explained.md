@@ -137,3 +137,20 @@ main:
     The test_connections method checks the status of the network and database connections, updating the GUI to reflect their status (good or bad) using colored icons. It also checks which instruments are currently connected by comparing active sockets to the expected tool list, updating each instrument's status indicator accordingly.
 
     Finally, the script's entry point creates an instance of inst_suite and calls its setup method, starting the application. This design separates concerns between GUI, networking, and instrument management, making the code modular and easier to maintain. A potential "gotcha" is that the code assumes the presence of certain files (like config.json) and images, and that the custom GUI components behave as expected.
+
+inst_util:
+
+    This code is a comprehensive utility module for managing instrument data collection, database interaction, and network communication in a laboratory or industrial setting. It is organized into several key sections: imports, utility functions, and class definitions.
+
+    The import section brings in a variety of standard and third-party libraries. Notably, it uses pyodbc for database connectivity, socket and select for network communication, and modules like json, csv, and logging for configuration, data handling, and diagnostics. Some imports are marked with #type:ignore to suppress type-checking errors, likely because they are not always used or their types are not strictly enforced.
+
+    The utility functions include strip_space, which processes strings by removing extra spaces and splitting them into a list of words, and parse, which reads and processes data files from a specific instrument (HMS 3000), extracting headers and data in a structured way.
+
+    The class definitions provide the core functionality:
+
+    The sample class tracks the measurement status for a sample across multiple instruments, using a dictionary to record which instruments have completed measurements.
+    The sql_client class manages all interactions with a SQL database, including loading configuration, connecting to the database, checking and creating tables, validating column names and values, and writing data. It uses dynamic SQL query construction and includes logic to handle missing columns by altering tables as needed.
+    The tcp_multiserver class implements a multi-client TCP server. It manages client connections, receives and processes messages, coordinates with the SQL client, and tracks sample measurement progress. It includes robust error handling and logging, and can gracefully handle client disconnects and server shutdowns.
+    The client class provides a simple TCP client for instrument computers to communicate with the server, including methods for connecting, disconnecting, and identifying themselves.
+    The FileManager class handles local file storage for instrument data, including automatic deletion of the oldest files when a size limit is exceeded, and writing data to CSV files.
+    Overall, the code is designed for extensibility and robustness, with clear separation of concerns between data parsing, database management, network communication, and file handling. It uses Python's type annotations for clarity, and logging for traceability. The design supports multiple instruments and samples, and can adapt to changes in database schema or network conditions.
