@@ -33,7 +33,7 @@ class inst_suite():
         
         self.quit = False
         self.process_display = None
-        self.teststr = "HIIIII"
+
         #spectrometers
         self.NIR = None
         self.CTR = None  #coated side transmission and reflection spectrometer
@@ -53,7 +53,7 @@ class inst_suite():
 
         #RDT 
         self.R_D_T = None
-        self.test = "HI"
+
         #resistances
         self.CRM = None #contact sheet R
         self.CLRM = None #contactless sheet R
@@ -64,11 +64,13 @@ class inst_suite():
         
         self.logger = logging.getLogger(name)
         self.logger.info("Server initalized")
+        
         #tcp vars
         try:
             self.host = sys.argv[1]
         except:
             self.host = "192.168.1.1"
+            
         self.port = 5050
         self.ADDR = (self.host, self.port)
         self.configpath = 'config.json'
