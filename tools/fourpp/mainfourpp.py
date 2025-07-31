@@ -17,7 +17,26 @@ from logging.handlers import TimedRotatingFileHandler
 from functools import partial
 #endregion
 
-#region logging
+#region sys args parsing 
+
+test = [
+    i.split("=") for i in sys.argv[1:]
+    ]
+print(test)
+i = 0
+
+for t in range(0,len(test) - 1):
+    try:    
+        pass
+    except IndexError:
+        pass
+    
+    i += 2
+    
+#end region
+
+#region
+
 
 date = dt.now().strftime("%m-%d-%Y, Hour %H Min %M Sec %S")
 

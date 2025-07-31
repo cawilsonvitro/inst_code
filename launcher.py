@@ -60,6 +60,8 @@ def venv_builder(req = "constraints.txt") -> None:
 def launch():
     """_summary_ launches correct path
     """
+    
+    kwargs = ""
     virt_path: str = os.path.join(os.getcwd(), '.venv', 'scripts', 'python.exe')
 
     with open ('config.json', 'r') as f:
@@ -99,6 +101,28 @@ def launch():
                 file_name += "hall_script"
             else:
                 file_name += tool
+        if tool == "fourpp":
+            fpp_config = config['fourpp']
+            resource_addy = fpp_config['resource_addy']
+            sample_count = fpp_config['sample_count']
+            
+            for key,value in fpp_config.items():
+                kwargs = f"{key}={value}"
+
+            file_name += tool
+            
+        if tool == "RDT":
+            rdt_config = config['RDT']
+            T_bias_on = rdt_config['t_bias']
+            t_run = rdt_config['t_run']
+            t_delay = rdt_config['t_delay']
+            T_cool = rdt_config['T_cool']
+            num_of_meas = rdt_config['num_of_meas']
+            usbconfig = config['RDT']['USB-9211A']
+            min_val = usbconfig['Min_val']
+            max_val = usbconfig['Max_val']
+            
+            file_name += tool
         else:
             file_name += tool
         file_name += ".py"
@@ -116,7 +140,7 @@ def launch():
     print(file_name)
     py = virt_path
     if file_name != "testing":
-        spawn_program_and_die([py, file_name, server_ip])
+        spawn_program_and_die([py, file_name, server_ip, kwargs])
 
 
     stop = True
