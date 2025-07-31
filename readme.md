@@ -61,7 +61,10 @@ add automatic reinit to ddrivers
 
 to do:
 RDT: fix conifg with launcher
-
+RDT: get repeated measure to graph name
+RDT: get tcp stuff up
+RDT: get data saving
+rdt:fix graph lag
 change timers to match JIMS leave mine as comments and talk to
 
 get list of params we can changes
@@ -96,11 +99,9 @@ fix setup and make it runoffline
 add to setup.py:
     adjust venv pyvevn.cfg to target exe
 
-get setup working with windows 11 computers
-
+build plant system
 add better error handling
 
-clean up imports
 
 need to do full test with vdap
 
@@ -110,6 +111,7 @@ add sql installs to setup
 
 
 done:
+clean up imports
 
 add time outs to sending 
 

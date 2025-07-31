@@ -2,14 +2,7 @@
 from gui_package_cawilvitro import *
 from instutil import inst_util as iu
 import nearir as IR
-from tkinter import Misc
-import tkinter.ttk as ttk
-from multiprocessing import Process, Queue
-from queue import Empty
-import time
-import json
 import sys
-import threading
 from datetime import datetime as dt
 import traceback
 import logging
@@ -420,13 +413,15 @@ class near_ir_app():
                     
                     data:list[str | int | float] = [self.sample_num, str(dt.now()), 
                                                     self.description, self.position]
-                    for val in self.spec.split(","): data.append(val)
+                    for val in self.spec.split(","): 
+                        if val != "":data.append(val)
                     
                     headers:list[str] = ["Sample ID", "TIME", "Description", "Position"]
                     
-                    for wv in self.wvs.split(","): headers.append(wv)
+                    for wv in self.wvs.split(","): 
+                        if val != "":headers.append(wv)
                     
-                    
+                    print(data)
                     self.fmanager.write_data("NIR", headers, data)
                     
                 except:

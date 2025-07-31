@@ -1,6 +1,5 @@
 #encoding=<UTF-8>
 #region Imports
-import time
 import sys
 import os
 from instutil import inst_util as iu

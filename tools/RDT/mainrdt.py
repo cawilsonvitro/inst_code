@@ -9,14 +9,7 @@ from instutil import inst_util as iu
 import RDT as rdt_Driver
 # import RDT_dummy as rdt_Driver
 import tkinter as tk
-from tkinter import Misc
-import tkinter.ttk as ttk
-from multiprocessing import Process, Queue
-from queue import Empty
-import time
-import json
 import sys
-import threading
 from datetime import datetime as dt
 import traceback
 import logging
@@ -494,31 +487,32 @@ class rdt_app():
         if self.sample_num == "":
             self.process_display.set("Please select or enter a sample ID")
         else:
-            if self.rdt.Status:
-                try:
-                    self.rdt.measure()
-                    self.value = (sum(self.rdt.values)/len(self.rdt.values)) * 4.517 * 1 * 1.006
-                    if self.connected:
-                        self.tcp_proptocol()
-                    self.process_display.set("Ready")
-                except Exception as e:
-                    traceback.print_exc()
-                    self.rdt.Status = False
-                    print("Measuring fail", e)
-            data:list[str | int | float] = [self.sample_num, str(dt.now()), self.value]
+            self.rdt.standard_procedure()
+        #     if self.rdt.Status:
+        #         try:
+        #             self.rdt.measure()
+        #             self.value = (sum(self.rdt.values)/len(self.rdt.values)) * 4.517 * 1 * 1.006
+        #             if self.connected:
+        #                 self.tcp_proptocol()
+        #             self.process_display.set("Ready")
+        #         except Exception as e:
+        #             traceback.print_exc()
+        #             self.rdt.Status = False
+        #             print("Measuring fail", e)
+        #     data:list[str | int | float] = [self.sample_num, str(dt.now()), self.value]
             
             
-            if not self.connected: #always get a sample description if not connected
-                self.logger.info("Not connected to server, having user manual enter sample description")
-                self.wait.set(True)
-                self.toggle_desc()
-                self.root.wait_variable(self.wait)
+        #     if not self.connected: #always get a sample description if not connected
+        #         self.logger.info("Not connected to server, having user manual enter sample description")
+        #         self.wait.set(True)
+        #         self.toggle_desc()
+        #         self.root.wait_variable(self.wait)
             
             
             
-            data.append(self.description)
-            data.append(self.position)
-            self.fmanager.write_data("RDT", ["sample id", "time", "resistance", "description", "pos"], data)
+        #     data.append(self.description)
+        #     data.append(self.position)
+        #     self.fmanager.write_data("RDT", ["sample id", "time", "resistance", "description", "pos"], data)
                 
             
             
