@@ -4,11 +4,6 @@ from gui_package_cawilvitro import *
 from instutil import inst_util as iu
 # import fourpp as fourpp
 import fourpp_dummy as fourpp
-import tkinter as tk#region imports
-from gui_package_cawilvitro import *
-from instutil import inst_util as iu
-# import fourpp as fourpp
-import fourpp_dummy as fourpp
 import tkinter as tk
 import sys
 from datetime import datetime as dt
@@ -56,9 +51,9 @@ class four_point_app():
         '''
         init class for use
         '''
-        self.quit = False
-        
-        self.process_display = None
+        #siglent
+        self.DM = None
+        self.resource_string = resource_string
         self.samples = []
         #siglent
         self.DM = None
@@ -67,10 +62,11 @@ class four_point_app():
         #data management
         self.value = None
         self.dataPath = r"data/"
-        self.sample_num:int
+        self.sample_num: int = ""
         self.exst = ".csv"
         self.fmanager:iu.FileManager = iu.FileManager("fourpp", "5")
         self.description: str = "None"
+        self.position: str = ""  # Initialize position to avoid attribute errors
         #threading
         # self.message: Queue[Any] = Queue(maxsize=1)
         # self.response: Queue[Any] = Queue(maxsize=1)
@@ -98,12 +94,13 @@ class four_point_app():
             self.tcp = iu.client(self.ip, self.port)#, self.message, self.response)
             result = self.tcp.connect()
             if result != None:
-                self.connection = False
-                self.logger.error(traceback.format_exc())
+                self.connected = False
+                self.logger.error(f"Connection error: {result}")
             else:
                 self.logger.info("Connect to server")
                 self.connected = True
         except Exception as e:
+            self.logger.error(f"Exception during connection: {e}")
             traceback.print_exc()
             self.connected = False
             
@@ -458,7 +455,12 @@ if __name__ == "__main__":
     PORT = 5050
     ADDR = (SERVER, PORT)
     
-    temp = four_point_app(SERVER, PORT, sysargs["sample_count"], sysargs["resource_string"])
+    temp = four_point_app(
+        SERVER,
+        PORT,
+        sysargs["sample_count"],
+        sysargs["resource_string"]
+    )
     temp.startApp()
 
  
