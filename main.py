@@ -7,6 +7,7 @@ import json
 import sys
 from instutil import inst_util as iu
 import threading
+import traceback
 from socket import socket
 from datetime import datetime as dt
 import logging
@@ -96,8 +97,7 @@ class inst_suite():
         self.CLRM = None #contactless sheet R
         #logging
 
-        class_name = str(type(self))
-        name = class_name.split(" ")[-1][:-1].replace("'", "")
+        name = self.__class__.__name__
         
         self.logger = logging.getLogger(name)
         self.logger.info("Server initalized")
@@ -370,7 +370,8 @@ class inst_suite():
 
 
 if __name__ == "__main__":
-    
-    temp = inst_suite()
-    temp.setup()
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+    try:
+        temp = inst_suite()
+        temp.setup()
+    except Exception as e:
+        temp.logger.error(traceback.format_exc())

@@ -22,6 +22,19 @@ def spawn_program_and_die(program, exit_code=0):
     sys.exit(exit_code)
     
 def venv_builder(req = "constraints.txt") -> None:
+    """
+    Creates a Python virtual environment in the current working directory and installs dependencies from a requirements file.
+    This function performs the following steps:
+    1. Reads the specified requirements file (default: "constraints.txt").
+    2. Strips whitespace from each line and replaces any line containing "delcom" with a local wheel file path.
+    3. Writes the processed requirements back to the file.
+    4. Creates a new virtual environment in a ".venv" directory if it does not already exist.
+    5. Installs the dependencies from the requirements file into the virtual environment using pip.
+    Args:
+        req (str, optional): Path to the requirements file. Defaults to "constraints.txt".
+    Returns:
+        None
+    """
     
     lines: list[str]
     req_file:str = req
@@ -59,9 +72,17 @@ def venv_builder(req = "constraints.txt") -> None:
         os.system(install)
         
 def launch():
-    """_summary_ launches correct path
     """
-    
+    Launches the appropriate tool script based on the current machine's IP address and configuration.
+    This function reads configuration from 'config.json', determines the current machine's IP address,
+    and selects the correct tool script to launch. It handles different tools (e.g., 'hall', 'fourpp', 'RDT')
+    and their specific configurations, constructs the command-line arguments, and spawns the selected script
+    using the Python interpreter from the local virtual environment.
+    Raises:
+        KeyError: If the current IP address is not found in the configuration, defaults to 'testing' mode.
+    Side Effects:
+        Launches a new process for the selected tool script and terminates the current process.
+    """
     kwargs = []
     virt_path: str = os.path.join(os.getcwd(), '.venv', 'scripts', 'python.exe')
 
