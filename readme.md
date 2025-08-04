@@ -61,8 +61,8 @@ add automatic reinit to ddrivers
 
 to do:
 main: test sql and run before moving over
+hall: debug script again and get running with hall computer
 
-RDT: fix conifg with launcher
 RDT: get repeated measure to graph name
 RDT: get tcp stuff up
 RDT: get data saving
@@ -73,10 +73,8 @@ change timers to match JIMS leave mine as comments and talk to
 
 get list of params we can changes
 
-
 improve logging in all tools
 
-add pos to tcp protocol during "META" 
 
 add instrument settups to config
 
@@ -110,6 +108,10 @@ add sql installs to setup
 
 
 done:
+add pos to tcp protocol during "META" 
+
+RDT: fix conifg with launcher
+
 propagate v2
 
 fix setup and make it runoffline

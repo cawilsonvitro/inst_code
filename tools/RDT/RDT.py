@@ -137,7 +137,7 @@ class NI_RDT():
             "Off": [False, False, False],
             "Heat": [True, False, False],
             "Cool": [False, False, True],
-            "Bias_on": [True, True, False]
+            "Bias_on": [False, True, False] #should be "Bias_on": [True, True, False]
         }
         self.Status = False
         
