@@ -115,7 +115,7 @@ class inst_suite():
         with open(self.configpath , 'r') as file:
             self.toolip:dict[str,str] = json.load(file)['Tool_ip']
         self.tools:list[str] = list(self.toolip.values())
-        
+        self.logger.info("loaded config")
         #sql stuff app thread will handle sql as it is not continously running
           
     def setup(self) -> None:
@@ -137,9 +137,14 @@ class inst_suite():
         # self.response: Queue[Any] = Queue(maxsize=1)
         
         #setting up tcp server and getting instruments
+        self.logger.info("Setting up TCP server")
         self.tcphandler: iu.tcp_multiserver = iu.tcp_multiserver(self.configpath, self.host, self.port, self)#, self.message, self.response)
+        self.logger.info("TCP server setup complete")
+        self.logger.info("Starting SQL connection")
         self.tcphandler.SQL_startup()
+        self.logger.info("SQL connection started")
         
+        self.logger.info("Setting up application threads")
         self.appThread = threading.Thread(target=self.startApp, args=())
         self.tcpThread = threading.Thread(target=self.tcphandler.server, args=())
         # self.insturmentManagerThread = threading.Thread(target=self.test, args=())
@@ -149,10 +154,11 @@ class inst_suite():
         # self.insturmentManagerThread.daemon = True
         
         #starting threads
+        self.logger.info("Starting application threads")
         self.appThread.start()
         self.tcpThread.start()
         # self.insturmentManagerThread.start()
-        
+        self.logger.info("Application threads started and joined")
         self.appThread.join()
         self.tcpThread.join()
         # self.insturmentManagerThread.join()
@@ -175,7 +181,7 @@ class inst_suite():
             - Tests instrument connections before starting the main loop.
             - Binds event handlers for application shutdown.
         """
-        
+        self.logger.info("Starting application")
         self.root: tk.Tk = tk.Tk() 
         self.root.title("Insturment Control Suite")
         self.root.geometry("430x485")
@@ -184,8 +190,13 @@ class inst_suite():
         self.process_display = tk.StringVar() 
         self.process_display.set("Booting")
         self.root.update_idletasks()
+        self.logger.info("Application object initialized")
         self.buildGUI(self.root)
+        self.logger.info("GUI built")
+        self.logger.info("Testing connections")
         self.test_connections()
+        self.logger.info("Connections tested")
+        self.logger.info("Starting main loop")
         self.root.mainloop()
         
          #checks inst connections before booting up tcp server and other 
@@ -217,7 +228,7 @@ class inst_suite():
         Side Effects:
             Modifies the GUI by adding/removing widgets to/from the root window.
         """
-
+        self.logger.info("Building GUI")
         StandardLabel.remove(None)
         
         StandardLabel (
@@ -324,10 +335,11 @@ class inst_suite():
 
         # first testing internet connections
         self.tcphandler.connections()
-        print("Testing connections")
         self.net_stat = self.tcphandler.network_status
+        self.logger.info(f"Network status: {self.net_stat}")
         self.db_stat = self.tcphandler.db_status
-        
+        self.logger.info(f"Database status: {self.db_stat}")
+        self.logger.info("Updating GUI with connection statuses")
         if self.net_stat:
             StandardLabel (
                 "Net_status",
@@ -355,6 +367,7 @@ class inst_suite():
             ).place(x = 210, y = 355)
         
         #testing instrument connections
+        self.logger.info("Testing instrument connections")
         conc_clients: list[socket] = self.tcphandler.connected_sockets
         conc_tools: list[str] = [self.toolip[soc.getpeername()[0]] for soc in conc_clients]
 
@@ -366,6 +379,7 @@ class inst_suite():
                     StandardLabel.instances[f"{tool}_status"].configure(image = TkImage(f"{tool.lower()}_status", r"images\Status_Bad.png").image)
             except KeyError:
                 print(f" {tool} not integrated into Front end")
+        self.logger.info("Instrument connection statuses updated, updating GUI")
         self.root.update()
     # endregion  
 
