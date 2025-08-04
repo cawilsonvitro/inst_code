@@ -552,7 +552,7 @@ class rdt_app():
     #endregion
 if __name__ == "__main__":
     logging.info("start from main")
-    print(sys.argv)
+    print(iu.get_args_as_dict(sys.argv[2:]))
     try:
         SERVER = sys.argv[1]
     except:
@@ -562,7 +562,7 @@ if __name__ == "__main__":
     PORT = 5050
     ADDR = (SERVER, PORT)
     
-    temp = rdt_app(SERVER, PORT)
-    temp.startApp()
+    # temp = rdt_app(SERVER, PORT)
+    # temp.startApp()
 
  

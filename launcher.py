@@ -114,8 +114,6 @@ def launch():
 
     file_name: str = "main"
 
-    print(tool)
-
     if tool != "host" and tool != "testing":
         if tool == "hall":
             if hall == "HMS":
@@ -130,17 +128,20 @@ def launch():
                 kwargs.append(f"{key}={value}")
 
             file_name += tool
-        elif tool == "RDT":
+        elif tool == "rdt":
             rdt_config = config['RDT']
-            T_bias_on = rdt_config['t_bias']
-            t_run = rdt_config['t_run']
-            t_delay = rdt_config['t_delay']
-            T_cool = rdt_config['T_cool']
-            num_of_meas = rdt_config['num_of_meas']
-            usbconfig = config['RDT']['USB-9211A']
-            min_val = usbconfig['Min_val']
-            max_val = usbconfig['Max_val']
+            rdt_sys_config = rdt_config['sys']
+            usbconfig = rdt_config['USB-9211A']
+            # T_bias_on = rdt_sys_config['T_Bias_on']
+            # t_run = rdt_sys_config['t_run']
+            # t_delay = rdt_sys_config['t_delay']
+            # T_cool = rdt_sys_config['T_cool']
+            # num_of_meas = rdt_sys_config['num_of_meas']
+            # min_val = usbconfig['Min_val']
+            # max_val = usbconfig['Max_val']
             
+            for key, value in rdt_sys_config.items():kwargs.append(f"{key}={value}")
+            for key, value in usbconfig.items():kwargs.append(f"{key}={value}")
             file_name += tool
         else:
             file_name += tool

@@ -428,7 +428,7 @@ class four_point_app():
     #endregion
 if __name__ == "__main__":
     logging.info("start from main")
-    sysargs = iu.getargsasdict()
+    sysargs = iu.get_args_as_dict(sys.argv[2:])
     try:
         SERVER = sys.argv[1]
     except:
