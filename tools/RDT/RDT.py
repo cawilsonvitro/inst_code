@@ -24,13 +24,81 @@ logging.basicConfig(
 #endregion
 
 class NI_RDT():
-    """_summary_ Class for connecting to and controlling a National Instruments device for RDT measurements.
+    """
+    NI_RDT is a class for controlling and automating measurements using National Instruments DAQ devices,
+    specifically for Resistive Device Testing (RDT) setups. It manages device initialization, measurement
+    procedures, data acquisition, GUI updates, and cooldown routines.
+    Attributes:
+        T_bias_flag (bool): Flag indicating if bias temperature is reached.
+        devices (dict[str, str]): Mapping of device product types to device names.
+        local_system (nidaqmx.system.System): Local NI DAQ system.
+        R (nidaqmx.Task): Task for USB9211A device (not directly used in code).
+        Relay_Controller (nidaqmx.Task): Task for controlling relays (USB6525).
+        root: GUI root object.
+        c1, t1, t2: GUI elements for displaying current and temperature readings.
+        Current_1 (str): Current measurement value.
+        Temp_1 (str): First temperature measurement value.
+        Temp_2 (str): Second temperature measurement value.
+        data (list[list[float|str|int]]): List of measurement data.
+        t_delay (float): Delay between measurements.
+        T_cool (int): Target temperature for cooldown.
+        N_meas (int): Number of measurements to perform.
+        T_bias (float): Bias temperature threshold.
+        min_val (float): Minimum value for voltage channel.
+        max_val (float): Maximum value for voltage channel.
+        States (dict[str, list[bool]]): Relay states for different modes.
+        Status (bool): Status flag for system initialization.
+        fig, axs: Matplotlib figure and axes for plotting.
+        T1, T2, C1, t: Lists for storing graph data.
+    Methods:
+        __init__(...): Initializes the NI_RDT instance and its configuration.
+        dev1_init(prod_name): Initializes the analog input channels for current and temperature.
+        dev2_init(prod_name): Initializes the digital output channels for relay control.
+        init_rdt(): Initializes the RDT system and devices.
+        update_gui(event=None): Updates the GUI with the latest measurement values.
+        flatten(data): Flattens a 2D list into a 1D list.
+        standard_procedure(): Executes the standard measurement procedure, including heating, biasing, and data collection.
+        cooldown(): Executes the cooldown procedure, monitoring temperature until target is reached.
+        quit(): Safely shuts down and releases all DAQ tasks and resources.
     """
     #region init
-    def __init__(
-                self, root, c1, t1, t2, T_bias_on, t_run, t_delay,
-                fan_delay, T_cool, num_of_meas, min_val, max_val
-    ):
+    def __init__(self, root, c1, t1, t2, T_bias_on, t_run, t_delay,fan_delay, T_cool, num_of_meas, min_val, max_val):
+        """
+        Initializes the RDT class with configuration parameters, hardware interfaces, and state management.
+        Args:
+            root: The root GUI element or main window.
+            c1: Front-end interface parameter (usage context-specific).
+            t1: Front-end interface parameter (usage context-specific).
+            t2: Front-end interface parameter (usage context-specific).
+            T_bias_on (float): Bias temperature value to be set when bias is on.
+            t_run: (Unused in this method; possibly for future use).
+            t_delay (float): Delay time before starting measurements.
+            fan_delay: (Unused in this method; possibly for future use).
+            T_cool (int): Cooling temperature threshold.
+            num_of_meas (int): Number of measurements to perform.
+            min_val (float): Minimum value for measurement or validation.
+            max_val (float): Maximum value for measurement or validation.
+        Attributes:
+            T_bias_flag (bool): Control flag for bias temperature.
+            devices (dict[str, str]): Dictionary of NI device names and identifiers.
+            local_system: NI DAQmx local system object.
+            R: NI DAQmx Task for USB9211A.
+            Relay_Controller: NI DAQmx Task for USB6525.
+            Current_1 (str): Data bus for current measurement.
+            Temp_1 (str): Data bus for first temperature measurement.
+            Temp_2 (str): Data bus for second temperature measurement.
+            data (list[list[float|str|int]]): Collected measurement data.
+            t_delay (float): Delay before measurement.
+            T_cool (int): Cooling temperature threshold.
+            N_meas (int): Number of measurements.
+            T_bias (float): Bias temperature value.
+            min_val (float): Minimum measurement value.
+            max_val (float): Maximum measurement value.
+            States (dict[str, list[bool]]): Dictionary of system states.
+            Status (bool): Current status of the system.
+            fig, axs: Matplotlib figure and axes for graphing.
+        """
+        
         #control flags
         self.T_bias_flag:bool = False
         
@@ -76,7 +144,9 @@ class NI_RDT():
         #graphing
         self.fig, self.axs, = plt.subplots(2,1)
         self.fig.set_size_inches(8,6)
-        
+        class_name = str(type(self))
+        name = class_name.split(" ")[-1][:-1].replace("'", "")
+        self.logger = logging.getLogger(name)
         
     def dev1_init(self, prod_name:str):
         """

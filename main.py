@@ -95,9 +95,10 @@ class inst_suite():
         #resistances
         self.CRM = None #contact sheet R
         self.CLRM = None #contactless sheet R
+        
         #logging
-
-        name = self.__class__.__name__
+        class_name = str(type(self))
+        name = class_name.split(" ")[-1][:-1].replace("'", "") #i know convoluted but it gives me the full stack trace
         
         self.logger = logging.getLogger(name)
         self.logger.info("Server initalized")

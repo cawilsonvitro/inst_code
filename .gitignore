@@ -181,7 +181,7 @@ cython_debug/
 *.pyc
 
 
-unittest/*
+unittest/*.py
 
 
 *.log
