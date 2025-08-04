@@ -11,7 +11,7 @@
     },
     "RDT": {
         "sys":{
-        "T_Bias_on": "150.0",
+        "T_Bias_on": "20.0",
         "t_run": "1",
         "t_delay": "1",
         "fan_delay": "30",

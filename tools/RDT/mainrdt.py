@@ -531,7 +531,7 @@ class rdt_app():
                     datas.append(temp)
                     
                     i += 1
-                    
+                print(datas)
                 self.fmanager.write_data("RDT", ["sample id", "time", "desc", "pos" "time of sample", "Current", "T_hotplate", "T_hotplate2"],datas)
                 self.rdt.cooldown()
                 

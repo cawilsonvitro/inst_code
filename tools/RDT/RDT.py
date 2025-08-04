@@ -122,6 +122,7 @@ class NI_RDT():
         self.Relay_Controller.do_channels.add_do_chan(self.devices[prod_name] + "/port0/line0")
         self.Relay_Controller.do_channels.add_do_chan(self.devices[prod_name] + "/port0/line1")
         self.Relay_Controller.do_channels.add_do_chan(self.devices[prod_name] + "/port0/line2")
+        
         self.Relay_Controller.start()        
         
     def init_rdt(self):
@@ -153,7 +154,7 @@ class NI_RDT():
         self.Status = True
         self.Relay_Controller.write(self.States["Off"])    
         self.Current_1, self.Temp_1, self.Temp_2  = self.Current_Tc.read()
-        self.update_gui()
+        # self.update_gui()
     #endregion
     #region front end interface
     def update_gui(self, event = None):
@@ -363,10 +364,20 @@ if __name__ == "__main__":
         rdt.load_config()
         rdt.init_rdt()
         print(rdt.T_cool)
+        test = [True] * 3
         rdt.Relay_Controller.write(rdt.States["Bias_on"])
-        t.sleep(5)
+        i = 0
+        while i < 10:
+            rdt.Current_1, rdt.Temp_1, rdt.Temp_2  = rdt.Current_Tc.read()
+            print(f"Current: {rdt.Current_1} A, T_HotPlate: {rdt.Temp_1} C, T_HotPlate2: {rdt.Temp_2} C")
+            i += 1
+            t.sleep(1)
+        rdt.Current_Tc.stop()
+        rdt.Current_Tc.close()
+        rdt.Relay_Controller.stop()
+        rdt.Relay_Controller.close()
         
-        rdt.Relay_Controller.write(rdt.States["Off"])
+        # rdt.Relay_Controller.write(rdt.States["Off"])
         # rdt.cooldown()
         # rdt.Relay_Controller.write(rdt.States["Cool"])
         # while 0 < rdt.Current_Tc.read()[1]:
