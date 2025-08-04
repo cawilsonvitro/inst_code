@@ -37,7 +37,7 @@ logging.basicConfig(
 class rdt_app():
     
     #region application start up
-    def __init__(self, ip, port):
+    def __init__(self, ip, port, T_bias_on, t_run, t_delay,fan_delay, T_cool, num_of_meas, min_val, max_val):
         '''
         init class for use
         '''
@@ -48,9 +48,17 @@ class rdt_app():
         self.t1 = None
         self.t2 = None
         self.samples = []
-        #siglent
+        #RDT driver
         self.rdt = None
-    
+        self.T_bias_on = T_bias_on
+        self.t_run = t_run
+        self.t_delay = t_delay
+        self.fan_delay = fan_delay
+        self.T_cool = T_cool
+        self.num_of_meas = num_of_meas
+        self.min_val = min_val
+        self.max_val = max_val
+
 
         #data management
         self.value = None
@@ -393,7 +401,10 @@ class rdt_app():
         self.process_display.set("Loading Driver")
         self.root.update_idletasks()
         try:
-            self.rdt = rdt_Driver.NI_RDT(self.root, self.c1, self.t1, self.t2)
+            self.rdt = rdt_Driver.NI_RDT(self.root, self.c1, self.t1, self.t2, 
+                                         self.T_bias_on, self.t_run, self.t_delay, 
+                                         self.fan_delay, self.T_cool, self.num_of_meas, 
+                                         self.min_val, self.max_val)
             self.rdt.load_config()
             self.rdt.init_rdt()
         except Exception as e:
@@ -569,7 +580,7 @@ if __name__ == "__main__":
     temp = rdt_app(
             SERVER, 
             PORT,
-            T_Bias_on = float(args["T_Bias_on"]) if "T_Bias_on" in list(args.keys()) else 150.0,
+            T_bias_on = float(args["T_bias_on"]) if "T_bias_on" in list(args.keys()) else 150.0,
             t_run = float(args["t_run"]) if "t_run" in list(args.keys()) else 1.0,
             t_delay = float(args["t_delay"]) if "t_delay" in list(args.keys()) else 1.0,
             fan_delay = float(args["fan_delay"]) if "fan_delay" in list(args.keys()) else 30.0,
@@ -578,6 +589,6 @@ if __name__ == "__main__":
             min_val = float(args["Min_val"]) if "Min_val" in list(args.keys()) else -0.05,
             max_val = float(args["Max_val"]) if "Max_val" in list(args.keys()) else 0.05,
             )
-    # temp.startApp()
+    temp.startApp()
 
  

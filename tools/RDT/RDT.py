@@ -147,11 +147,20 @@ class NI_RDT():
         class_name = str(type(self))
         name = class_name.split(" ")[-1][:-1].replace("'", "")
         self.logger = logging.getLogger(name)
+        logging.debug("rdt class initialized")
         
     def dev1_init(self, prod_name:str):
         """
-        wrapper for usb init
+        Initializes the NI-DAQmx task for the specified device, configuring voltage and thermocouple channels.
+        Args:
+            prod_name (str): The product name or device identifier used to select the appropriate NI-DAQmx device.
+        Side Effects:
+            - Creates and assigns a nidaqmx.Task to self.Current_Tc.
+            - Adds an analog voltage channel (ai0) with specified min and max values.
+            - Adds two thermocouple channels (ai1 and ai2) of type K, named "T_HotPlate" and "T_HotPlate2".
+            - Starts the NI-DAQmx task for data acquisition.
         """
+
         self.Current_Tc = nidaqmx.Task()
         
         self.Current_Tc.ai_channels.add_ai_voltage_chan(

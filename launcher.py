@@ -132,7 +132,7 @@ def launch():
             rdt_config = config['RDT']
             rdt_sys_config = rdt_config['sys']
             usbconfig = rdt_config['USB-9211A']
-            # T_bias_on = rdt_sys_config['T_Bias_on']
+            # T_bias_on = rdt_sys_config['T_bias_on']
             # t_run = rdt_sys_config['t_run']
             # t_delay = rdt_sys_config['t_delay']
             # T_cool = rdt_sys_config['T_cool']
