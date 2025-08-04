@@ -367,8 +367,10 @@ if __name__ == "__main__":
         test = [True] * 3
         rdt.Relay_Controller.write(rdt.States["Bias_on"])
         i = 0
+        current = []
         while i < 10:
             rdt.Current_1, rdt.Temp_1, rdt.Temp_2  = rdt.Current_Tc.read()
+            current.append(rdt.Current_1)
             print(f"Current: {rdt.Current_1} A, T_HotPlate: {rdt.Temp_1} C, T_HotPlate2: {rdt.Temp_2} C")
             i += 1
             t.sleep(1)
@@ -376,7 +378,7 @@ if __name__ == "__main__":
         rdt.Current_Tc.close()
         rdt.Relay_Controller.stop()
         rdt.Relay_Controller.close()
-        
+        plt.plot(current)
         # rdt.Relay_Controller.write(rdt.States["Off"])
         # rdt.cooldown()
         # rdt.Relay_Controller.write(rdt.States["Cool"])
