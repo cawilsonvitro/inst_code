@@ -114,7 +114,7 @@ def launch():
 
     file_name: str = "main"
 
-    # print(tool)
+    print(tool)
 
     if tool != "host" and tool != "testing":
         if tool == "hall":
@@ -130,7 +130,6 @@ def launch():
                 kwargs.append(f"{key}={value}")
 
             file_name += tool
-            
         elif tool == "RDT":
             rdt_config = config['RDT']
             T_bias_on = rdt_config['t_bias']

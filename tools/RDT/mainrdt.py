@@ -552,6 +552,7 @@ class rdt_app():
     #endregion
 if __name__ == "__main__":
     logging.info("start from main")
+    print(sys.argv)
     try:
         SERVER = sys.argv[1]
     except:

@@ -13,20 +13,6 @@ from logging.handlers import TimedRotatingFileHandler
 from functools import partial
 #endregion
 
-#region sys args parsing 
-
-def getargsasdict():
-    argsin = [
-    i.split("=") for i in sys.argv[2:]
-    ]
-    dictout = {}
-    for t in argsin:
-        dictout[t[0]] = t[1]
-
-    return dictout
-
-#end region
-
 #region logging
 
 
@@ -442,7 +428,7 @@ class four_point_app():
     #endregion
 if __name__ == "__main__":
     logging.info("start from main")
-    sysargs = getargsasdict()
+    sysargs = iu.getargsasdict()
     try:
         SERVER = sys.argv[1]
     except:
