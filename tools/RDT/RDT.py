@@ -27,7 +27,10 @@ class NI_RDT():
     """_summary_ Class for connecting to and controlling a National Instruments device for RDT measurements.
     """
     #region init
-    def __init__(self, root, c1, t1, t2, config_path:str = r"C:\Users\c376038\Desktop\inst_suite\working\tools\RDT\rdt_config.json"):
+    def __init__(
+                self, root, c1, t1, t2, T_bias_on, t_run, t_delay,
+                fan_delay, T_cool, num_of_meas, min_val, max_val
+    ):
         #control flags
         self.T_bias_flag:bool = False
         
@@ -54,14 +57,12 @@ class NI_RDT():
         
         #stuff to pull from config 
         # self.t_run:float = 0.0
-        self.t_delay:float = 1.0
-        self.T_cool:int = 130
-        self.N_meas:int = 0
-        
-        #config 
-        self.config_path:str  = config_path
-        self.config:dict[str,dict[str,str]]
-        self.sys_config:dict[str,str]
+        self.t_delay:float = t_delay
+        self.T_cool:int = T_cool
+        self.N_meas:int = num_of_meas
+        self.T_bias:float = T_bias_on
+        self.min_val:float = min_val
+        self.max_val:float = max_val
         
         #states
         self.States: dict[str,list[bool]] = {
@@ -76,36 +77,15 @@ class NI_RDT():
         self.fig, self.axs, = plt.subplots(2,1)
         self.fig.set_size_inches(8,6)
         
-    def load_config(self): #this will need to be replaced with front end config loading
-        """_summary_ Load the configuration from the JSON file.
-        """
-        try:
-            with open(self.config_path, 'r') as file:
-                self.config:dict[str,dict[str,str]] = json.load(file)
-            print(list(self.config.keys()))
-            self.sys_config = self.config['RDT']['sys']
-            print(self.sys_config)
-            self.T_bias:float = float(self.sys_config["T_Bias_on"])
-            
-
-        except FileNotFoundError:
-            print(f"Configuration file {self.config_path} not found.")
-        except json.JSONDecodeError:
-            print(f"Error decoding JSON from the configuration file {self.config_path}.")
         
     def dev1_init(self, prod_name:str):
         """
         wrapper for usb init
         """
-        
-        min_val:float = float(self.config["RDT"][prod_name]["Min_val"])
-        
-        max_val:float = float(self.config["RDT"][prod_name]["Max_val"])
-        
         self.Current_Tc = nidaqmx.Task()
         
         self.Current_Tc.ai_channels.add_ai_voltage_chan(
-            self.devices[prod_name] + "/ai0", min_val=min_val, max_val=max_val
+            self.devices[prod_name] + "/ai0", min_val=self.min_val, max_val=self.max_val
             )
         self.Current_Tc.ai_channels.add_ai_thrmcpl_chan(
             self.devices[prod_name] + "/ai1", name_to_assign_to_channel="T_HotPlate", thermocouple_type=ThermocoupleType.K
