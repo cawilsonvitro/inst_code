@@ -144,6 +144,7 @@ class NI_RDT():
         #graphing
         self.fig, self.axs, = plt.subplots(2,1)
         self.fig.set_size_inches(8,6)
+        #logging
         class_name = str(type(self))
         name = class_name.split(" ")[-1][:-1].replace("'", "")
         self.logger = logging.getLogger(name)
@@ -213,7 +214,21 @@ class NI_RDT():
         self.Status = True
         self.Relay_Controller.write(self.States["Off"])    
         self.Current_1, self.Temp_1, self.Temp_2  = self.Current_Tc.read()
-        # self.update_gui()
+        self.update_gui()
+    
+    def maintain_temp(self):
+        #need to make better 
+        t_upper = 30
+        t_lower = 20 
+        if self.Temp_1 < t_lower:
+            self.Relay_Controller.write([True, True, False])
+        
+        if t_lower < self.Temp_1 < t_upper and self.Temp_1 < t_upper:
+            self.Relay_Controller.write([False, True, False])
+        
+        if self.Temp_1 > t_upper:
+            self.Relay_Controller.write([False, True, True])     
+        
     #endregion
     #region front end interface
     def update_gui(self, event = None):

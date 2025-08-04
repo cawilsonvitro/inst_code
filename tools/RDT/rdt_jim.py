@@ -158,6 +158,7 @@ def bias_on(task1):
 
 def DAQ(data_out_list, t_run, t_delay):
     N_meas = int(t_run*60/t_delay) # number of DAQs based on
+    print(N_meas)
     for t_index in range(N_meas):
             TIME = t_index*t_delay
             x.append(TIME/60)

@@ -66,7 +66,9 @@ RDT: fix conifg with launcher
 RDT: get repeated measure to graph name
 RDT: get tcp stuff up
 RDT: get data saving
-rdt:fix graph lag
+RDT :fix graph lag
+RDT: get closing graph support
+
 change timers to match JIMS leave mine as comments and talk to
 
 get list of params we can changes
