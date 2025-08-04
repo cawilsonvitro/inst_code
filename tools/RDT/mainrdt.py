@@ -405,7 +405,6 @@ class rdt_app():
                                          self.T_bias_on, self.t_run, self.t_delay, 
                                          self.fan_delay, self.T_cool, self.num_of_meas, 
                                          self.min_val, self.max_val)
-            self.rdt.load_config()
             self.rdt.init_rdt()
         except Exception as e:
             traceback.print_exc()
@@ -576,16 +575,16 @@ if __name__ == "__main__":
         SERVER, 
         PORT
         )
-    
+    print(args)
     temp = rdt_app(
             SERVER, 
             PORT,
-            T_bias_on = float(args["T_bias_on"]) if "T_bias_on" in list(args.keys()) else 150.0,
+            T_bias_on = float(args["T_bias_on"]) if "T_bias_on" in list(args.keys()) else 20.0, #should be 150
             t_run = float(args["t_run"]) if "t_run" in list(args.keys()) else 1.0,
             t_delay = float(args["t_delay"]) if "t_delay" in list(args.keys()) else 1.0,
             fan_delay = float(args["fan_delay"]) if "fan_delay" in list(args.keys()) else 30.0,
-            T_cool = float(args["T_cool"]) if "T_cooldown" in list(args.keys()) else 130.0,
-            num_of_meas = float(args["num_of_meas"]) if "num_of_meas" in list(args.keys()) else 10.0,
+            T_cool = float(args["T_cool"]) if "T_cooldown" in list(args.keys()) else 20.0,
+            num_of_meas = float(args["num_of_meas"]) if "num_of_meas" in list(args.keys()) else 100.0,
             min_val = float(args["Min_val"]) if "Min_val" in list(args.keys()) else -0.05,
             max_val = float(args["Max_val"]) if "Max_val" in list(args.keys()) else 0.05,
             )

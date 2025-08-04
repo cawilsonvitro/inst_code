@@ -224,7 +224,6 @@ class NI_RDT():
             self.Current_1, self.Temp_1, self.Temp_2  = self.Current_Tc.read()
             
         cur1 = str(self.Current_1)
-        print(cur1)
         cur1e = cur1[cur1.index("e"):] if "e" in cur1 else ""
         cur1 = cur1[:cur1.index(".") + 3] if "." in cur1 else cur1
         if cur1e != "":cur1 = f"{cur1}{cur1e}"
@@ -281,7 +280,6 @@ class NI_RDT():
         
         self.Relay_Controller.write(self.States["Bias_on"])
         
-        self.N_meas:int = 1
         
         t_total:float = self.N_meas * self.t_delay 
         
