@@ -11,7 +11,7 @@ python -m pip install nidaqmx
 
 python -m nidaqmx installdriver
 
-
+logging: most larger things and things running in the app of the intrument will be in logging.info others will be in logging.debugging
 
 
 git notes: 
