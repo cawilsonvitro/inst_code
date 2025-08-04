@@ -6,6 +6,27 @@ import sys
 import subprocess
 import venv #type:ignore
 import traceback
+import logging
+from logging.handlers import TimedRotatingFileHandler
+import datetime as dt
+
+
+
+date = dt.now().strftime("%m-%d-%Y, Hour %H Min %M Sec %S")
+logging.basicConfig(
+    level=logging.DEBUG, # Set a global logging level
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        # logging.StreamHandler(), # Log to console
+        TimedRotatingFileHandler(f'logs\\{date}.log', when = "D", backupCount= 5)
+    ]
+)
+
+global logger
+
+logger = logging.getLogger('launcher')
+
+
 
 def spawn_program_and_die(program, exit_code=0):
     """
@@ -15,10 +36,10 @@ def spawn_program_and_die(program, exit_code=0):
     Takes the parameter program, which is a list 
     that corresponds to the argv of your command.
     """
-    # Start the external program
-    # print("code to cmd", program)
+    global logger
+    logger.debug(f"Spawning program with following cmd args: {program}")
     subprocess.Popen(program)
-    # We have started the program, and can suspend this interpreter
+    logger.debug("Program spawned, exiting launcher script")
     sys.exit(exit_code)
     
 def venv_builder(req = "constraints.txt") -> None:
@@ -35,13 +56,16 @@ def venv_builder(req = "constraints.txt") -> None:
     Returns:
         None
     """
-    
+    global logger
+    logger.debug("Starting virtual environment builder")
+    logger.debug(f"Using requirements file: {req}")
     lines: list[str]
     req_file:str = req
     with open( req_file, 'r') as f:
         lines = list(f.readlines())
+    logger.debug(f"Read {len(lines)} lines from requirements file")
 
-
+    logger.debug("Stripping lines and replacing 'delcom' entries")
     stripped_lines: list[str] = []
     stripped: str = ""
     cwd = os.getcwd()
@@ -58,18 +82,22 @@ def venv_builder(req = "constraints.txt") -> None:
             for line in stripped_lines:
                 f.write("\n" + line)
                 
-
+        logger.debug(f"Creating virtual environment at {venv_path}")
         venv.create(venv_path, with_pip=True, clear=True)
 
+        logger.debug("Virtual environment created, installing dependencies")
+        
         script = os.path.join(venv_path, 'Scripts')
 
         py = os.path.join(script, 'python.exe')
 
         pip = os.path.join(script, 'pip.exe')
-
+        
+        logger.debug(f"Using Python interpreter at {py} and pip at {pip}")
         install = f"{py} {pip} install -r constraints.txt"
 
         os.system(install)
+        logger.debug("Dependencies installed")
         
 def launch():
     """
@@ -83,9 +111,12 @@ def launch():
     Side Effects:
         Launches a new process for the selected tool script and terminates the current process.
     """
+    global logger
+    logger.debug("Starting launch process")
     kwargs = []
     virt_path: str = os.path.join(os.getcwd(), '.venv', 'scripts', 'python.exe')
-
+    logger.debug(f"Virtual environment Python path: {virt_path}")
+    logger.debug("Reading configuration from config.json")
     with open ('config.json', 'r') as f:
         config = json.load(f)
     
@@ -97,9 +128,11 @@ def launch():
     inv_map = {v: k for k, v in ver_map}
     server_ip = inv_map["host"]
 
-
+    logger.debug(f"Server IP address: {server_ip}")
     hostname:str = socket.gethostname()
+    logger.debug(f"Hostname: {hostname}")
     ip_address = socket.gethostbyname(hostname)
+    logger.debug(f"IP Address: {ip_address}")
     # ip_address: str = "127.0.0.1" #for debugging
     # print(f"Hostname: {hostname}")
     # print(f"IP Address: {ip_address}")
@@ -113,7 +146,7 @@ def launch():
 
 
     file_name: str = "main"
-
+    logger.debug(f"Selected tool: {tool}")
     if tool != "host" and tool != "testing":
         if tool == "hall":
             if hall == "HMS":
@@ -168,6 +201,7 @@ def launch():
 if __name__ == "__main__":
     sysargs = sys.argv
     # print(sysargs)
+    logger.debug(f"Launcher script started with arguments: {sysargs}")
     try:
         if sysargs[-1] == "test":      
             with open ('config.json', 'r') as f:
