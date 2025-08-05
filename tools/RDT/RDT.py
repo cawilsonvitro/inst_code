@@ -300,8 +300,8 @@ class NI_RDT():
         temp2 = temp2[:temp2.index(".") + 3] if "." in temp2 else temp2
         temp1 += " C"
         temp2 += " C"   
-        self.logger.debug(f"Current: {cur1} A, T_HotPlate: {temp1}, T_HotPlate2: {temp2}")
-        self.logger.debug("Setting GUI variables")
+        # self.logger.debug(f"Current: {cur1} A, T_HotPlate: {temp1}, T_HotPlate2: {temp2}")
+        # self.logger.debug("Setting GUI variables")
         self.c1.set(cur1)
         self.t1.set(temp1)
         self.t2.set(temp2)
@@ -374,8 +374,8 @@ class NI_RDT():
         if self.Temp_1 < self.T_bias:
             self.logger.debug("Preheating hotplate to bias temperature")
             self.T_bias_flag = True
+            self.logger.debug("starting heating relay")
             while self.Temp_1 < self.T_bias:
-                self.logger.debug("starting heating relay")
                 self.Relay_Controller.write(self.States["Heat"])
                 self.Current_1, self.Temp_1, self.Temp_2  = self.Current_Tc.read()
                 self.update_gui()

@@ -579,7 +579,7 @@ if __name__ == "__main__":
     temp = rdt_app(
             SERVER, 
             PORT,
-            T_bias_on = float(args["T_bias_on"]) if "T_bias_on" in list(args.keys()) else 20.0, #should be 150
+            T_bias_on = float(args["T_bias_on"]) if "T_bias_on" in list(args.keys()) else 150.0, #should be 150
             t_run = float(args["t_run"]) if "t_run" in list(args.keys()) else 1.0,
             t_delay = float(args["t_delay"]) if "t_delay" in list(args.keys()) else 1.0,
             fan_delay = float(args["fan_delay"]) if "fan_delay" in list(args.keys()) else 30.0,
