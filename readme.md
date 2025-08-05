@@ -63,6 +63,8 @@ to do:
 main: test sql and run before moving over
 hall: debug script again and get running with hall computer
 
+
+RDT: get slow start fixed
 RDT: get repeated measure to graph name
 RDT: get tcp stuff up
 RDT: get data saving

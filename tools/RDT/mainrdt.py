@@ -583,7 +583,7 @@ if __name__ == "__main__":
             t_run = float(args["t_run"]) if "t_run" in list(args.keys()) else 1.0,
             t_delay = float(args["t_delay"]) if "t_delay" in list(args.keys()) else 1.0,
             fan_delay = float(args["fan_delay"]) if "fan_delay" in list(args.keys()) else 30.0,
-            T_cool = float(args["T_cool"]) if "T_cooldown" in list(args.keys()) else 20.0,
+            T_cool = float(args["T_cool"]) if "T_cooldown" in list(args.keys()) else 30.0,
             num_of_meas = float(args["num_of_meas"]) if "num_of_meas" in list(args.keys()) else 60.0,
             min_val = float(args["Min_val"]) if "Min_val" in list(args.keys()) else -0.05,
             max_val = float(args["Max_val"]) if "Max_val" in list(args.keys()) else 0.05,
