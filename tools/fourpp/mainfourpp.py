@@ -437,6 +437,14 @@ if __name__ == "__main__":
     
     PORT = 5050
     ADDR = (SERVER, PORT)
+    try:
+        sysargs["sample_count"]
+        sysargs["resource_string"]
+    except KeyError as e:
+        logging.error(f"Missing required argument: {e}")
+        logging.error("using default arguments")
+        sysargs["sample_count"] = 1
+        sysargs["resource_string"] = "USB0::0xF4EC::0x1208::SDM36HCD801150::INSTR"
     
     temp = four_point_app(
         SERVER,
