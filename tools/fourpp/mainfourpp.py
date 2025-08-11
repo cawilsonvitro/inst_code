@@ -168,7 +168,7 @@ class four_point_app():
             dropdown.instances["samples"].configure(values=resp.split(","))
         else:
             dropdown.instances["samples"].configure(values=[])
-        
+       
     def buildGUI(self, root):
         '''
         builds gui for user interaction
@@ -199,6 +199,7 @@ class four_point_app():
             width = 5,
         ).place(x = 200, y = 60)
         dropdown.instances["position"].bind('<<ComboboxSelected>>', self.get_pos)
+        
         Label(
             "positions",
             root,
@@ -227,22 +228,19 @@ class four_point_app():
             justify = tk.LEFT,  
             wraplength=100   
             ).place(x = 0, y = 40, width = 80,height = 20)
-        
-        
+          
         StandardButtons(
             "Measure",
             root,
             image = TkImage("Measure", r"tools\fourpp\images\Measure_Button.png").image,
             command = self.measure
-        ).place(x = 0, y = 120)
-        
+        ).place(x = 0, y = 120)       
         StandardButtons(
             "Reconnect",
             root,
             image = TkImage("Reconnect", r"tools\fourpp\images\Reconnect_Button.png").image,
             command = self.connectClient
-        ).place(x = 0, y = 190)
-        
+        ).place(x = 0, y = 190)       
         StandardLabel(
             "Connection",
             root,
@@ -279,6 +277,12 @@ class four_point_app():
         self.desc_window.protocol("WM_DELETE_WINDOW", partial(self.get_desc, None))
         TextBox("desc", self.desc_window, height = 20, width = 32).place(x = 10, y = 50)
         self.desc_window.withdraw()
+        
+        #operator id window
+        self.id_window = tk.Toplevel(self.root)
+        self.id_window.geometry("300x300")
+        self.id_window.title("Operator ID")
+        
         
         self.process_display.set("GUI Built, initializing Driver")
         self.logger.info("GUI built, initializing Driver")

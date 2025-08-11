@@ -61,6 +61,8 @@ add automatic reinit to ddrivers
 
 to do:
 main: test sql and run before moving over
+main: add operator id columns to database building
+
 hall: debug script again and get running with hall computer
 
 
