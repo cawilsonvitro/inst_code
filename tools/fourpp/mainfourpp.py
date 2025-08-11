@@ -312,7 +312,7 @@ class four_point_app():
             justify = tk.LEFT,  
             wraplength=100   
             ).place(x = 0, y = 30, width = 80,height = 20)
-        #self.id_window.withdraw()
+        self.id_window.withdraw()
 
         self.process_display.set("GUI Built, initializing Driver")
         self.logger.info("GUI built, initializing Driver")
@@ -442,11 +442,14 @@ class four_point_app():
                 self.toggle_desc()
                 self.root.wait_variable(self.wait)
             
+            self.toggle_id()
+            
             
             
             data.append(self.description)
             data.append(self.position)
-            self.fmanager.write_data("fourpp", ["sample id", "time", "resistance", "description", "pos"], data)
+            data.append(self.operator_id)
+            self.fmanager.write_data("fourpp", ["sample id", "time", "resistance", "description", "pos", "operator ID"], data)
                 
             
             
