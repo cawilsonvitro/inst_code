@@ -63,6 +63,8 @@ to do:
 main: test sql and run before moving over
 main: add operator id columns to database building
 
+
+all tools: slow main boot
 hall: debug script again and get running with hall computer
 
 

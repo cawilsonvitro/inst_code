@@ -178,9 +178,9 @@ class four_point_app():
     def get_id(self, event) -> None:
         self.logger.debug("Getting ID")
         self.id = TextBox.instances["id"].get("1.0","end-1c")
+        print(self.id)
         TextBox.instances["id"].delete("1.0","end-1c")
         self.toggle_id()
-        self.wait.set(False)
 
     def buildGUI(self, root):
         '''
@@ -298,6 +298,20 @@ class four_point_app():
         self.id_window.bind('<Escape>', self.get_id)
         self.id_window.protocol("WM_DELETE_WINDOW", partial(self.get_id, None))
         TextBox("id", self.id_window, height = 2, width = 30).place(x = 10, y = 50)
+        Label(
+            "Operator_ID",
+            self.id_window,
+            text = "Operator ID:",
+            anchor=tk.W,           
+            height=1,              
+            width=30,              
+            bd=1,                  
+            font=("Arial", 10), 
+            cursor="hand2",   
+            fg="black",                           
+            justify = tk.LEFT,  
+            wraplength=100   
+            ).place(x = 0, y = 30, width = 80,height = 20)
         #self.id_window.withdraw()
 
         self.process_display.set("GUI Built, initializing Driver")
