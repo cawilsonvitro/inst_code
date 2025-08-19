@@ -469,7 +469,7 @@ class near_ir_app():
     def init_spec(self):
         """
         Initializes the spectrometer driver and updates the UI with the driver status.
-        This method attempts to load and initialize the spectrometer driver using the IR.stellarnet class.
+        This method attempts to load and initialize the spectrometer driver using the IRstellarnet class.
         It updates the process display and root UI to indicate loading status. If the driver loads successfully,
         it displays a "Status Good" image and logs a success message. If the driver fails to load, it displays
         a "Status Bad" image and logs an error message. Any exceptions during initialization are printed to the console.
@@ -483,7 +483,7 @@ class near_ir_app():
         self.process_display.set("Loading Driver")
         self.root.update_idletasks()
         try:
-            self.spectrometer = IR.stellarnet(int_time=1000, scans_to_avg=1, x_smooth=0, x_timing=3)
+            self.spectrometer = IR.stellarnet(connection_string="123",int_time=1000, scans_to_avg=1, x_smooth=0, x_timing=3)
             self.spectrometer.init_driver()
             
         except Exception as e:
@@ -548,6 +548,10 @@ class near_ir_app():
         self.logger.debug(f"Server sent sample description {self.description}, launched description editor")
         self.process_display.set("Please enter sample, if no description needed enter none")
         self.wait.set(True)
+        self.toggle_id()
+        self.root.wait_variable(self.wait)
+            
+        self.wait.set(True)
         self.toggle_desc()
         self.root.wait_variable(self.wait)
         self.logger.debug(f"user set description to {self.description}")
@@ -605,7 +609,6 @@ class near_ir_app():
         Raises:
             Exception: If measurement fails, logs the error and resets the spectrometer status.
         """
-
         self.process_display.set("measuring")
         self.root.update_idletasks()
         self.sample_num = dropdown.instances["samples"].get()
@@ -626,7 +629,11 @@ class near_ir_app():
                     self.wvs = str_wvs
                     self.spec = str_spec
                     if not self.connected:
-                        self.logger.error("Not connected to server, cannot send data, having user enter sample description")
+                        self.logger.error("Not connected to server, cannot send data, having user enter sample description and op id")
+                        self.wait.set(True)
+                        self.toggle_id()
+                        self.root.wait_variable(self.wait)
+            
                         self.wait.set(True)
                         self.toggle_desc()
                         self.root.wait_variable(self.wait)
@@ -648,8 +655,7 @@ class near_ir_app():
                     self.logger.error("Failed to measure, reinitializing spectrometer")
                     self.spectrometer.status = False
                 
-                self.init_spec()
-                self.spec_init()
+                    self.init_spec()
                     
                 
 

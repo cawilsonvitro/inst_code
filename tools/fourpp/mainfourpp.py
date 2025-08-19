@@ -420,6 +420,11 @@ class four_point_app():
         self.logger.debug(f"Server sent sample description {self.description}, launched description editor")
         self.process_display.set("Please enter sample, if no description needed enter none")
         self.wait.set(True)
+        self.toggle_id()
+        self.root.wait_variable(self.wait)
+            
+        
+        self.wait.set(True)
         self.toggle_desc()
         self.root.wait_variable(self.wait)
         self.logger.debug(f"user set description to {self.description}")
@@ -480,16 +485,17 @@ class four_point_app():
             
             
             if not self.connected: #always get a sample description if not connected
-                self.logger.info("Not connected to server, having user manual enter sample description")
+                self.logger.info("Not connected to server, having user manual enter sample description and op id")
+                self.wait.set(True)
+                self.toggle_id()
+                self.root.wait_variable(self.wait)
+            
                 self.wait.set(True)
                 self.toggle_desc()
                 self.root.wait_variable(self.wait)
             
             
-            self.wait.set(True)
-            self.toggle_id()
-            self.root.wait_variable(self.wait)
-            
+
             
             
             data.append(self.description)
