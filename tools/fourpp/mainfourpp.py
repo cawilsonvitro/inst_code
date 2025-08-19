@@ -31,6 +31,45 @@ logging.basicConfig(
 #endregion
 
 class four_point_app():
+    """
+    four_point_app(ip, port, samp_cout, resource_string)
+    A GUI application for controlling a four-point probe measurement system, managing TCP communication with a server, and handling data acquisition, storage, and user interaction.
+    Attributes:
+        DM: Driver manager for the measurement instrument.
+        resource_string (str): VISA resource string for instrument connection.
+        samples (list): List of sample data.
+        value: Last measured value.
+        dataPath (str): Path to store measurement data.
+        sample_num (str): Current sample number.
+        description (str): Description of the current sample.
+        position (str): Measurement position identifier.
+        fmanager: File manager for data storage.
+        logger: Logger instance for application logging.
+        ip (str): Server IP address.
+        port (int): Server port.
+        connected (bool): TCP connection status.
+        root: Tkinter root window.
+        process_display: Tkinter StringVar for process status display.
+        wait: Tkinter BooleanVar for GUI event synchronization.
+        desc_window: Tkinter Toplevel window for sample description.
+        id_window: Tkinter Toplevel window for operator ID.
+        id (str): Operator ID.
+    Methods:
+        __init__(ip, port, samp_cout, resource_string): Initialize the application.
+        connectClient(): Establish TCP connection to the server.
+        startApp(): Start the GUI application.
+        endApp(event): Gracefully shut down the application.
+        toggle_desc(): Show/hide the sample description window.
+        get_desc(event): Retrieve and set the sample description from the user.
+        get_pos(event): Retrieve and set the measurement position from the user.
+        update(): Update the sample dropdown list from the server.
+        toggle_id(): Show/hide the operator ID window.
+        get_id(event): Retrieve and set the operator ID from the user.
+        buildGUI(root): Build the main GUI and auxiliary windows.
+        load_dm(): Load and initialize the measurement driver.
+        tcp_protocol(): Handle the TCP protocol for metadata and measurement data exchange.
+        measure(): Perform a measurement, handle data entry, and save results.
+    """
     
     #region application start up
     def __init__(self, ip, port, samp_cout, resource_string):
