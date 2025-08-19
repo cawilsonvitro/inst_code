@@ -3,10 +3,6 @@ from gui_package_cawilvitro import *
 from instutil import inst_util as iu
 import RDT as RDT
 # import RDT_dummy as RDT
-import tkinter as tk#region imports
-from gui_package_cawilvitro import *
-from instutil import inst_util as iu
-import RDT as rdt_Driver
 # import RDT_dummy as rdt_Driver
 import tkinter as tk
 import sys

@@ -44,7 +44,8 @@
             "sample_id": "VARCHAR(255)",
             "pos":"VARCHAR(255)",
             "time":"VARCHAR(255)",
-            "Description":"VARCHAR(8000)"
+            "Description":"VARCHAR(8000)",
+            "operator_id":"VARCHAR(255)"
         }
     },
     "Tool_pre": {

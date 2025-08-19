@@ -50,6 +50,8 @@ class four_point_app():
         self.sample_num: str = ""
         self.description: str = "None"
         self.position: str = ""  # Initialize position to avoid attribute errors
+        self.fmanager = iu.FileManager("fourpp", "5")
+        
         #threading
         # self.message: Queue[Any] = Queue(maxsize=1)
         # self.response: Queue[Any] = Queue(maxsize=1)
@@ -181,6 +183,8 @@ class four_point_app():
         print(self.id)
         TextBox.instances["id"].delete("1.0","end-1c")
         self.toggle_id()
+        
+        self.wait.set(False)
 
     def buildGUI(self, root):
         '''
@@ -442,13 +446,17 @@ class four_point_app():
                 self.toggle_desc()
                 self.root.wait_variable(self.wait)
             
+            
+            self.wait.set(True)
             self.toggle_id()
+            self.root.wait_variable(self.wait)
             
             
             
             data.append(self.description)
             data.append(self.position)
-            data.append(self.operator_id)
+            print(self.id)
+            data.append(self.id)
             self.fmanager.write_data("fourpp", ["sample id", "time", "resistance", "description", "pos", "operator ID"], data)
                 
             
