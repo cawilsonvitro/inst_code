@@ -65,6 +65,9 @@ main: add operator id columns to database building
 
 
 all tools: slow main boot
+
+fpp: make sure new config layout works with code
+
 hall: debug script again and get running with hall computer
 
 
