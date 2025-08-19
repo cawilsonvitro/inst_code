@@ -24,10 +24,15 @@
         } 
     },
     "Nir":{
-        "int_tim": "50",
+        "int_time": "50",
         "scans_to_avg": "1",
         "x_smooth": "0",
-        "x_timing": "3"
+        "x_timing": "3",
+        "darkAvgs": "10",
+        "lightAvgs": "10",
+        "BoxCar" : "5",
+        "startPt":"300",
+        "stopPt" :"1550"
     },
     "fourpp":{
             "resource_string":"USB0::0xF4EC::0x1208::SDM36HCD801150::INSTR",

@@ -33,7 +33,7 @@ logging.basicConfig(
 class rdt_app():
     
     #region application start up
-    def __init__(self, ip, port, T_bias_on, t_run, t_delay,fan_delay, T_cool, num_of_meas, min_val, max_val):
+    def __init__(self, ip, port, T_bias_on, t_run, t_delay,fan_delay, T_cool, num_of_meas, min_val, max_val, **kwargs):
         '''
         init class for use
         '''
@@ -55,6 +55,7 @@ class rdt_app():
         self.min_val = min_val
         self.max_val = max_val
 
+        
 
         #data management
         self.value = None
@@ -582,7 +583,8 @@ if __name__ == "__main__":
             T_cool = float(args["T_cool"]) if "T_cooldown" in list(args.keys()) else 30.0,
             num_of_meas = float(args["num_of_meas"]) if "num_of_meas" in list(args.keys()) else 60.0,
             min_val = float(args["Min_val"]) if "Min_val" in list(args.keys()) else -0.05,
-            max_val = float(args["Max_val"]) if "Max_val" in list(args.keys()) else 0.05,
+            max_val = float(args["Max_val"]) if "Max_val" in list(args.keys()) else 0.05
+            
             )
     temp.startApp()
 
