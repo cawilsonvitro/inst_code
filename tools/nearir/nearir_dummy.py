@@ -5,6 +5,7 @@ import random
 class stellarnet():
 
     def __init__(self,connection_string, **kwargs):
+        
         self.status = False
         
         self.rm = None
@@ -19,7 +20,9 @@ class stellarnet():
         self.values_raw = None
 
         self.std = None
-
+                
+        self.wv = ["a","b","c"]
+        self.spectra: list[float|int] = [str(i) for i in range(0,len(self.wv))]
     def init_driver(self):
         self.status = True
     
@@ -33,7 +36,10 @@ class stellarnet():
         
 
 
-
+if __name__ == "__main__":
+    temp = stellarnet("USB0::0xF4EC::0x1208::SDM36HCD801150::INSTR", int_time=1000, scans_to_avg=1, x_smooth=0, x_timing=3)
+    
+    print(temp.spectra)
 # foo = siglent("USB0::0xF4EC::0x1208::SDM36HCD801150::INSTR")
 
 # foo.init_driver()

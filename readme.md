@@ -61,6 +61,13 @@ add automatic reinit to ddrivers
 
 to do:
 main: test sql and run before moving over
+main: add operator id columns to database building
+
+
+all tools: slow main boot
+all tools: make sure we are not calling config and that we are using sysv args to pass args from launcher
+fpp: make sure new config layout works with code
+
 hall: debug script again and get running with hall computer
 
 

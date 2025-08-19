@@ -31,6 +31,45 @@ logging.basicConfig(
 #endregion
 
 class four_point_app():
+    """
+    four_point_app(ip, port, samp_cout, resource_string)
+    A GUI application for controlling a four-point probe measurement system, managing TCP communication with a server, and handling data acquisition, storage, and user interaction.
+    Attributes:
+        DM: Driver manager for the measurement instrument.
+        resource_string (str): VISA resource string for instrument connection.
+        samples (list): List of sample data.
+        value: Last measured value.
+        dataPath (str): Path to store measurement data.
+        sample_num (str): Current sample number.
+        description (str): Description of the current sample.
+        position (str): Measurement position identifier.
+        fmanager: File manager for data storage.
+        logger: Logger instance for application logging.
+        ip (str): Server IP address.
+        port (int): Server port.
+        connected (bool): TCP connection status.
+        root: Tkinter root window.
+        process_display: Tkinter StringVar for process status display.
+        wait: Tkinter BooleanVar for GUI event synchronization.
+        desc_window: Tkinter Toplevel window for sample description.
+        id_window: Tkinter Toplevel window for operator ID.
+        id (str): Operator ID.
+    Methods:
+        __init__(ip, port, samp_cout, resource_string): Initialize the application.
+        connectClient(): Establish TCP connection to the server.
+        startApp(): Start the GUI application.
+        endApp(event): Gracefully shut down the application.
+        toggle_desc(): Show/hide the sample description window.
+        get_desc(event): Retrieve and set the sample description from the user.
+        get_pos(event): Retrieve and set the measurement position from the user.
+        update(): Update the sample dropdown list from the server.
+        toggle_id(): Show/hide the operator ID window.
+        get_id(event): Retrieve and set the operator ID from the user.
+        buildGUI(root): Build the main GUI and auxiliary windows.
+        load_dm(): Load and initialize the measurement driver.
+        tcp_protocol(): Handle the TCP protocol for metadata and measurement data exchange.
+        measure(): Perform a measurement, handle data entry, and save results.
+    """
     
     #region application start up
     def __init__(self, ip, port, samp_cout, resource_string):
@@ -50,6 +89,8 @@ class four_point_app():
         self.sample_num: str = ""
         self.description: str = "None"
         self.position: str = ""  # Initialize position to avoid attribute errors
+        self.fmanager = iu.FileManager("fourpp", "5")
+        
         #threading
         # self.message: Queue[Any] = Queue(maxsize=1)
         # self.response: Queue[Any] = Queue(maxsize=1)
@@ -168,7 +209,22 @@ class four_point_app():
             dropdown.instances["samples"].configure(values=resp.split(","))
         else:
             dropdown.instances["samples"].configure(values=[])
+    
+    def toggle_id(self):
+        self.logger.info("Toggling ID Window")
+        state = self.id_window.state()
+        if state == "normal":self.id_window.withdraw()
+        if state == "withdrawn":self.id_window.deiconify()
         
+    def get_id(self, event) -> None:
+        self.logger.debug("Getting ID")
+        self.id = TextBox.instances["id"].get("1.0","end-1c")
+        print(self.id)
+        TextBox.instances["id"].delete("1.0","end-1c")
+        self.toggle_id()
+        
+        self.wait.set(False)
+
     def buildGUI(self, root):
         '''
         builds gui for user interaction
@@ -199,6 +255,7 @@ class four_point_app():
             width = 5,
         ).place(x = 200, y = 60)
         dropdown.instances["position"].bind('<<ComboboxSelected>>', self.get_pos)
+        
         Label(
             "positions",
             root,
@@ -227,22 +284,19 @@ class four_point_app():
             justify = tk.LEFT,  
             wraplength=100   
             ).place(x = 0, y = 40, width = 80,height = 20)
-        
-        
+          
         StandardButtons(
             "Measure",
             root,
             image = TkImage("Measure", r"tools\fourpp\images\Measure_Button.png").image,
             command = self.measure
-        ).place(x = 0, y = 120)
-        
+        ).place(x = 0, y = 120)       
         StandardButtons(
             "Reconnect",
             root,
             image = TkImage("Reconnect", r"tools\fourpp\images\Reconnect_Button.png").image,
             command = self.connectClient
-        ).place(x = 0, y = 190)
-        
+        ).place(x = 0, y = 190)       
         StandardLabel(
             "Connection",
             root,
@@ -280,6 +334,29 @@ class four_point_app():
         TextBox("desc", self.desc_window, height = 20, width = 32).place(x = 10, y = 50)
         self.desc_window.withdraw()
         
+        #operator id window
+        self.id_window = tk.Toplevel(self.root)
+        self.id_window.geometry("300x300")
+        self.id_window.title("Operator ID")
+        self.id_window.bind('<Escape>', self.get_id)
+        self.id_window.protocol("WM_DELETE_WINDOW", partial(self.get_id, None))
+        TextBox("id", self.id_window, height = 2, width = 30).place(x = 10, y = 50)
+        Label(
+            "Operator_ID",
+            self.id_window,
+            text = "Operator ID:",
+            anchor=tk.W,           
+            height=1,              
+            width=30,              
+            bd=1,                  
+            font=("Arial", 10), 
+            cursor="hand2",   
+            fg="black",                           
+            justify = tk.LEFT,  
+            wraplength=100   
+            ).place(x = 0, y = 30, width = 80,height = 20)
+        self.id_window.withdraw()
+
         self.process_display.set("GUI Built, initializing Driver")
         self.logger.info("GUI built, initializing Driver")
         self.load_dm()
@@ -343,6 +420,11 @@ class four_point_app():
         self.logger.debug(f"Server sent sample description {self.description}, launched description editor")
         self.process_display.set("Please enter sample, if no description needed enter none")
         self.wait.set(True)
+        self.toggle_id()
+        self.root.wait_variable(self.wait)
+            
+        
+        self.wait.set(True)
         self.toggle_desc()
         self.root.wait_variable(self.wait)
         self.logger.debug(f"user set description to {self.description}")
@@ -403,16 +485,24 @@ class four_point_app():
             
             
             if not self.connected: #always get a sample description if not connected
-                self.logger.info("Not connected to server, having user manual enter sample description")
+                self.logger.info("Not connected to server, having user manual enter sample description and op id")
+                self.wait.set(True)
+                self.toggle_id()
+                self.root.wait_variable(self.wait)
+            
                 self.wait.set(True)
                 self.toggle_desc()
                 self.root.wait_variable(self.wait)
             
             
+
+            
             
             data.append(self.description)
             data.append(self.position)
-            self.fmanager.write_data("fourpp", ["sample id", "time", "resistance", "description", "pos"], data)
+            print(self.id)
+            data.append(self.id)
+            self.fmanager.write_data("fourpp", ["sample id", "time", "resistance", "description", "pos", "operator ID"], data)
                 
             
             
@@ -437,6 +527,14 @@ if __name__ == "__main__":
     
     PORT = 5050
     ADDR = (SERVER, PORT)
+    try:
+        sysargs["sample_count"]
+        sysargs["resource_string"]
+    except KeyError as e:
+        logging.error(f"Missing required argument: {e}")
+        logging.error("using default arguments")
+        sysargs["sample_count"] = 1
+        sysargs["resource_string"] = "USB0::0xF4EC::0x1208::SDM36HCD801150::INSTR"
     
     temp = four_point_app(
         SERVER,
