@@ -1,7 +1,8 @@
 #region imports
 from gui_package_cawilvitro import *
 from instutil import inst_util as iu
-import nearir as IR
+# import nearir as IR
+import nearir_dummy as IR
 import sys
 from datetime import datetime as dt
 import traceback
@@ -275,7 +276,10 @@ class near_ir_app():
         self.position = "" 
         self.position = dropdown.instances["position"].get()
         self.logger.debug(f"{self.position} selected")
-             
+    
+    
+    
+    
     def update(self) -> None:
         """
         Updates the "samples" dropdown menu with values received from the TCP server.
@@ -292,6 +296,21 @@ class near_ir_app():
             dropdown.instances["samples"].configure(values=resp.split(","))
         else:
             dropdown.instances["samples"].configure(values=[])
+        
+    def toggle_id(self):
+        self.logger.info("Toggling ID Window")
+        state = self.id_window.state()
+        if state == "normal":self.id_window.withdraw()
+        if state == "withdrawn":self.id_window.deiconify()
+        
+    def get_id(self, event) -> None:
+        self.logger.debug("Getting ID")
+        self.id = TextBox.instances["id"].get("1.0","end-1c")
+        print(self.id)
+        TextBox.instances["id"].delete("1.0","end-1c")
+        self.toggle_id()
+        
+        self.wait.set(False)
         
     def buildGUI(self, root):
         """
@@ -312,6 +331,7 @@ class near_ir_app():
         Label.remove(None)
         StandardLabel.remove(None)
         dropdown.remove(None)
+        
         
         #to track our var
         self.wait:tk.BooleanVar = tk.BooleanVar()
@@ -420,6 +440,29 @@ class near_ir_app():
         self.logger.info("GUI built, initializing Driver")
         self.init_spec()
 
+        #operator id window
+        self.id_window = tk.Toplevel(self.root)
+        self.id_window.geometry("300x300")
+        self.id_window.title("Operator ID")
+        self.id_window.bind('<Escape>', self.get_id)
+        self.id_window.protocol("WM_DELETE_WINDOW", partial(self.get_id, None))
+        TextBox("id", self.id_window, height = 2, width = 30).place(x = 10, y = 50)
+        Label(
+            "Operator_ID",
+            self.id_window,
+            text = "Operator ID:",
+            anchor=tk.W,           
+            height=1,              
+            width=30,              
+            bd=1,                  
+            font=("Arial", 10), 
+            cursor="hand2",   
+            fg="black",                           
+            justify = tk.LEFT,  
+            wraplength=100   
+            ).place(x = 0, y = 30, width = 80,height = 20)
+        self.id_window.withdraw()
+        
     #endregion
     
     #region spectrometer
