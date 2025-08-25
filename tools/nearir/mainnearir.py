@@ -324,7 +324,16 @@ class near_ir_app():
         self.toggle_id()
         
         self.wait.set(False)
+    
+    def toggle_dark(self) -> None:
+        self.logger.debug("asking user to check light")
+        print(" I RAN TOO")
+        state = self.dark_window.state()
+        if state == "normal":self.dark_window.withdraw()
+        if state == "withdrawn":self.dark_window.deiconify()
         
+        self.wait.set(False)
+
     def buildGUI(self, root):
         """
         Constructs and initializes the graphical user interface (GUI) for user interaction.
@@ -475,6 +484,32 @@ class near_ir_app():
             ).place(x = 0, y = 30, width = 80,height = 20)
         self.id_window.withdraw()
         
+        
+        #dark checkpoint window
+        self.dark_window = tk.Toplevel(self.root)
+        self.dark_window.geometry("200x200")
+        self.dark_window.title("Dark Check point")
+        StandardButtons(
+            "darkdone",
+            self.dark_window,
+            command = self.toggle_dark,
+            image = TkImage("darkdone", r"tools\nearir\images\OK_button.png").image,
+        ).place(x = 0, y = 100)
+        Label(
+            "Dark_Check",
+            self.dark_window,
+            text = "Please turn off light",
+            anchor=tk.W,           
+            height=1,              
+            width=30,              
+            bd=1,                  
+            font=("Arial", 10), 
+            cursor="hand2",   
+            fg="black",                           
+            justify = tk.LEFT,  
+            wraplength=100   
+            ).place(x = 0, y = 30, width = 120,height = 60)
+        self.dark_window.withdraw()
     #endregion
     
     #region spectrometer
@@ -624,12 +659,15 @@ class near_ir_app():
             try:
                 self.logger.info("Starting dark measurement")
                 darks = []
-                dark_avgs = []
+                darks_float = []
+                dark_avgs = 0
                 i = 0
                 for i in range(self.darkavgs):
                     self.spectrometer.measure()
-                    darks = self.spectrometer.spectra
-                    dark_avgs = np.add(dark_avgs, darks)
+                    darks_str = self.spectrometer.spectra
+                    darks_float = [float(x) for x in darks_str]
+                    dark_avgs = np.add(dark_avgs, darks_float)
+                    print(i)
                     i += 1
                 
                 dark_avgs = dark_avgs / self.darkavgs
@@ -637,6 +675,7 @@ class near_ir_app():
                 
                 self.darkflag = True
             except Exception as e:
+                print("error")
                 self.logger.error(traceback.format_exc())
                 self.darkflag = False
                 
@@ -696,7 +735,13 @@ class near_ir_app():
         else:
             if self.spectrometer.status:
                 try:
-                    self.spectrometer.measure()
+                    # self.spectrometer.measure()
+                    self.dark()
+                    self.toggle_dark()
+                    self.wait.set(True)
+                    self.root.wait_variable(self.wait)
+                    self.light()
+                    
                     
                     
                     
@@ -735,7 +780,7 @@ class near_ir_app():
                 except:
                     self.logger.error("Failed to measure, reinitializing spectrometer")
                     self.spectrometer.status = False
-                
+                    self.logger.error(traceback.format_exc())
                     self.init_spec()
                     
                 
