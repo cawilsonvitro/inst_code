@@ -105,6 +105,7 @@ class near_ir_app():
         #data management
         self.darkflag = False
         self.dark_bus = []
+        self.light_bus = []
         self.value = None
         self.dataPath = r"data/"
         self.sample_num:int
@@ -641,6 +642,22 @@ class near_ir_app():
                 
     def light(self):
         
+        if self.spectrometer.status:
+            try:
+                self.logger.info("Starting light measurement")
+                lights = []
+                lights_avg = []
+                i = 0
+                for i in range(self.lightavgs):
+                    self.spectrometer.measure()
+                    lights = self.spectrometer.spectra
+                    lights_avg = np.add(lights_avg, lights)
+                    i += 1
+
+                lights_avg = lights_avg / self.lightavgs
+                self.light_bus = np.convolve(lights_avg, np.ones(self.boxcar), 'valid')/self.boxcar
+            except Exception as e:
+                self.logger.error(traceback.format_exc())
         
 
     def measure(self):
