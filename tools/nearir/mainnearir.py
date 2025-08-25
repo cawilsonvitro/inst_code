@@ -9,6 +9,7 @@ import traceback
 import logging
 from logging.handlers import TimedRotatingFileHandler
 from functools import partial
+import numpy as np
 #endregion
 
 #region logging
@@ -91,8 +92,19 @@ class near_ir_app():
         
         #spectrometer
         self.spectrometer = None
-
+        
+        #input values these need to be put in from config file eventually
+        self.darkavgs = 10
+        self.lightavgs = 10
+        self.boxcar = 5
+        
+        
+        
+        
+        
         #data management
+        self.darkflag = False
+        self.dark_bus = []
         self.value = None
         self.dataPath = r"data/"
         self.sample_num:int
@@ -354,6 +366,7 @@ class near_ir_app():
             width = 5,
         ).place(x = 200, y = 60)
         dropdown.instances["position"].bind('<<ComboboxSelected>>', self.get_pos)
+        
         Label(
             "positions",
             root,
@@ -368,7 +381,6 @@ class near_ir_app():
             justify = tk.LEFT,  
             wraplength=100   
             ).place(x = 200, y = 40, width = 80,height = 20)
-        
         Label(
             "Samples",
             root,
@@ -383,7 +395,6 @@ class near_ir_app():
             justify = tk.LEFT,  
             wraplength=100   
             ).place(x = 0, y = 40, width = 80,height = 20)
-        
         
         StandardButtons(
             "Measure",
@@ -592,6 +603,23 @@ class near_ir_app():
     #endregion
     
     #region measurement
+    
+    def dark(self):
+        
+        #need to figure out how to get user to turn off light
+        if self.spectrometer.status:
+            darks = []
+            dark_avgs = []
+            i = 0
+            for i in range(self.darkavgs):
+                self.spectrometer.measure()
+                darks = self.spectrometer.spectra
+                dark_avgs = np.add(dark_avgs, darks)
+                i += 1
+            
+            dark_avgs = dark_avgs / self.darkavgs
+            self.dark_bus = np.convolve(dark_avgs, np.ones(self.boxcar), 'valid')/self.boxcar
+
     def measure(self):
         """
         Performs a measurement using the spectrometer, processes the results, and writes the data to a file.
@@ -618,6 +646,8 @@ class near_ir_app():
             if self.spectrometer.status:
                 try:
                     self.spectrometer.measure()
+                    
+                    
                     
                     str_wvs: str = ""
                     str_spec: str = ""
