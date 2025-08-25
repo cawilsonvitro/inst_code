@@ -641,6 +641,17 @@ class near_ir_app():
                 self.darkflag = False
                 
     def light(self):
+        """
+        Performs a light measurement using the spectrometer, averages multiple measurements,
+        applies a boxcar smoothing filter, and stores the result.
+        The method checks if the spectrometer is active, then performs a number of light measurements
+        specified by `self.lightavgs`. Each measurement is accumulated and averaged. The averaged
+        spectrum is then smoothed using a boxcar convolution with a window size of `self.boxcar`.
+        The final processed spectrum is stored in `self.light_bus`.
+        Logs the start of the measurement and any exceptions encountered during the process.
+        Raises:
+            Logs any exceptions encountered during measurement or processing.
+        """
         
         if self.spectrometer.status:
             try:
