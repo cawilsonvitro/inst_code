@@ -605,20 +605,43 @@ class near_ir_app():
     #region measurement
     
     def dark(self):
+        """
+        Performs a dark measurement using the spectrometer.
+        This method instructs the user to turn off the light source (implementation pending),
+        then collects a specified number of dark spectra measurements (`self.darkavgs`).
+        Each measurement is accumulated and averaged to produce a mean dark spectrum.
+        The averaged dark spectrum is then smoothed using a boxcar convolution with width `self.boxcar`.
+        The resulting dark spectrum is stored in `self.dark_bus`, and the `self.darkflag` is set to True
+        upon successful completion. If an error occurs during the process, the error is logged and
+        `self.darkflag` is set to False.
+        Raises:
+            Exception: If an error occurs during the dark measurement process.
+        """
         
         #need to figure out how to get user to turn off light
         if self.spectrometer.status:
-            darks = []
-            dark_avgs = []
-            i = 0
-            for i in range(self.darkavgs):
-                self.spectrometer.measure()
-                darks = self.spectrometer.spectra
-                dark_avgs = np.add(dark_avgs, darks)
-                i += 1
-            
-            dark_avgs = dark_avgs / self.darkavgs
-            self.dark_bus = np.convolve(dark_avgs, np.ones(self.boxcar), 'valid')/self.boxcar
+            try:
+                self.logger.info("Starting dark measurement")
+                darks = []
+                dark_avgs = []
+                i = 0
+                for i in range(self.darkavgs):
+                    self.spectrometer.measure()
+                    darks = self.spectrometer.spectra
+                    dark_avgs = np.add(dark_avgs, darks)
+                    i += 1
+                
+                dark_avgs = dark_avgs / self.darkavgs
+                self.dark_bus = np.convolve(dark_avgs, np.ones(self.boxcar), 'valid')/self.boxcar
+                
+                self.darkflag = True
+            except Exception as e:
+                self.logger.error(traceback.format_exc())
+                self.darkflag = False
+                
+    def light(self):
+        
+        
 
     def measure(self):
         """
