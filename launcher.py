@@ -12,7 +12,7 @@ import datetime as dt
 
 
 
-date = dt.now().strftime("%m-%d-%Y, Hour %H Min %M Sec %S")
+date = dt.datetime.now().strftime("%m-%d-%Y, Hour %H Min %M Sec %S")
 logging.basicConfig(
     level=logging.DEBUG, # Set a global logging level
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
