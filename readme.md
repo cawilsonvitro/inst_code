@@ -60,6 +60,9 @@ add automatic reinit to ddrivers
 
 
 to do:
+main: add command that is sent to a tool to clear all data
+and log and data clearing 
+
 main: test sql and run before moving over
 main: add operator id columns to database building
 
