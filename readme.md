@@ -62,7 +62,7 @@ add automatic reinit to ddrivers
 to do:
 main: add command that is sent to a tool to clear all data
 and log and data clearing 
-
+s
 main: test sql and run before moving over
 main: add operator id columns to database building
 
@@ -72,7 +72,7 @@ all tools: make sure we are not calling config and that we are using sysv args t
 fpp: make sure new config layout works with code
 
 hall: debug script again and get running with hall computer
-
+hall: get computer able to ping my computer
 
 RDT: get slow start fixed
 RDT: get repeated measure to graph name

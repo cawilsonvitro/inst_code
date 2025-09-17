@@ -481,28 +481,28 @@ class four_point_app():
                     traceback.print_exc()
                     self.DM.status = False
                     print("Measuring fail", e)
-            data:list[str | int | float] = [self.sample_num, str(dt.now()), self.value]
-            
-            
-            if not self.connected: #always get a sample description if not connected
-                self.logger.info("Not connected to server, having user manual enter sample description and op id")
-                self.wait.set(True)
-                self.toggle_id()
-                self.root.wait_variable(self.wait)
-            
-                self.wait.set(True)
-                self.toggle_desc()
-                self.root.wait_variable(self.wait)
-            
-            
+                data:list[str | int | float] = [self.sample_num, str(dt.now()), self.value]
+                
+                
+                if not self.connected: #always get a sample description if not connected
+                    self.logger.info("Not connected to server, having user manual enter sample description and op id")
+                    self.wait.set(True)
+                    self.toggle_id()
+                    self.root.wait_variable(self.wait)
+                
+                    self.wait.set(True)
+                    self.toggle_desc()
+                    self.root.wait_variable(self.wait)
+                
+                
 
-            
-            
-            data.append(self.description)
-            data.append(self.position)
-            print(self.id)
-            data.append(self.id)
-            self.fmanager.write_data("fourpp", ["sample id", "time", "resistance", "description", "pos", "operator ID"], data)
+                
+                
+                data.append(self.description)
+                data.append(self.position)
+                print(self.id)
+                data.append(self.id)
+                self.fmanager.write_data("fourpp", ["sample id", "time", "resistance", "description", "pos", "operator ID"], data)
                 
             
             
