@@ -12,6 +12,7 @@ import os
 import logging
 from logging.handlers import TimedRotatingFileHandler
 from datetime import datetime as dt
+import traceback
 #endregion 
 
 #region logging
@@ -74,7 +75,7 @@ class silent_hall:
     def starApp(self):
         self.root = tk.Tk()
         self.root.title("Hall Effect measurement")
-        self.root.geometry("240x240")
+        self.root.geometry("800x800")
         self.root.resizable(width=False,height=False)
         self.root.bind("<Escape>", self.endApp)
         self.root.protocol("WM_DELETE_WINDOW",self.endProto)
@@ -84,31 +85,7 @@ class silent_hall:
         self.buildGUI(self.root)
         
         self.root.mainloop()
-    
-    
-       
-        
-    def toggle_desc(self):
-        self.logger.info("Toggling Description Window")
-        state = self.desc_window.state()
-        if state == "normal": self.desc_window.withdraw()
-        if state == "withdrawn": self.desc_window.deiconify()
 
-    
-    def get_desc(self, event) ->None:
-        #closes out window and gets info
-        self.description = TextBox.instances["desc"].get("1.0","end-1c")
-        TextBox.instances["desc"].delete("1.0","end-1c")
-        self.toggle_desc()
-        
-        self.wait.set(False)
-    
-    def get_pos(self,event) -> None:        
-        self.logger.debug("Getting pos")
-        self.position = "" 
-        self.position = dropdown.instances["position"].get()
-        self.logger.debug(f"{self.position} selected")
-        
     def update(self) -> None:
         self.logger.info("Updating sample dropdown")
         self.tcp.soc.send("UPDATE".encode())
@@ -147,6 +124,7 @@ class silent_hall:
         
         dropdown.remove(None)
         Label.remove(None)
+        TextBox.remove(None)
         
         dropdown(
             "samples",
@@ -195,38 +173,43 @@ class silent_hall:
             wraplength=100   
             ).place(x = 0, y = 40, width = 80,height = 20)
         
-        #description window
-        TextBox.remove(None) #here so we only have to call this once might havet to switch
-        self.desc_window = tk.Toplevel(self.root)
-        self.desc_window.geometry("300x800")
-        self.desc_window.title("Sample Description")
-        self.desc_window.bind('<Escape>', self.get_desc)
-        self.desc_window.protocol("WM_DELETE_WINDOW", partial(self.get_desc, None))
-        TextBox("desc", self.desc_window, height = 20, width = 32).place(x = 10, y = 50)
-        self.desc_window.withdraw()
         
-        #operator id window
-        self.id_window = tk.Toplevel(self.root)
-        self.id_window.geometry("300x300")
-        self.id_window.title("Operator ID")
-        self.id_window.bind('<Escape>', self.get_id)
-        self.id_window.protocol("WM_DELETE_WINDOW", partial(self.get_id, None))
-        TextBox("id", self.id_window, height = 2, width = 30).place(x = 10, y = 50)
-        Label(
-            "Operator_ID",
-            self.id_window,
-            text = "Operator ID:",
-            anchor=tk.W,           
-            height=1,              
-            width=30,              
-            bd=1,                  
-            font=("Arial", 10), 
-            cursor="hand2",   
-            fg="black",                           
-            justify = tk.LEFT,  
-            wraplength=100   
-            ).place(x = 0, y = 30, width = 80,height = 20)
-        self.id_window.withdraw()
+        TextBox("desc", root, height = 20, width = 20, ).place(x = 400, y = 400)
+        
+        
+        
+        # #description window
+        # TextBox.remove(None) #here so we only have to call this once might havet to switch
+        # self.desc_window = tk.Toplevel(self.root)
+        # self.desc_window.geometry("300x800")
+        # self.desc_window.title("Sample Description")
+        # self.desc_window.bind('<Escape>', self.get_desc)
+        # self.desc_window.protocol("WM_DELETE_WINDOW", partial(self.get_desc, None))
+        # TextBox("desc", self.desc_window, height = 20, width = 32).place(x = 10, y = 50)
+        # self.desc_window.withdraw()
+        
+        # #operator id window
+        # self.id_window = tk.Toplevel(self.root)
+        # self.id_window.geometry("300x300")
+        # self.id_window.title("Operator ID")
+        # self.id_window.bind('<Escape>', self.get_id)
+        # self.id_window.protocol("WM_DELETE_WINDOW", partial(self.get_id, None))
+        # TextBox("id", self.id_window, height = 2, width = 30).place(x = 10, y = 50)
+        # Label(
+        #     "Operator_ID",
+        #     self.id_window,
+        #     text = "Operator ID:",
+        #     anchor=tk.W,           
+        #     height=1,              
+        #     width=30,              
+        #     bd=1,                  
+        #     font=("Arial", 10), 
+        #     cursor="hand2",   
+        #     fg="black",                           
+        #     justify = tk.LEFT,  
+        #     wraplength=100   
+        #     ).place(x = 0, y = 30, width = 80,height = 20)
+        # self.id_window.withdraw()
         
     def callback(self, eventObject):
         self.endApp(None)
@@ -321,7 +304,9 @@ class silent_hall:
                 self.client = iu.client(self.ip, self.port) 
                 self.client.connect()
                 self.client.id()
-                self.starApp()
+                for file in self.new_files:
+                    self.current_file = file
+                    self.starApp()
                 
             
      
@@ -334,6 +319,8 @@ class silent_hall:
                 with open(self.tracker, "w") as f: f.writelines(lines)
                 
             except:
+                
+                print(traceback.format_exc())
                 with open(self.tracker, "r") as f:lines=f.readlines()
                 
                 lines[1] = "False"
@@ -356,7 +343,6 @@ class silent_hall:
         self.wait.set(True)
         self.toggle_id()
         self.root.wait_variable(self.wait)
-        
         print("I ran 3")
         
         self.wait.set(True)
