@@ -1,7 +1,7 @@
 import pyvisa
 import numpy as np
 import random
-
+import time as t
 class siglent():
 
     def __init__(self,connection_string, **kwargs):
@@ -26,7 +26,7 @@ class siglent():
     def measure(self):
         self.values = [7,8,9,10]
 
-        
+        t.sleep(5)
 
     def quit(self):
         self.status = False
