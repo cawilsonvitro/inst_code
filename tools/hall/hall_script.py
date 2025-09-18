@@ -9,21 +9,36 @@ import tkinter as tk
 #endregion 
 
 
+import sys
+import os
+
+cwd = os.getcwd()
+
+def get_exe_location():
+    """
+    Returns the absolute path to the compiled executable.
+    """
+    if getattr(sys, 'frozen', False):
+        # Running in a PyInstaller bundle
+        return os.path.dirname(sys.executable)
+    else:
+        # Running as a regular Python script
+        return os.path.dirname(os.path.abspath(__file__))
+
+exe_path = get_exe_location()
+print(f"The executable is located at: {exe_path}, current working path is {cwd}")
+
+if str(cwd).lower() != str(exe_path).lower():
+    os.chdir(exe_path)
+    print(f"Changed working directory to: {os.getcwd()}")
+
 class silent_hall:
     
     def __init__(self, ip, port, 
                  tracker = "script_tracker.txt",
                  hmsdata = "data"
                  ):
-        """_summary_ for HMS 3000 silent running, will connect to tcp server and run in back
-        round for code
 
-        Args:
-            ip (_type_): ip for tcp server
-            port (_type_): port for tcp server.
-        Sys Args:
-            <ip of server> <state of hms> s
-        """
         self.ip = ip
         self.port = port
         self.tracker = tracker
@@ -45,7 +60,7 @@ class silent_hall:
         self.buildGUI(self.root)
         
         self.root.mainloop()
-        
+    #region gui 
     def buildGUI(self, root):
         """_summary_ builds gui
 
@@ -149,24 +164,24 @@ class silent_hall:
         # print(new_files)
         if len(new_files) != 0:
             try:
-                    # self.client = iu.client(self.ip, self.port) 
-                # self.client.connect()
-                # self.client.id()
-                # self.starApp()
-                # for file in new_files:
-                #     # print(file)
-                #     path = os.path.join("data", file)
-                #     self.client.soc.send("MEAS".encode())
-                #     resp = self.client.soc.recv(1024).decode()
-                #     self.client.soc.send(self.sample_num.encode())
-                #     resp = self.client.soc.recv(1024).decode()
-                #     _,data = iu.parse(path)
-                #     data_str = (",").join(data)
+                self.client = iu.client(self.ip, self.port) 
+                self.client.connect()
+                self.client.id()
+                self.starApp()
+                for file in new_files:
+                    # print(file)
+                    path = os.path.join("data", file)
+                    self.client.soc.send("MEAS".encode())
+                    resp = self.client.soc.recv(1024).decode()
+                    self.client.soc.send(self.sample_num.encode())
+                    resp = self.client.soc.recv(1024).decode()
+                    _,data = iu.parse(path)
+                    data_str = (",").join(data)
                     
-                #     self.client.soc.send(data_str.encode())
+                    self.client.soc.send(data_str.encode())
                     
                     
-                # self.client.disconnect()
+                self.client.disconnect()
                 raise Exception
                 with open(self.tracker, "r") as f:lines=f.readlines()
                 
@@ -196,6 +211,10 @@ if __name__ == "__main__":
     except:
         SERVER = "192.168.1.1"
     PORT = 5050
+    cwd = os.getcwd()
+    if str(cwd).lower() != str(exe_path).lower():
+        os.chdir(exe_path)
+        print(f"Changed working directory to: {os.getcwd()}")
     
     temp = silent_hall(SERVER, PORT)
     temp.state_sys()
