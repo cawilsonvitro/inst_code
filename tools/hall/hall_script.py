@@ -364,6 +364,8 @@ class silent_hall:
                 self.logger.error("tcp client not created, cannot disconnect")
         else:
             print("No new files detected")
+            lines = [str(recent) + "\n", "True"]
+            with open(self.tracker, "w") as f:f.writelines(lines)
 
     def tcp_protocol(self):
         
