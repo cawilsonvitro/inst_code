@@ -61,6 +61,14 @@ class silent_hall:
         self.hms = hmsdata
         self.cwd = os.getcwd()
         
+                #logging
+
+        class_name = str(type(self))
+        name = class_name.split(" ")[-1][:-1].replace("'", "")
+        
+        self.logger = logging.getLogger(name)
+        
+        self.logger.info("4 point probe app initialized")
     
     #region gui
     def starApp(self):
@@ -249,6 +257,10 @@ class silent_hall:
         if self.sample_num == "":
                 print("Please enter a sample number")
         else:
+            for file in self.new_files:
+                print(file)
+                self.measure(file)
+                
             self.root.quit()
         
             
@@ -295,36 +307,24 @@ class silent_hall:
         times.sort()
         
         i:int = 0
-        new_files = []
+        self.new_files = []
         for time in times:
             if float(time) > pre_file:
-                new_files.append(all_files[i])
+                self.new_files.append(all_files[i])
             i += 1
             
-        print(new_files)
+        print(self.new_files)
         
         # print(new_files)
-        if len(new_files) != 0:
+        if len(self.new_files) != 0:
             try:
                 self.client = iu.client(self.ip, self.port) 
                 self.client.connect()
                 self.client.id()
                 self.starApp()
                 
-                
-                for file in new_files:
-                    # print(file)
-                    path = os.path.join("data", file)
-                    self.wait.set(True)
-                    self.id_window.title(f"Operator ID for {file}")
-                    self.toggle_id()
-                    self.root.wait_variable(self.wait)
-                    
-                    self.desc_window.title(f"Description for {file}")
-                    self.wait.set(True)
-                    self.toggle_desc()
-                    self.root.wait_variable(self.wait)
-                    
+            
+     
                 self.client.disconnect()
                 raise Exception #this is to prevent new file from being marked as read, please comment to run normally
                 with open(self.tracker, "r") as f:lines=f.readlines()
@@ -346,6 +346,24 @@ class silent_hall:
         else:
             print("No new files detected")
 
+    def measure(self, file):
+        self.desc_window.title(f"Description for {file}")
+        self.id_window.title(f"Operator ID for {file}")
+        
+        
+        # path = os.path.join("data", file)
+        print("I RAN 1")
+        self.wait.set(True)
+        self.toggle_id()
+        self.root.wait_variable(self.wait)
+        
+        print("I ran 3")
+        
+        self.wait.set(True)
+        self.toggle_desc()
+        self.root.wait_variable(self.wait)
+        print("I RAN 2")
+    
     def tcp_protocol(self, path):
         
         self.logger.info("Starting TCP protocol")
