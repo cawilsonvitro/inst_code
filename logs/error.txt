@@ -1,0 +1,84 @@
+PS C:\Users\C376038\Documents\inst_suite\python\inst_code> & C:/Users/C376038/Documents/inst_suite/python/inst_code/.venv/Scripts/Activate.ps1
+(.venv) PS C:\Users\C376038\Documents\inst_suite\python\inst_code> py launcher.py
+(.venv) PS C:\Users\C376038\Documents\inst_suite\python\inst_code> ('192.168.1.1', 5050)
+{'resistance': 'VARCHAR(255)'}
+Setting up server...
+
+* Server is ON *
+
+Waiting for clients to establish connection...
+{'resistance': 'VARCHAR(255)'}
+
+New client joined! ('192.168.1.3', 51374)
+
+Currently Connected Sockets:
+         ('192.168.1.3', 51374)
+{'resistance': 'VARCHAR(255)'}
+ host not integrated into Front end
+ testing not integrated into Front end
+ host not integrated into Front end
+ testing not integrated into Front end
+
+Received new message form client ('192.168.1.3', 51374) at 18/09/2025, 14:18:15:
+ID
+
+The client ('192.168.1.3', 51374) has disconnected...
+No more clients connected
+
+Currently Connected Sockets:
+{'resistance': 'VARCHAR(255)'}
+ host not integrated into Front end
+ testing not integrated into Front end
+
+New client joined! ('192.168.1.3', 51383)
+
+Currently Connected Sockets:
+         ('192.168.1.3', 51383)
+{'resistance': 'VARCHAR(255)'}
+ host not integrated into Front end
+ testing not integrated into Front end
+
+Received new message form client ('192.168.1.3', 51383) at 18/09/2025, 14:18:39:
+ID
+
+Received new message form client ('192.168.1.3', 51383) at 18/09/2025, 14:18:47:
+META
+
+Received new message form client ('192.168.1.3', 51383) at 18/09/2025, 14:18:47:
+MEAS
+insert into hall(ha_time, ha_sample_id, ha_Description, ha_pos, ha_DATE, ha_User_Name, ha_Sample_Name, "ha_I(mA)", ha_B, ha_D, ha_D_T, ha_MN, "ha_T(K)", ha_Nb, ha_u, ha_rho, ha_RH, ha_RHA, ha_RHB, ha_NS, ha_SIGMA, ha_DELTA, ha_ALPHA, "ha_Vab+I", "ha_Vbc+I", "ha_Vac+I", "ha_Vmac+I", "ha_V-mac+I", "ha_Vcd+I", "ha_Vda+I", "ha_Vbd+I", "ha_Vmbd+I", "ha_V-mbd", "ha_Vab-I", "ha_Vbc-I", "ha_Vac-I", "ha_Vmac-I", "ha_V-mac-I", "ha_Vcd-I", "ha_Vda-I", "ha_Vbd-I", "ha_Vmbd-I", ha_Rs) values ('2025-09-18 14:18:47.548706', 'S','None','LC','07-09-2024', 'KF','C-15222C', '7.000','0.550','0.120','0.100','300','300','-8.293E+20', '2.875E+01','2.618E-04', '-7.527E-03', '-7.526E-03', '-7.528E-03', '-9.952E+15', '3.819E+03','3.450E-02', '9.521E-01', '-34.558', '-32.903', '-1.676', '-1.918', '-1.432', '-34.553', '-32.900', '-1.676', '-1.436', '-1.917', '34.512','32.861','1.625','1.870','1.390','34.512','32.855','1.626','1.390','1.874')
+
+Received new message form client ('192.168.1.3', 51383) at 18/09/2025, 14:18:48:
+UPDATE
+No samples to update
+
+Received new message form client ('192.168.1.3', 51383) at 18/09/2025, 14:18:52:
+META
+
+Received new message form client ('192.168.1.3', 51383) at 18/09/2025, 14:18:52:
+MEAS
+insert into hall(ha_time, ha_sample_id, ha_Description, ha_pos, ha_DATE, ha_User_Name, ha_Sample_Name, "ha_I(mA)", ha_B, ha_D, ha_D_T, ha_MN, "ha_T(K)", ha_Nb, ha_u, ha_rho, ha_RH, ha_RHA, ha_RHB, ha_NS, ha_SIGMA, ha_DELTA, ha_ALPHA, "ha_Vab+I", "ha_Vbc+I", "ha_Vac+I", "ha_Vmac+I", "ha_V-mac+I", "ha_Vcd+I", "ha_Vda+I", "ha_Vbd+I", "ha_Vmbd+I", "ha_V-mbd", "ha_Vab-I", "ha_Vbc-I", "ha_Vac-I", "ha_Vmac-I", "ha_V-mac-I", "ha_Vcd-I", "ha_Vda-I", "ha_Vbd-I", "ha_Vmbd-I", ha_Rs) values ('2025-09-18 14:18:52.128414', 'A','None','CC','07-09-2024', 'KF','C-15289A', '7.000','0.550','0.120','0.100','300','300','-1.875E+21', '1.312E+01','2.537E-04', '-3.329E-03', '-3.326E-03', '-3.331E-03', '-2.250E+16', '3.942E+03','1.526E-02', '7.346E-01', '-27.892', '-37.964', '10.080','9.970','10.185','-27.895', '-37.973', '10.080','10.188','9.977','27.878','37.956','-10.091', '-9.985', '-10.196', '27.875','37.951','-10.090', '-10.197', '-9.981',)
+Server issue
+Setting up server...
+Traceback (most recent call last):
+  File "C:\Users\C376038\Documents\inst_suite\python\inst_code\.venv\Lib\site-packages\instutil\inst_util.py", line 1020, in server
+    self.serve_client(current_socket)
+  File "C:\Users\C376038\Documents\inst_suite\python\inst_code\.venv\Lib\site-packages\instutil\inst_util.py", line 857, in serve_client
+    elif client_data == "MEAS":self.meas_prot(current_socket, self.tool, t)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\C376038\Documents\inst_suite\python\inst_code\.venv\Lib\site-packages\instutil\inst_util.py", line 984, in meas_prot
+    self.SQL.write(tool, values)
+  File "C:\Users\C376038\Documents\inst_suite\python\inst_code\.venv\Lib\site-packages\instutil\inst_util.py", line 605, in write
+    self.cursor.execute(query)
+pyodbc.ProgrammingError: ('42000', "[42000] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Incorrect syntax near ')'. (102) (SQLExecDirectW)")
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\C376038\Documents\inst_suite\python\inst_code\.venv\Lib\site-packages\instutil\inst_util.py", line 996, in server
+    self.server_socket.bind(self.ADDR)
+OSError: [WinError 10022] An invalid argument was supplied
+
+* Server is ON *
+
+Waiting for clients to establish connection...

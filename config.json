@@ -7,7 +7,8 @@
         "127.0.0.1": "testing"
     },
     "Hall": {
-        "sys": "HMS"
+        "sys": "HMS",
+        "ip": ""
     },
     "RDT": {
         "sys":{
