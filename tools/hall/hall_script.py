@@ -56,25 +56,30 @@ class silent_hall:
                  hmsdata = "data"
                  ):
 
+        
+        self.position = ""
+
+
+
         self.ip = ip
         self.port = port
         self.tracker = tracker
         self.hms = hmsdata
         self.cwd = os.getcwd()
         
-                #logging
+        #logging
 
         class_name = str(type(self))
         name = class_name.split(" ")[-1][:-1].replace("'", "")
         
         self.logger = logging.getLogger(name)
         
-        self.logger.info("4 point probe app initialized")
+        self.logger.info("hall script started")
     
     #region gui
     def starApp(self):
         self.root = tk.Tk()
-        self.root.title("Hall Effect measurement")
+        self.root.title(f"Hall Effect measurement {self.current_file}")
         self.root.geometry("300x500")
         self.root.resizable(width=False,height=False)
         self.root.bind("<Escape>", self.endApp)
@@ -126,7 +131,7 @@ class silent_hall:
             width = 28,
             postcommand=self.update
         ).place(x = 5, y = 20)
-        # dropdown.instances["samples"].bind("<<ComboboxSelected>>",self.callback) dont need this
+        dropdown.instances["samples"].bind("<<ComboboxSelected>>",self.callback) #DO NEED THIS
 
         dropdown(
             "position",
@@ -206,8 +211,8 @@ class silent_hall:
 
     def update(self) -> None:
         # print("asking")
-        self.client.soc.send("UPDATE".encode())
-        resp:str = self.client.soc.recv(1024).decode()
+        self.tcp.soc.send("UPDATE".encode())
+        resp:str = self.tcp.soc.recv(1024).decode()
         # print(resp)
         if resp != "None":
             dropdown.instances["samples"].configure(values=resp.split(","))
@@ -230,10 +235,12 @@ class silent_hall:
         if self.sample_num == "":
                 print("Please enter a sample number")
         else:
-            for file in self.new_files:
-                print(file)
-                self.measure(file)
-                
+            self.description = TextBox.instances["desc"].get("1.0", "end-1c")
+            self.id = TextBox.instances["id"].get("1.0", "end-1c")    
+            _, data = iu.parse(os.path.join(os.getcwd(),'data', self.current_file))
+            self.value = (",").join(data)
+            self.tcp_protocol()
+            print(data)
             self.root.quit()
         
             
@@ -291,17 +298,17 @@ class silent_hall:
         # print(new_files)
         if len(self.new_files) != 0:
             try:
-                self.client = iu.client(self.ip, self.port) 
-                self.client.connect()
-                self.client.id()
+                self.tcp = iu.client(self.ip, self.port) 
+                self.tcp.connect()
+                self.tcp.id()
                 for file in self.new_files:
                     self.current_file = file
                     self.starApp()
                 
             
      
-                self.client.disconnect()
-                raise Exception #this is to prevent new file from being marked as read, please comment to run normally
+                self.tcp.disconnect()
+                # raise Exception #this is to prevent new file from being marked as read, please comment to run normally
                 with open(self.tracker, "r") as f:lines=f.readlines()
                 
                 lines[1] = "True"
@@ -316,31 +323,11 @@ class silent_hall:
                 lines[1] = "False"
                 
                 with open(self.tracker, "w") as f: f.writelines(lines)
-                
-            
-            
-            
+        
         else:
             print("No new files detected")
-
-    def measure(self, file):
-        self.desc_window.title(f"Description for {file}")
-        self.id_window.title(f"Operator ID for {file}")
-        
-        
-        # path = os.path.join("data", file)
-        print("I RAN 1")
-        self.wait.set(True)
-        self.toggle_id()
-        self.root.wait_variable(self.wait)
-        print("I ran 3")
-        
-        self.wait.set(True)
-        self.toggle_desc()
-        self.root.wait_variable(self.wait)
-        print("I RAN 2")
     
-    def tcp_protocol(self, path):
+    def tcp_protocol(self):
         
         self.logger.info("Starting TCP protocol")
         
@@ -365,17 +352,6 @@ class silent_hall:
         self.logger.debug(f"got {self.description} from server")
         self.logger.debug("Sending description request to server")
 
-        TextBox.instances["desc"].insert("1.0", self.description)
-        self.logger.debug(f"Server sent sample description {self.description}, launched description editor")
-        self.process_display.set("Please enter sample, if no description needed enter none")
-        self.wait.set(True)
-        self.toggle_id()
-        self.root.wait_variable(self.wait)
-            
-        
-        self.wait.set(True)
-        self.toggle_desc()
-        self.root.wait_variable(self.wait)
         self.logger.debug(f"user set description to {self.description}")
 
         self.logger.info("Starting TCP MEAS protocol")
