@@ -43,7 +43,7 @@
             }
     },
     "Database_Config":{
-        "host": "localhost",
+        "host": "10.40.0.16",
         "db": "glass_test",
         "driver": "{ODBC Driver 17 for SQL Server}",
         "default_col":{

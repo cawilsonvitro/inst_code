@@ -154,3 +154,17 @@ inst_util:
     The client class provides a simple TCP client for instrument computers to communicate with the server, including methods for connecting, disconnecting, and identifying themselves.
     The FileManager class handles local file storage for instrument data, including automatic deletion of the oldest files when a size limit is exceeded, and writing data to CSV files.
     Overall, the code is designed for extensibility and robustness, with clear separation of concerns between data parsing, database management, network communication, and file handling. It uses Python's type annotations for clarity, and logging for traceability. The design supports multiple instruments and samples, and can adapt to changes in database schema or network conditions.
+
+
+
+hall_Script:
+
+    This script automates the workflow for collecting and processing Hall Effect measurement data. It begins by importing necessary modules for system operations, GUI creation, logging, and custom utilities. Logging is configured to write detailed debug information to a time-stamped file, which helps track the script's activity and diagnose issues.
+
+    The script determines the location of the executable and ensures the working directory matches, which is important for consistent file access, especially when running as a packaged executable. The main logic is encapsulated in the silent_hall class, which manages experiment parameters, file tracking, and logging.
+
+    The GUI, built with Tkinter, provides dropdowns for selecting samples and positions, and text boxes for entering descriptions and IDs. The GUI updates dynamically based on server responses, and user actions trigger data collection and transmission. The starApp method launches the GUI for each new data file detected.
+
+    File tracking is managed via a text file, which records the state before and after running the measurement software. The script detects new data files, launches the measurement software, and processes each file through the GUI. For each file, user input is collected and sent to a remote server using a custom TCP protocol, with detailed logging at each step.
+
+    The main block sets up the server connection parameters, ensures the correct working directory, and starts the experiment workflow. The script is robust and extensible, with clear separation between GUI, file management, and network communication. However, it assumes the existence and correct format of several files and directories, which could cause runtime errors if not properly set up.
