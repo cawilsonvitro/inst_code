@@ -75,7 +75,7 @@ class silent_hall:
     def starApp(self):
         self.root = tk.Tk()
         self.root.title("Hall Effect measurement")
-        self.root.geometry("800x800")
+        self.root.geometry("300x500")
         self.root.resizable(width=False,height=False)
         self.root.bind("<Escape>", self.endApp)
         self.root.protocol("WM_DELETE_WINDOW",self.endProto)
@@ -96,18 +96,11 @@ class silent_hall:
         else:
             dropdown.instances["samples"].configure(values=[])
     
-    def toggle_id(self):
-        self.logger.info("Toggling ID Window")
-        state = self.id_window.state()
-        if state == "normal":self.id_window.withdraw()
-        if state == "withdrawn":self.id_window.deiconify()
-        
-    def get_id(self, event) -> None:
-        self.logger.debug("Getting ID")
-        self.id = TextBox.instances["id"].get("1.0","end-1c")
-        print(self.id)
-        TextBox.instances["id"].delete("1.0","end-1c")
-        self.toggle_id()
+    def get_pos(self,event) -> None:        
+        self.logger.debug("Getting pos")
+        self.position = "" 
+        self.position = dropdown.instances["position"].get()
+        self.logger.debug(f"{self.position} selected")
     
     def buildGUI(self, root):
         """_summary_ builds gui
@@ -132,7 +125,7 @@ class silent_hall:
             values = "",
             width = 28,
             postcommand=self.update
-        ).place(x = 0, y = 60)
+        ).place(x = 5, y = 20)
         # dropdown.instances["samples"].bind("<<ComboboxSelected>>",self.callback) dont need this
 
         dropdown(
@@ -140,7 +133,7 @@ class silent_hall:
             root,
             values = ["LT", "LC", "LL", "CT", "CC", "CL", "RT", "RC", "RL"],
             width = 5,
-        ).place(x = 0, y = 120)
+        ).place(x = 5, y = 80)
         dropdown.instances["position"].bind('<<ComboboxSelected>>', self.get_pos)
 
         Label(
@@ -156,7 +149,7 @@ class silent_hall:
             fg="black",                           
             justify = tk.LEFT,  
             wraplength=100   
-            ).place(x = 0, y = 100, width = 80,height = 20)
+            ).place(x = 5, y = 60, width = 80,height = 20)
         
         Label(
             "Samples",
@@ -171,45 +164,42 @@ class silent_hall:
             fg="black",                           
             justify = tk.LEFT,  
             wraplength=100   
-            ).place(x = 0, y = 40, width = 80,height = 20)
+            ).place(x = 5, y = 0, width = 80,height = 20)
         
+        Label(
+            "desc_label",
+            root,
+            text = "Description:",
+            anchor=tk.W,           
+            height=1,              
+            width=30,              
+            bd=1,                  
+            font=("Arial", 10), 
+            cursor="hand2",   
+            fg="black",                           
+            justify = tk.LEFT,  
+            wraplength=100   
+            ).place(x = 5, y = 160, width = 80,height = 20)
         
-        TextBox("desc", root, height = 20, width = 20, ).place(x = 400, y = 400)
+        TextBox("desc", root, height = 20, width = 20, ).place(x = 5, y = 180)
         
+        Label(
+            "id_label",
+            root,
+            text = "ID:",
+            anchor=tk.W,           
+            height=1,              
+            width=30,              
+            bd=1,                  
+            font=("Arial", 10), 
+            cursor="hand2",   
+            fg="black",                           
+            justify = tk.LEFT,  
+            wraplength=100   
+            ).place(x = 5, y = 110, width = 80,height = 20)
         
-        
-        # #description window
-        # TextBox.remove(None) #here so we only have to call this once might havet to switch
-        # self.desc_window = tk.Toplevel(self.root)
-        # self.desc_window.geometry("300x800")
-        # self.desc_window.title("Sample Description")
-        # self.desc_window.bind('<Escape>', self.get_desc)
-        # self.desc_window.protocol("WM_DELETE_WINDOW", partial(self.get_desc, None))
-        # TextBox("desc", self.desc_window, height = 20, width = 32).place(x = 10, y = 50)
-        # self.desc_window.withdraw()
-        
-        # #operator id window
-        # self.id_window = tk.Toplevel(self.root)
-        # self.id_window.geometry("300x300")
-        # self.id_window.title("Operator ID")
-        # self.id_window.bind('<Escape>', self.get_id)
-        # self.id_window.protocol("WM_DELETE_WINDOW", partial(self.get_id, None))
-        # TextBox("id", self.id_window, height = 2, width = 30).place(x = 10, y = 50)
-        # Label(
-        #     "Operator_ID",
-        #     self.id_window,
-        #     text = "Operator ID:",
-        #     anchor=tk.W,           
-        #     height=1,              
-        #     width=30,              
-        #     bd=1,                  
-        #     font=("Arial", 10), 
-        #     cursor="hand2",   
-        #     fg="black",                           
-        #     justify = tk.LEFT,  
-        #     wraplength=100   
-        #     ).place(x = 0, y = 30, width = 80,height = 20)
-        # self.id_window.withdraw()
+        TextBox("id", root, height = 1, width = 20, ).place(x = 5, y = 130)
+
         
     def callback(self, eventObject):
         self.endApp(None)
