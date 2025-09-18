@@ -340,7 +340,8 @@ class silent_hall:
                     self.starApp()
                 
             
-                    
+        
+            
 
                     raise Exception #this is to prevent new file from being marked as read, please comment to run normally
                     with open(self.tracker, "r") as f:lines=f.readlines()
