@@ -305,10 +305,7 @@ class silent_hall:
             update:bool = False
         elif lines[1].strip().lower() == 'true':
             update:bool = True
-        
-        if update:
-            lines = [str(recent) + "\n", "True"]
-            with open(self.tracker, "w") as f:f.writelines(lines)
+        #update is to check if the last run was good. If it was
         os.system("\"C:\\Program Files (x86)\\HMS3000 V3.52\\HMS-3000 V3.52.exe\"")
       #  if self.state == "post":
         pre_file: float = float(lines[0].strip())
@@ -344,9 +341,10 @@ class silent_hall:
             
                     
 
-                    # raise Exception #this is to prevent new file from being marked as read, please comment to run normally
+                    raise Exception #this is to prevent new file from being marked as read, please comment to run normally
                     with open(self.tracker, "r") as f:lines=f.readlines()
                     
+                    lines[0] = str(recent) + "\n"
                     lines[1] = "True"
                     
                     with open(self.tracker, "w") as f: f.writelines(lines)
@@ -364,7 +362,7 @@ class silent_hall:
                 self.logger.error("tcp client not created, cannot disconnect")
         else:
             print("No new files detected")
-            lines = [str(recent) + "\n", "True"]
+            lines = [str(recent) + "\n", update]
             with open(self.tracker, "w") as f:f.writelines(lines)
 
     def tcp_protocol(self):
@@ -413,8 +411,8 @@ class silent_hall:
         resp = self.tcp.soc.recv(1024).decode()
         
         self.logger.debug(f"Received response: {resp}")
-        
-        self.tcp.soc.send(str(self.value).encode())
+
+        self.tcp.soc.send(self.value.encode())
         resp = self.tcp.soc.recv(1024).decode()
         
         self.logger.debug(f"Received response: {resp}")
