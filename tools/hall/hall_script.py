@@ -272,10 +272,11 @@ class silent_hall:
             self.logger.info(f"Sample number {self.sample_num} selected, getting meta data then writing output")
             self.description = TextBox.instances["desc"].get("1.0", "end-1c")
             self.id = TextBox.instances["id"].get("1.0", "end-1c")    
-            _, data = iu.parse(os.path.join(os.getcwd(),'data', self.current_file))
+            col, data = iu.parse(os.path.join(os.getcwd(),'data', self.current_file))
+            print(col)
             self.value = (",").join(data)
             self.tcp_protocol()
-            print(data)
+            print(len(col), len(data))
             self.root.quit()
         
             
@@ -413,6 +414,7 @@ class silent_hall:
         self.logger.debug(f"Received response: {resp}")
 
         self.tcp.soc.send(self.value.encode())
+        print(self.value.encode())
         resp = self.tcp.soc.recv(1024).decode()
         
         self.logger.debug(f"Received response: {resp}")
