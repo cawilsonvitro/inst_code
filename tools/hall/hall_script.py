@@ -120,8 +120,9 @@ class silent_hall:
     
     #region gui
     def starApp(self):
+        self.logger.info("Starting GUI application")
         self.root = tk.Tk()
-        self.root.title(f"Hall Effect measurement {self.current_file}")
+        self.root.title(self.current_file)
         self.root.geometry("300x500")
         self.root.resizable(width=False,height=False)
         self.root.bind("<Escape>", self.endApp)
@@ -130,7 +131,7 @@ class silent_hall:
         self.process_display.set("Booting")
         self.root.update_idletasks()
         self.buildGUI(self.root)
-        
+        self.logger.info("GUI built successfully, entering main loop")
         self.root.mainloop()
 
     def update(self) -> None:
@@ -261,11 +262,14 @@ class silent_hall:
         '''
         ends application
         '''
+        self.logger.info("Ending application")
         self.quit = True
         self.sample_num = dropdown.instances["samples"].get()
         if self.sample_num == "":
                 print("Please enter a sample number")
+                self.logger.warning("No sample number entered, waiting for user input")
         else:
+            self.logger.info(f"Sample number {self.sample_num} selected, getting meta data then writing output")
             self.description = TextBox.instances["desc"].get("1.0", "end-1c")
             self.id = TextBox.instances["id"].get("1.0", "end-1c")    
             _, data = iu.parse(os.path.join(os.getcwd(),'data', self.current_file))
@@ -284,7 +288,7 @@ class silent_hall:
             after launch
         """
         
-    
+        self.logger.info("Starting state system")
         files:int = 0 #number of files
         all_files: list[str] = []
         
@@ -303,7 +307,8 @@ class silent_hall:
             update:bool = True
         
         if update:
-            with open(self.tracker, "w") as f:f.write(str(recent))
+            lines = [str(recent) + "\n", "True"]
+            with open(self.tracker, "w") as f:f.writelines(lines)
         os.system("\"C:\\Program Files (x86)\\HMS3000 V3.52\\HMS-3000 V3.52.exe\"")
       #  if self.state == "post":
         pre_file: float = float(lines[0].strip())
@@ -321,7 +326,7 @@ class silent_hall:
         self.new_files = []
         for time in times:
             if float(time) > pre_file:
-                self.new_files.append(all_files[i])
+                if ".txt" in all_files[i]:self.new_files.append(all_files[i])
             i += 1
             
         print(self.new_files)
@@ -337,27 +342,29 @@ class silent_hall:
                     self.starApp()
                 
             
-     
+                    
+
+                    # raise Exception #this is to prevent new file from being marked as read, please comment to run normally
+                    with open(self.tracker, "r") as f:lines=f.readlines()
+                    
+                    lines[1] = "True"
+                    
+                    with open(self.tracker, "w") as f: f.writelines(lines)
                 self.tcp.disconnect()
-                # raise Exception #this is to prevent new file from being marked as read, please comment to run normally
-                with open(self.tracker, "r") as f:lines=f.readlines()
-                
-                lines[1] = "True"
-                
-                with open(self.tracker, "w") as f: f.writelines(lines)
-                
             except:
-                
                 print(traceback.format_exc())
                 with open(self.tracker, "r") as f:lines=f.readlines()
                 
                 lines[1] = "False"
                 
                 with open(self.tracker, "w") as f: f.writelines(lines)
-        
+            try: 
+                self.tcp.disconnect()
+            except AttributeError:
+                self.logger.error("tcp client not created, cannot disconnect")
         else:
             print("No new files detected")
-    
+
     def tcp_protocol(self):
         
         self.logger.info("Starting TCP protocol")
