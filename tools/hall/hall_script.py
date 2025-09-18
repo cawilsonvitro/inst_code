@@ -48,7 +48,51 @@ if str(cwd).lower() != str(exe_path).lower():
     print(f"Changed working directory to: {os.getcwd()}")
 
 class silent_hall:
-    
+    '''
+    A class to manage Hall Effect measurement workflow, including GUI interaction,
+    file tracking, and TCP communication with a remote server.
+    Attributes:
+        ip (str): IP address for TCP connection.
+        port (int): Port for TCP connection.
+        tracker (str): Path to the tracker file for state management.
+        hms (str): Directory containing measurement data files.
+        cwd (str): Current working directory.
+        logger (logging.Logger): Logger instance for the class.
+        position (str): Selected position from GUI.
+        root (tk.Tk): Tkinter root window for GUI.
+        process_display (tk.StringVar): StringVar for process status display.
+        wait (tk.BooleanVar): BooleanVar for GUI state.
+        sample_num (str): Selected sample number from GUI.
+        description (str): Sample description from GUI.
+        id (str): Sample ID from GUI.
+        value (str): Parsed measurement data.
+        new_files (list): List of newly detected files.
+        tcp (iu.client): TCP client instance.
+        current_file (str): Currently processed file.
+        
+    Methods:
+        __init__(ip, port, tracker="script_tracker.txt", hmsdata="data"):
+            Initializes the silent_hall instance with connection and file tracking parameters.
+        starApp():
+            Launches the GUI application for Hall Effect measurement.
+        update():
+            Updates the sample dropdown list in the GUI by querying the server.
+        get_pos(event):
+            Retrieves the selected position from the GUI dropdown.
+        buildGUI(root):
+            Constructs the GUI layout and widgets.
+        callback(eventObject):
+            Handles sample selection events and ends the application.
+        endProto():
+            Wrapper to end the application via protocol.
+        endApp(event):
+            Ends the application, collects user input, and initiates TCP protocol.
+        state_sys():
+            Manages state tracking using a tracker file, detects new measurement files,
+            and launches the GUI for each new file.
+        tcp_protocol():
+            Handles the TCP communication protocol for sending measurement metadata and data to the server.
+    '''
     def __init__(self, ip, port, 
                  tracker = "script_tracker.txt",
                  hmsdata = "data"
