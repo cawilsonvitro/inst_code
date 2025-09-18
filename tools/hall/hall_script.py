@@ -7,8 +7,6 @@ import sys
 from gui_package_cawilvitro import *
 import tkinter as tk
 from functools import partial
-import sys
-import os
 import logging
 from logging.handlers import TimedRotatingFileHandler
 from datetime import datetime as dt
@@ -208,18 +206,7 @@ class silent_hall:
         
     def callback(self, eventObject):
         self.endApp(None)
-
-    def update(self) -> None:
-        # print("asking")
-        self.tcp.soc.send("UPDATE".encode())
-        resp:str = self.tcp.soc.recv(1024).decode()
-        # print(resp)
-        if resp != "None":
-            dropdown.instances["samples"].configure(values=resp.split(","))
-        else:
-            dropdown.instances["samples"].configure(values=[])
-        #debugging
-        
+    
     def endProto(self):
         '''
         wrapper to endApp
