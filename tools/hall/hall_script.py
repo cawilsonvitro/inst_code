@@ -7,23 +7,23 @@ import sys
 from gui_package_cawilvitro import *
 import tkinter as tk
 from functools import partial
-import logging
-from logging.handlers import TimedRotatingFileHandler
+# import logging
+# from logging.handlers import TimedRotatingFileHandler
 from datetime import datetime as dt
 import traceback
 #endregion 
 
 #region logging
-date = dt.now().strftime("%m-%d-%Y, Hour %H Min %M Sec %S")
+# date = dt.now().strftime("%m-%d-%Y, Hour %H Min %M Sec %S")
 
-logging.basicConfig(
-    level=logging.DEBUG, # Set a global logging level
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        # logging.StreamHandler(), # Log to console
-        TimedRotatingFileHandler(f'tools\\hall\\logs\\{date}.log', when = "D", backupCount= 5)
-    ]
-)
+# logging.basicConfig(
+#     level=logging.DEBUG, # Set a global logging level
+#     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+#     handlers=[
+#         # logging.StreamHandler(), # Log to console
+#         TimedRotatingFileHandler(f'tools\\hall\\logs\\{date}.log', when = "D", backupCount= 5)
+#     ]
+# )
 
 #endregion 
 
@@ -114,7 +114,7 @@ class silent_hall:
         class_name = str(type(self))
         name = class_name.split(" ")[-1][:-1].replace("'", "")
         
-        self.logger = logging.getLogger(name)
+        # self.logger = logging.getLogger(name)
         
         self.logger.info("hall script started")
     
