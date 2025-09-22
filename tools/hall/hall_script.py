@@ -119,7 +119,7 @@ class silent_hall:
         # #self.logger.info("hall script started")
     
     #region gui
-    def starApp(self):
+    def startApp(self):
         # #self.logger.info("Starting GUI application")
         self.root = tk.Tk()
         self.root.title(self.current_file)
@@ -336,7 +336,7 @@ class silent_hall:
                 self.tcp.id()
                 for file in self.new_files:
                     self.current_file = file
-                    self.starApp()
+                    self.startApp()
                     # raise Exception #this is to prevent new file from being marked as read, please comment to run normally
                     with open(self.tracker, "r") as f:lines=f.readlines()
                     
