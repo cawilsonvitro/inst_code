@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['C:\\Users\\E376038\\Documents\\repos\\python\\inst_code\\tools\\hall\\hall_script.py'],
+    ['c:\\Users\\E376038\\Documents\\repos\\python\\inst_code\\tools\\hall\\hall_script.py'],
     pathex=[],
     binaries=[],
     datas=[],
@@ -22,7 +22,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='Microsoft_hall.exe',
+    name='Microsoft_hall',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
