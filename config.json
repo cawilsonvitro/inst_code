@@ -44,7 +44,7 @@
             }
     },
     "Database_Config":{
-        "host": "10.40.0.16",
+        "host": "10.40.0.155",
         "db": "glass_test",
         "driver": "{ODBC Driver 17 for SQL Server}",
         "default_col":{
@@ -60,6 +60,7 @@
         "hall": "ha",
         "rdt": "rdt",
         "nearir": "nir",
-        "test": "t"
+        "test": "t",
+        "hall_testing": "ha"
     }
 }

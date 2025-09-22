@@ -69,6 +69,18 @@ class silent_hall:
         self.position = ""
         self.ID = ""
         self.description = ""
+    #region testing
+
+    def sql_setup(self):
+        cwd = os.getcwd().split("\\")[:-2]
+        cwd.append("config.json")
+        self.config_path = "\\".join(cwd)
+        self.SQL = iu.sql_client(self.config_path)
+        self.SQL.load_config()
+        self.SQL.connect()
+        
+    #endregion
+
 
 #region state system  
     def state_sys(self):
@@ -112,10 +124,6 @@ class silent_hall:
         # print(new_files)
         if len(self.new_files) != 0:
             try:
-                print(type(self.ip))
-                self.tcp = iu.client(self.ip, self.port) 
-                self.tcp.connect()
-                self.tcp.id()
                 for file in self.new_files:
                     self.current_file = file
                     # self.startApp()
@@ -125,8 +133,17 @@ class silent_hall:
                     self.description = input("Enter Description: ")
                     self.id = input("Enter ID: ")
                     col, data = iu.parse(os.path.join(os.getcwd(),'data', self.current_file))
-                    self.value = (",").join(data)
-                    self.tcp_protocol()
+                    sql_val = []
+                    i = 0
+                    for d in data:
+                        sql_val.append([col[i], d])
+                        i += 1
+                    sql_val.append(["ha_sample_id", self.sample_num])
+                    sql_val.append(["ha_pos", self.position])
+                    sql_val.append(["ha_description", self.description])
+                    sql_val.append(["ha_time", dt.now().strftime("%m-%d-%Y, Hour %H Min %M Sec %S")])
+                    self.SQL.check_columns("hall", (",").join(col))
+                    self.SQL.write("hall", sql_val)
 
                     
                     # raise Exception #this is to prevent new file from being marked as read, please comment to run normally
@@ -136,7 +153,6 @@ class silent_hall:
                 lines[1] = "True"
                 
                 with open(self.tracker, "w") as f: f.writelines(lines)
-                self.tcp.disconnect()
             except:
                 print(traceback.format_exc())
                 with open(self.tracker, "r") as f:lines=f.readlines()
@@ -145,7 +161,7 @@ class silent_hall:
                 
                 with open(self.tracker, "w") as f: f.writelines(lines)
             try: 
-                self.tcp.disconnect()
+                pass
             except AttributeError:
                 print("tcp client not created, cannot disconnect")
         else:
@@ -153,58 +169,19 @@ class silent_hall:
             lines = [str(pre_file) + "\n", str(update)] #do not change the file if no new files
             with open(self.tracker, "w") as f:f.writelines(lines)
 
-    def tcp_protocol(self):
-
-        self.tcp.soc.send("META".encode())
-        resp = self.tcp.soc.recv(1024).decode()
-        
-        
-        self.tcp.soc.send(str(self.sample_num).encode())
-        resp = self.tcp.soc.recv(1024).decode()
-
-
-        
-        self.tcp.soc.send(self.position.encode())
-        self.description = self.tcp.soc.recv(1024).decode()
-
-        
-        self.tcp.soc.send("MEAS".encode())
-        
-        resp = self.tcp.soc.recv(1024).decode()
-
-        self.tcp.soc.send(self.sample_num.encode())
-        resp = self.tcp.soc.recv(1024).decode()
-
-        
-        self.tcp.soc.send(self.description.encode())
-        resp = self.tcp.soc.recv(1024).decode()
-
-        self.tcp.soc.send(self.value.encode())
-        resp = self.tcp.soc.recv(1024).decode()
-        
-        if resp != "data received":
-            print(f"unexpected response from server {resp}")
-        else:
-            print("data sent successfully")
     #endregion
 
 
 if __name__ == "__main__":
         #SERVER = "127.0.0.1" 
-    try:
-        SERVER = f"{sys.argv[1]}"
-        PORT = int(sys.argv[2])
-    except:
-        print(traceback.format_exc())
-        SERVER = "10.40.0.16"
-        PORT = 5051
-    print(SERVER, PORT)
+
     
     cwd = os.getcwd()
     if str(cwd).lower() != str(exe_path).lower():
         os.chdir(exe_path)
         print(f"Changed working directory to: {os.getcwd()}")
     
-    temp = silent_hall(SERVER, PORT)
+    temp = silent_hall("0", 0)
+    temp.sql_setup()
     temp.state_sys()
 

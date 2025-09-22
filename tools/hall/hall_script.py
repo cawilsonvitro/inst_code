@@ -430,7 +430,7 @@ if __name__ == "__main__":
         PORT = int(sys.argv[2])
     except:
         print(traceback.format_exc())
-        SERVER = "10.40.0.16"
+        SERVER = "10.40.0.155"
         PORT = 5051
     print(SERVER, PORT)
     
