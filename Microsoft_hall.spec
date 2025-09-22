@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['c:\\Users\\E376038\\Documents\\repos\\python\\inst_code\\tools\\hall\\hall_script.py'],
+    ['c:\\Users\\E376038\\Documents\\repos\\python\\inst_code\\tools\\hall\\trend_micro_bad.py'],
     pathex=[],
     binaries=[],
     datas=[],
