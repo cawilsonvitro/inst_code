@@ -116,11 +116,11 @@ class silent_hall:
         
         # self.logger = logging.getLogger(name)
         
-        self.logger.info("hall script started")
+        # #self.logger.info("hall script started")
     
     #region gui
     def starApp(self):
-        self.logger.info("Starting GUI application")
+        # #self.logger.info("Starting GUI application")
         self.root = tk.Tk()
         self.root.title(self.current_file)
         self.root.geometry("300x500")
@@ -131,11 +131,11 @@ class silent_hall:
         self.process_display.set("Booting")
         self.root.update_idletasks()
         self.buildGUI(self.root)
-        self.logger.info("GUI built successfully, entering main loop")
+        # #self.logger.info("GUI built successfully, entering main loop")
         self.root.mainloop()
 
     def update(self) -> None:
-        self.logger.info("Updating sample dropdown")
+        # #self.logger.info("Updating sample dropdown")
         self.tcp.soc.send("UPDATE".encode())
         resp:str = self.tcp.soc.recv(1024).decode()
         print(resp)
@@ -145,10 +145,10 @@ class silent_hall:
             dropdown.instances["samples"].configure(values=[])
     
     def get_pos(self,event) -> None:        
-        self.logger.debug("Getting pos")
+        #self.logger.debug("Getting pos")
         self.position = "" 
         self.position = dropdown.instances["position"].get()
-        self.logger.debug(f"{self.position} selected")
+        #self.logger.debug(f"{self.position} selected")
     
     def buildGUI(self, root):
         """_summary_ builds gui
@@ -262,14 +262,14 @@ class silent_hall:
         '''
         ends application
         '''
-        self.logger.info("Ending application")
+        #self.logger.info("Ending application")
         self.quit = True
         self.sample_num = dropdown.instances["samples"].get()
         if self.sample_num == "":
                 print("Please enter a sample number")
-                self.logger.warning("No sample number entered, waiting for user input")
+                #self.logger.warning("No sample number entered, waiting for user input")
         else:
-            self.logger.info(f"Sample number {self.sample_num} selected, getting meta data then writing output")
+            #self.logger.info(f"Sample number {self.sample_num} selected, getting meta data then writing output")
             self.description = TextBox.instances["desc"].get("1.0", "end-1c")
             self.id = TextBox.instances["id"].get("1.0", "end-1c")    
             col, data = iu.parse(os.path.join(os.getcwd(),'data', self.current_file))
@@ -289,17 +289,15 @@ class silent_hall:
             after launch
         """
         
-        self.logger.info("Starting state system")
+        # #self.logger.info("Starting state system")
         files:int = 0 #number of files
         all_files: list[str] = []
         
         for dirpath,_,filenames in os.walk(self.hms):
-            for f in filenames:all_files.append(f)
-            
-        all_files.sort(key=lambda x: os.path.getmtime(os.path.join(self.hms, x)))
-        timesorted = [os.path.getmtime(os.path.join(self.hms, f)) for f in all_files]
-        recent = timesorted[-1]
-        
+            for f in filenames:
+                if ".txt" in f:
+                    all_files.append(f)
+
         with open(self.tracker, "r") as f:lines = f.readlines()
             
         if lines[1].strip().lower() == 'false':
@@ -308,24 +306,24 @@ class silent_hall:
             update:bool = True
         #update is to check if the last run was good. If it was
         os.system("\"C:\\Program Files (x86)\\HMS3000 V3.52\\HMS-3000 V3.52.exe\"")
+        
+        all_files.sort(key=lambda x: os.path.getmtime(os.path.join(self.hms, x)))
+        timesorted = [os.path.getmtime(os.path.join(self.hms, f)) for f in all_files]
+        recent = timesorted[-1]
       #  if self.state == "post":
         pre_file: float = float(lines[0].strip())
-        # files:int = 0
-        # for dirpath,_,filenames in os.walk(self.hms):
-        #     for f in filenames:
-        #         files += 1
-        # new_files:int = files - pre_file
 
         all_files = os.listdir(self.hms)
+        all_files = [f for f in all_files if ".txt" in f]
         times = [os.path.getmtime(os.path.join(self.hms, f)) for f in all_files]
         times.sort()
-        
-        i:int = 0
         self.new_files = []
-        for time in times:
-            if float(time) > pre_file:
-                if ".txt" in all_files[i]:self.new_files.append(all_files[i])
-            i += 1
+        self.new_files = [i for i in all_files if os.path.getmtime(os.path.join(self.hms, i)) > pre_file and ".txt" in i]
+        # i:int = 0
+        # for time in times:
+        #     if float(time) > pre_file:
+        #         if ".txt" in all_files[i]:self.new_files.append(all_files[i])
+        #     i += 1
             
         print(self.new_files)
         
@@ -338,18 +336,13 @@ class silent_hall:
                 for file in self.new_files:
                     self.current_file = file
                     self.starApp()
-                
-            
-        
-            
-
-                    raise Exception #this is to prevent new file from being marked as read, please comment to run normally
+                    # raise Exception #this is to prevent new file from being marked as read, please comment to run normally
                     with open(self.tracker, "r") as f:lines=f.readlines()
                     
-                    lines[0] = str(recent) + "\n"
-                    lines[1] = "True"
-                    
-                    with open(self.tracker, "w") as f: f.writelines(lines)
+                lines[0] = str(recent) + "\n"
+                lines[1] = "True"
+                
+                with open(self.tracker, "w") as f: f.writelines(lines)
                 self.tcp.disconnect()
             except:
                 print(traceback.format_exc())
@@ -361,68 +354,71 @@ class silent_hall:
             try: 
                 self.tcp.disconnect()
             except AttributeError:
-                self.logger.error("tcp client not created, cannot disconnect")
+                print("tcp client not created, cannot disconnect")
+                #self.logger.error("tcp client not created, cannot disconnect")
         else:
             print("No new files detected")
-            lines = [str(recent) + "\n", update]
+            lines = [str(recent) + "\n", str(update)]
             with open(self.tracker, "w") as f:f.writelines(lines)
 
     def tcp_protocol(self):
         
-        self.logger.info("Starting TCP protocol")
+        #self.logger.info("Starting TCP protocol")
         
-        self.logger.debug("Sending META command to server")
+        #self.logger.debug("Sending META command to server")
         
         self.tcp.soc.send("META".encode())
         resp = self.tcp.soc.recv(1024).decode()
         
-        self.logger.debug(f"Received response: {resp}")
-        self.logger.debug("Sending sample number to server")
+        #self.logger.debug(f"Received response: {resp}")
+        #self.logger.debug("Sending sample number to server")
         
         self.tcp.soc.send(str(self.sample_num).encode())
         resp = self.tcp.soc.recv(1024).decode()
         
-        self.logger.debug(f"Received response: {resp}")
-        self.logger.debug("Sending position to server")
+        #self.logger.debug(f"Received response: {resp}")
+        #self.logger.debug("Sending position to server")
         if self.position == "": self.position = "None"
         
         self.tcp.soc.send(self.position.encode())
         self.description = self.tcp.soc.recv(1024).decode()
         
-        self.logger.debug(f"got {self.description} from server")
-        self.logger.debug("Sending description request to server")
+        #self.logger.debug(f"got {self.description} from server")
+        #self.logger.debug("Sending description request to server")
 
-        self.logger.debug(f"user set description to {self.description}")
+        #self.logger.debug(f"user set description to {self.description}")
 
-        self.logger.info("Starting TCP MEAS protocol")
+        #self.logger.info("Starting TCP MEAS protocol")
 
-        self.logger.debug("Sending MEAS command")
+        #self.logger.debug("Sending MEAS command")
         
         self.tcp.soc.send("MEAS".encode())
         
         resp = self.tcp.soc.recv(1024).decode()
-        self.logger.debug(f"got {resp} from Server")
-        self.logger.debug(f"sending sample id {self.sample_num}")
+        #self.logger.debug(f"got {resp} from Server")
+        #self.logger.debug(f"sending sample id {self.sample_num}")
         
         self.tcp.soc.send(self.sample_num.encode())
         resp = self.tcp.soc.recv(1024).decode()
         
-        self.logger.debug(f"Received response: {resp}")
+        #self.logger.debug(f"Received response: {resp}")
         
         self.tcp.soc.send(self.description.encode())
         resp = self.tcp.soc.recv(1024).decode()
         
-        self.logger.debug(f"Received response: {resp}")
+        #self.logger.debug(f"Received response: {resp}")
 
         self.tcp.soc.send(self.value.encode())
         print(self.value.encode())
         resp = self.tcp.soc.recv(1024).decode()
         
-        self.logger.debug(f"Received response: {resp}")
+        #self.logger.debug(f"Received response: {resp}")
         if resp != "data received":
-           self.logger.error(f"unexpected response from server {resp}")
+            print(f"unexpected response from server {resp}")
+           #self.logger.error(f"unexpected response from server {resp}")
         else:
-            self.logger.info("TCP protocol complete")
+            print("data sent successfully")
+            #self.logger.info("TCP protocol complete")
     #endregion
 
 
