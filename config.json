@@ -63,5 +63,7 @@
         "nearir": "nir",
         "test": "t",
         "hall_testing": "ha"
+        "test": "t",
+        "hall_testing": "ha"
     }
 }

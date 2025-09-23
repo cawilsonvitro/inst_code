@@ -102,7 +102,7 @@ class silent_hall:
         self.position = ""
 
 
-
+        print(type(ip))
         self.ip = ip
         self.port = port
         self.tracker = tracker
@@ -119,7 +119,7 @@ class silent_hall:
         # #self.logger.info("hall script started")
     
     #region gui
-    def starApp(self):
+    def startApp(self):
         # #self.logger.info("Starting GUI application")
         self.root = tk.Tk()
         self.root.title(self.current_file)
@@ -330,12 +330,13 @@ class silent_hall:
         # print(new_files)
         if len(self.new_files) != 0:
             try:
+                print(type(self.ip))
                 self.tcp = iu.client(self.ip, self.port) 
                 self.tcp.connect()
                 self.tcp.id()
                 for file in self.new_files:
                     self.current_file = file
-                    self.starApp()
+                    self.startApp()
                     # raise Exception #this is to prevent new file from being marked as read, please comment to run normally
                     with open(self.tracker, "r") as f:lines=f.readlines()
                     
@@ -358,7 +359,7 @@ class silent_hall:
                 #self.logger.error("tcp client not created, cannot disconnect")
         else:
             print("No new files detected")
-            lines = [str(recent) + "\n", str(update)]
+            lines = [str(pre_file) + "\n", str(update)] #do not change the file if no new files
             with open(self.tracker, "w") as f:f.writelines(lines)
 
     def tcp_protocol(self):
@@ -425,10 +426,14 @@ class silent_hall:
 if __name__ == "__main__":
         #SERVER = "127.0.0.1" 
     try:
-        SERVER = sys.argv[1]
+        SERVER = f"{sys.argv[1]}"
+        PORT = int(sys.argv[2])
     except:
-        SERVER = "192.168.1.1"
-    PORT = 5050
+        print(traceback.format_exc())
+        SERVER = "10.40.0.155"
+        PORT = 5051
+    print(SERVER, PORT)
+    
     cwd = os.getcwd()
     if str(cwd).lower() != str(exe_path).lower():
         os.chdir(exe_path)
