@@ -701,7 +701,8 @@ class near_ir_app():
                 for i in range(self.lightavgs):
                     self.spectrometer.measure()
                     lights = self.spectrometer.spectra
-                    lights_avg = np.add(lights_avg, lights)
+                    lights_float = [float(x) for x in lights]
+                    lights_avg = np.add(lights_avg, lights_float)
                     i += 1
 
                 lights_avg = lights_avg / self.lightavgs
@@ -741,10 +742,6 @@ class near_ir_app():
                     self.wait.set(True)
                     self.root.wait_variable(self.wait)
                     self.light()
-                    
-                    
-                    
-                    
                     str_wvs: str = ""
                     str_spec: str = ""
                     i: int = 0
