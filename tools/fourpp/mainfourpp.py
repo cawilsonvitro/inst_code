@@ -2,8 +2,6 @@
 #region imports
 from gui_package_cawilvitro import *
 from instutil import inst_util as iu
-# import fourpp as fourpp
-import fourpp_dummy as fourpp
 import tkinter as tk
 import sys
 from datetime import datetime as dt
@@ -11,6 +9,19 @@ import traceback
 import logging
 from logging.handlers import TimedRotatingFileHandler
 from functools import partial
+
+
+if getattr(sys, 'frozen', False):
+    # Running in a PyInstaller bundle
+    import fourpp
+else:
+    print("importing dummy")
+    import fourpp_dummy as fourpp
+
+#endregion
+#env setup
+
+
 #endregion
 
 #region logging
@@ -23,7 +34,8 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
         # logging.StreamHandler(), # Log to console
-        TimedRotatingFileHandler(f'tools\\fourpp\\logs\\{date}.log', when = "D", backupCount= 5)
+        TimedRotatingFileHandler(f'tools\\fourpp\\logs\\{date}.log', when = "D", backupCount= 5),
+        
     ]
 )
 
@@ -130,13 +142,22 @@ class four_point_app():
             
         if self.connected:
             self.logger.info(f"Connected to server {self.ip}:{self.port}")
-            StandardLabel.instances["Connection"].configure(image = TkImage("connection_status", r"images\Status_Good.png").image)
+            StandardLabel(
+                "Connection",
+                self.root,
+                image = TkImage("Connect_status",  r"tools\fourpp\images\Status_Bad.png").image
+                ).place(x = 140, y = 190)
             try:
                 self.tcp.id()
             except Exception as e:
                 self.logger.error(f"Failed to send id to server")
         else:
-            StandardLabel.instances["Connection"].configure(image = TkImage("connection_status", r"images\Status_Bad.png").image)
+            StandardLabel(
+                "Connection",
+                self.root,
+                image = TkImage("Connect_status",  r"tools\fourpp\images\Status_Bad.png").image
+            ).place(x = 140, y = 190)
+            
             self.logger.error(f"Failed to connect to server, see above for details")
     
     def startApp(self):
@@ -172,7 +193,9 @@ class four_point_app():
                 self.tcp.disconnect()
         except:
             self.logger.debug("client already shut down")
-       
+        finally:
+            self.root.destroy()
+            sys.exit()
         
         
     #endregion

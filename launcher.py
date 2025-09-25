@@ -190,11 +190,18 @@ def launch():
     #     # file_name = f"tools//hall//{file_name}"
     py = virt_path
     if not file_name.endswith('.py'): file_name += '.py'
+    if not os.path.exists(py):
+        file_name = file_name.replace(".py",".exe")
+        
     if file_name != "testing":
-        # print("FILENAME", file_name)
-        program = [py, file_name, server_ip]
-        for i in kwargs: program.append(i)
-        spawn_program_and_die(program)
+        if file_name.endswith('.exe'):
+            program = [file_name, server_ip]
+            for i in kwargs: program.append(i)
+            spawn_program_and_die(program)
+        else:
+            program = [py, file_name, server_ip]
+            for i in kwargs: program.append(i)
+            spawn_program_and_die(program)
 
 
 
