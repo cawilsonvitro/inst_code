@@ -66,9 +66,11 @@ and log and data clearing
 main: test sql and run before moving over
 main: add operator id columns to database building
 
+
+all tools add log cleaning system
 all tools: change description window size
 all tools: get ready and test for deployment
-
+add file size handler to all
 all things get env standarized
 all tools: slow main boot
 all tools: make sure we are not calling config and that we are using sysv args to pass args from launcher
