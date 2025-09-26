@@ -41,6 +41,7 @@ def deploy(tool):
     os.makedirs(deploy_path)
     os.makedirs(f"{deploy_path}/tools")
     os.makedirs(f"{deploy_path}/logs")
+    shutil.copytree(r"install_files", f"{deploy_path}/install_files")
     
     i = 0
     for dirs,folders,files in os.walk(tool_pypath):

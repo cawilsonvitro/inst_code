@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['C:\\Users\\E376038\\Documents\\repos\\python\\inst_code/tools/fourpp/mainfourpp.py'],
+    ['C:\\Users\\C376038\\Documents\\inst_suite\\python\\inst_code/tools/fourpp/mainfourpp.py'],
     pathex=[],
     binaries=[],
     datas=[],
