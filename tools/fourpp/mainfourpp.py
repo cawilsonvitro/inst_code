@@ -145,7 +145,7 @@ class four_point_app():
             StandardLabel(
                 "Connection",
                 self.root,
-                image = TkImage("Connect_status",  r"tools\fourpp\images\Status_Bad.png").image
+                image = TkImage("Connect_status",  r"tools\fourpp\images\Status_Good.png").image
                 ).place(x = 140, y = 190)
             try:
                 self.tcp.id()
