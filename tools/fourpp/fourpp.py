@@ -90,7 +90,7 @@ if __name__ == "__main__":
         answer = value * 4.517 * 1 * 1.006
         print(answer)
     
-    foo = siglent("USB0::0xF4EC::0x1208::SDM36HCD801150::INSTR")
+    foo = siglent("USB0::0xF4EC::0x1203::SDM36HCD801462::INSTR")
 
     foo.init_driver()
 

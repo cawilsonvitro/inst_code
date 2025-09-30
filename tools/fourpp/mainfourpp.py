@@ -169,7 +169,9 @@ class four_point_app():
         self.root.bind("<Escape>", self.endApp)
         self.root.protocol("WM_DELETE_WINDOW",partial(self.endApp, None))
         self.process_display = tk.StringVar() 
+        self.measurement = tk.StringVar()
         self.process_display.set("Booting")
+        self.measurement.set("No Measurement")
         self.root.update_idletasks()
         self.buildGUI(self.root)
         self.connectClient()
@@ -227,7 +229,6 @@ class four_point_app():
         self.logger.info("Updating sample dropdown")
         self.tcp.soc.send("UPDATE".encode())
         resp:str = self.tcp.soc.recv(1024).decode()
-        print(resp)
         if resp != "None":
             dropdown.instances["samples"].configure(values=resp.split(","))
         else:
@@ -242,7 +243,6 @@ class four_point_app():
     def get_id(self, event) -> None:
         self.logger.debug("Getting ID")
         self.id = TextBox.instances["id"].get("1.0","end-1c")
-        print(self.id)
         TextBox.instances["id"].delete("1.0","end-1c")
         self.toggle_id()
         
@@ -327,6 +327,21 @@ class four_point_app():
         ).place(x = 140, y = 190)
         
         Label(
+            "Measurement_Value", 
+            root,
+            textvariable = self.measurement,
+            anchor=tk.W,           
+            height=1,              
+            width=30,              
+            bd=1,                  
+            font=("Arial", 10), 
+            cursor="hand2",   
+            fg="black",                           
+            justify = tk.LEFT,  
+            wraplength=100   
+            ).place(x = 300, y = 140, width = 180,height = 100)
+                
+        Label(
             "Process_Status", 
             root,
             textvariable = self.process_display,
@@ -339,7 +354,7 @@ class four_point_app():
             fg="black",                           
             justify = tk.LEFT,  
             wraplength=100   
-            ).place(x = 300, y = 40, width = 180,height = 200)
+            ).place(x = 300, y = 40, width = 100,height = 100)
         
         StandardLabel(
             "Status",
@@ -364,6 +379,7 @@ class four_point_app():
         self.id_window.bind('<Escape>', self.get_id)
         self.id_window.protocol("WM_DELETE_WINDOW", partial(self.get_id, None))
         TextBox("id", self.id_window, height = 2, width = 30).place(x = 10, y = 50)
+        
         Label(
             "Operator_ID",
             self.id_window,
@@ -497,13 +513,15 @@ class four_point_app():
                 try:
                     self.DM.measure()
                     self.value = (sum(self.DM.values)/len(self.DM.values)) * 4.517 * 1 * 1.006
+                    self.measurement.set(f"{self.value} Ohms per sqr")
+                    self.root.update_idletasks()
                     if self.connected:
                         self.tcp_protocol()
                     self.process_display.set("Ready")
                 except Exception as e:
                     traceback.print_exc()
                     self.DM.status = False
-                    print("Measuring fail", e)
+                    self.logger.error(f"Measurement failed, {traceback.format_exc()}")
                 data:list[str | int | float] = [self.sample_num, str(dt.now()), self.value]
                 
                 
@@ -523,7 +541,6 @@ class four_point_app():
                 
                 data.append(self.description)
                 data.append(self.position)
-                print(self.id)
                 data.append(self.id)
                 self.fmanager.write_data("fourpp", ["sample id", "time", "resistance", "description", "pos", "operator ID"], data)
                 
@@ -540,31 +557,33 @@ class four_point_app():
         
     #endregion
 if __name__ == "__main__":
-    logging.info("start from main")
-    sysargs = iu.get_args_as_dict(sys.argv[2:])
     try:
-        SERVER = sys.argv[1]
-    except:
-        # SERVER = "127.0.0.1" 
-        SERVER = "192.168.1.1"
-    
-    PORT = 5050
-    ADDR = (SERVER, PORT)
-    try:
-        sysargs["sample_count"]
-        sysargs["resource_string"]
-    except KeyError as e:
-        logging.error(f"Missing required argument: {e}")
-        logging.error("using default arguments")
-        sysargs["sample_count"] = 1
-        sysargs["resource_string"] = "USB0::0xF4EC::0x1208::SDM36HCD801150::INSTR"
-    
-    temp = four_point_app(
-        SERVER,
-        PORT,
-        sysargs["sample_count"],
-        sysargs["resource_string"]
-    )
-    temp.startApp()
-
- 
+        logging.info("start from main")
+        sysargs = iu.get_args_as_dict(sys.argv[2:])
+        try:
+            SERVER = sys.argv[1]
+        except:
+            # SERVER = "127.0.0.1" 
+            SERVER = "192.168.1.1"
+        
+        PORT = 5050
+        ADDR = (SERVER, PORT)
+        try:
+            sysargs["sample_count"]
+            sysargs["resource_string"]
+        except KeyError as e:
+            logging.error(f"Missing required argument: {e}")
+            logging.error("using default arguments")
+            sysargs["sample_count"] = 1
+            sysargs["resource_string"] = "USB0::0xF4EC::0x1208::SDM36HCD801150::INSTR"
+        
+        temp = four_point_app(
+            SERVER,
+            PORT,
+            sysargs["sample_count"],
+            sysargs["resource_string"]
+        )
+        temp.startApp()
+    except Exception as e:
+        logging.critical(f"Fatal error, application shutting down {traceback.format_exc()}")
+        sys.exit()

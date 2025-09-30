@@ -76,6 +76,8 @@ all tools: slow main boot
 all tools: make sure we are not calling config and that we are using sysv args to pass args from launcher
 fpp: make sure new config layout works with code
 
+all: change to .pyw files or other way to remove console on deployment
+
 hall: debug script again and get running with hall computer
 hall: get computer able to ping my computer
 hall: remove process display
